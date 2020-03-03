@@ -5,6 +5,9 @@ const doMian = "/jeecg-boot/";
 //图片预览请求地址
 const imgView = "http://127.0.0.1:8080/jeecg-boot/sys/common/view/";
 
+//用户管理
+//const getPersonnel = (params)=>postAction("/",params)
+
 
 //角色管理
 const addRole = (params)=>postAction("/sys/role/add",params);

@@ -5,7 +5,7 @@
           <a-row :gutter="24">
 
             <a-col :span="6">
-              <a-form-item label="物品名称">
+              <a-form-item label="物品名称" >
                 <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseName"></a-input>
               </a-form-item>
             </a-col>
@@ -44,22 +44,21 @@
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
 
-<!--        <a-dropdown v-if="selectedRowKeys.length > 0">-->
-<!--          <a-menu slot="overlay">-->
-<!--            <a-menu-item key="1" @click="batchDel">-->
-<!--              <a-icon type="delete"/>-->
-<!--              删除-->
-<!--            </a-menu-item>-->
-<!--          </a-menu>-->
-<!--          <a-button style="margin-left: 8px"> 批量操作-->
-<!--            <a-icon type="down"/>-->
-<!--          </a-button>-->
-<!--        </a-dropdown>-->
+<!--        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="batchDel">
+              <a-icon type="delete"/>
+              删除
+            </a-menu-item>
+          </a-menu>
+          <a-button style="margin-left: 8px"> 批量操作
+            <a-icon type="down"/>
+          </a-button>
+        </a-dropdown>-->
       </div>
-
       <!-- table区域-begin -->
       <div>
-        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
           <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
           selectedRowKeys.length }}</a>项
           <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -96,7 +95,7 @@
         </a-table>
       </div>
       <!-- table区域-end -->
-
+      <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
 
     </a-card>
 
@@ -104,9 +103,15 @@
 
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
+    import prochaseInfoMode from "./modules/pruchaseInfoMode";
+    import {deleteAction, getAction, postAction} from '@/api/manage'
+
     export default {
       name: "purchaseInfo",
-      components: {ARow},
+      components: {
+        ARow,
+        prochaseInfoMode
+      },
       data() {
         return{
           description: '采购管理页面',
@@ -126,48 +131,58 @@
               }
             },
             {
-              title: '姓名',
+              title: '物品名称',
               align: "center",
-              dataIndex: 'name'
+              dataIndex: 'purchaseItem'
             },
             {
-              title: '关键词',
+              title: '设备型号',
               align: "center",
-              dataIndex: 'keyWord'
+              dataIndex: 'itemModel'
             },
             {
-              title: '打卡时间',
+              title: '单价',
               align: "center",
-              dataIndex: 'punchTime'
+              dataIndex: 'price'
             },
             {
-              title: '性别',
+              title: '数量',
               align: "center",
-              dataIndex: 'sex',
-              customRender: (text, record, index) => {
+              dataIndex: 'quantity',
+/*              customRender: (text, record, index) => {
                 //字典值替换通用方法
                 return filterDictText(this.sexDictOptions, text);
-              }
+              }*/
             },
             {
-              title: '年龄',
+              title: '总价',
               align: "center",
-              dataIndex: 'age'
+              dataIndex: 'totalPrice',
             },
             {
-              title: '生日',
+              title: '采购人员',
               align: "center",
-              dataIndex: 'birthday'
+              dataIndex: 'purchaser'
             },
             {
-              title: '邮箱',
+              title: '采购时间',
               align: "center",
-              dataIndex: 'email'
+              dataIndex: 'purchase_time'
             },
             {
-              title: '个人简介',
+              title: '采购来源',
               align: "center",
-              dataIndex: 'content'
+              dataIndex: 'whichCompany'
+            },
+            {
+              title: '到货日期',
+              align: "center",
+              dataIndex: 'arrivalTime'
+            },
+            {
+              title: '是否到货',
+              align: "center",
+              dataIndex: 'isarrival'
             },
             {
               title: '操作',
@@ -199,21 +214,58 @@
           selectedRows: [],
           url: {
             list: "/test/jeecgDemo/list",
-            delete: "/test/jeecgDemo/delete",
-            deleteBatch: "/test/jeecgDemo/deleteBatch",
+/*            delete: "/test/jeecgDemo/delete",
+            deleteBatch: "/test/jeecgDemo/deleteBatch",*/
           },
         }
       },
+      created() {
+        this.loadData();
+        //初始化字典配置
+        this.initDictConfig();
+      },
       methods: {
+      loadData(arg) {
+          //加载数据 若传入参数1则加载第一页的内容
+          if (arg === 1) {
+            this.ipagination.current = 1;
+          }
+          var params = this.getQueryParams();//查询条件
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.records;
+              this.ipagination.total = res.result.total;
+            }
+          })
+        },
         handleAdd: function () {
-          // this.$refs.jeecgDemoModal.add();
-          // this.$refs.jeecgDemoModal.title = "新增";
+           this.$refs.prochaseInfoMode.add();
+           this.$refs.prochaseInfoMode.title = "新增";
+        },
+      modalFormOk() {
+          // 新增/修改 成功时，重载列表
+          this.loadData();
         },
         searchReset() {
           var that = this;
           that.queryParam = {}
           that.loadData(1);
-        }
+        },
+        getQueryParams() {
+          var param = Object.assign({}, this.queryParam, this.isorter);
+          param.field = this.getQueryField();
+          param.pageNo = this.ipagination.current;
+          param.pageSize = this.ipagination.pageSize;
+          return filterObj(param);
+        },
+        getQueryField() {
+          //TODO 字段权限控制
+          var str = "id,";
+          this.columns.forEach(function (value, index) {
+            str += "," + value.dataIndex;
+          });
+          return str;
+        },
       }
     }
 
