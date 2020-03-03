@@ -45,6 +45,40 @@ export const asyncRouterMap = [
 
         ]
       },
+      //人员管理
+      {
+        path: '/personnel',
+        name: 'personnel',
+        redirect: '/persopnnel/edit',
+        component: RouteView,
+        meta: { title: '人员管理', icon: 'dashboard', permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/personnel/edit',
+            name: 'edit',
+            component: () => import('@/views/personnel/Staffeditor'),
+            meta: { title: '人员编辑',permission:[ 'dashboard'] }
+          }
+        ]
+      },
+
+      //人车4G
+      {
+        path: '/work',
+        name: 'work',
+        redirect: '/equipment/purchaseInfo',
+        component: RouteView,
+        meta: { title: '人车4G', icon: 'dashboard', permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/equipment/purchaseInfo',
+            name: 'purchaseInfo',
+            component: () => import('@/views/work/equipment/purchaseInfo'),
+            meta: { title: '设备采购管理',permission:[ 'dashboard'] }
+          }
+        ]
+      },
+
 
       // dashboard
       {
@@ -281,6 +315,8 @@ export const asyncRouterMap = [
           }
         ]
       },
+
+
 
       // account
       {
