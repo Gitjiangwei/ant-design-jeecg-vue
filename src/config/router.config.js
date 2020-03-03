@@ -99,6 +99,29 @@ export const asyncRouterMap = [
           }
         ]
       },
+
+      //work
+      {
+        path: '/work',
+          name: 'work',
+        redirect: '/work',
+        component: RouteView,
+        meta: { title: '人车项目', icon: 'dashboard', permission: [ 'dashboard' ] },
+        children: [
+          {
+            path: '/work/purchaseInfo',
+            name: 'purchaseList',
+            component: () => import('@/views/work/purchaseInfo'),
+            meta: { title: '采购信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/customer/companyInfo',
+            name: 'companyList',
+            component: () => import('@/views/work/customer/companyInfo'),
+            meta: { title: '客户信息', permission: [ 'dashboard' ] }
+          }
+        ]
+      },
       // forms
       {
         path: '/form',

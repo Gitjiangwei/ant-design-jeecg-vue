@@ -66,6 +66,7 @@ const delDictItemList = (params)=>deleteAction("/sys/dictItem/deleteBatch",param
 
 //字典标签专用（通过code获取字典数组）
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
+export const ajaxGetRencheDictItems = (code, params)=>getAction(`/renche/dict/getDictItems/${code}`,params);
 
 //系统通告
 const doReleaseData = (params)=>getAction("/sys/annountCement/doReleaseData",params);

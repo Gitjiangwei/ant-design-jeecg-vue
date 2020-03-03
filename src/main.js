@@ -13,6 +13,7 @@ import 'ant-design-vue/dist/antd.less';  // or 'ant-design-vue/dist/antd.less'
 import '@/permission' // permission control
 import '@/utils/filter' // base filter
 import DictSelectTag from './components/dict/index.js'
+import RencheDictSelectTag from './components/dict/indexRenche.js'
 import Print from 'vue-print-nb'
 /*import '@babel/polyfill'*/
 
@@ -40,6 +41,7 @@ Vue.use(VueAxios, router)
 Vue.use(Viser)
 Vue.use(hasPermission)
 Vue.use(DictSelectTag)
+Vue.use(RencheDictSelectTag)
 Vue.use(Print)
 
 new Vue({
