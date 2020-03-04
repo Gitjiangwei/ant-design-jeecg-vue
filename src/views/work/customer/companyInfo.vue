@@ -57,7 +57,7 @@
           ref="table"
           size="middle"
           bordered
-          rowKey="id"
+          rowKey="companyId"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
@@ -73,7 +73,7 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.companyId)">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -186,8 +186,8 @@
           selectedRows: [],
           url: {
             list: "/renche/companyInfo/list",
-            delete: "/test/jeecgDemo/delete",
-            deleteBatch: "/test/jeecgDemo/deleteBatch",
+            delete: "/renche/companyInfo/delete",
+            deleteBatch: "/renche/companyInfo/deleteBatch",
           },
         }
       },
@@ -252,6 +252,33 @@
           this.selectedRowKeys = [];
           this.selectionRows = [];
         },
+        batchDel: function () {
+          if (this.selectedRowKeys.length <= 0) {
+            this.$message.warning('请选择一条记录！');
+            return;
+          } else {
+            var ids = "";
+            for (var a = 0; a < this.selectedRowKeys.length; a++) {
+              ids += this.selectedRowKeys[a] + ",";
+            }
+            var that = this;
+            this.$confirm({
+              title: "确认删除",
+              content: "是否删除选中数据?",
+              onOk: function () {
+                deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                });
+              }
+            });
+          }
+        },
         handleDelete: function (id) {
           var that = this;
           deleteAction(that.url.delete, {id: id}).then((res) => {
@@ -264,8 +291,8 @@
           });
         },
         handleEdit: function (record) {
-          this.$refs.jeecgDemoModal.edit(record);
-          this.$refs.jeecgDemoModal.title = "编辑";
+          this.$refs.companyInfoModal.edit(record);
+          this.$refs.companyInfoModal.title = "编辑";
         },
         handleAdd: function () {
           this.$refs.companyInfoModal.add();
