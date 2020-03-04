@@ -6,7 +6,7 @@
 
             <a-col :span="6">
               <a-form-item label="物品名称" >
-                <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseName"></a-input>
+                <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseItem"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -104,7 +104,9 @@
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
-    import {deleteAction, getAction, postAction} from '@/api/manage'
+    import {deleteAction, getAction, postAction} from '@/api/manage';
+    import {filterObj} from '@/utils/util';
+    import {initDictOptions, filterDictText} from '@/components/dict/DictSelectUtil';
 
     export default {
       name: "purchaseInfo",
@@ -149,10 +151,7 @@
               title: '数量',
               align: "center",
               dataIndex: 'quantity',
-/*              customRender: (text, record, index) => {
-                //字典值替换通用方法
-                return filterDictText(this.sexDictOptions, text);
-              }*/
+
             },
             {
               title: '总价',
@@ -167,7 +166,7 @@
             {
               title: '采购时间',
               align: "center",
-              dataIndex: 'purchase_time'
+              dataIndex: 'purchaseTime'
             },
             {
               title: '采购来源',
@@ -182,7 +181,16 @@
             {
               title: '是否到货',
               align: "center",
-              dataIndex: 'isarrival'
+              dataIndex: 'isarrival',
+              customRender: (text) => {
+                if(text==1){
+                  return "是";
+                }else if(text==2){
+                  return "否";
+                }else{
+                  return text;
+                }
+              }
             },
             {
               title: '操作',
@@ -213,7 +221,7 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/test/jeecgDemo/list",
+            list: "/renche/purchase/qryPurchase",
 /*            delete: "/test/jeecgDemo/delete",
             deleteBatch: "/test/jeecgDemo/deleteBatch",*/
           },
@@ -233,7 +241,7 @@
           var params = this.getQueryParams();//查询条件
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
-              this.dataSource = res.result.records;
+              this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }
           })
@@ -265,6 +273,28 @@
             str += "," + value.dataIndex;
           });
           return str;
+        },
+        onSelectChange(selectedRowKeys, selectionRows) {
+          this.selectedRowKeys = selectedRowKeys;
+          this.selectionRows = selectionRows;
+        },
+        onClearSelected() {
+          this.selectedRowKeys = [];
+          this.selectionRows = [];
+        },
+        searchQuery(){
+          this.loadData(1);
+        },
+        handleTableChange(pagination, filters, sorter) {
+          //分页、排序、筛选变化时触发
+          console.log(sorter);
+          //TODO 筛选
+          if (Object.keys(sorter).length > 0) {
+            this.isorter.column = sorter.field;
+            this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+          }
+          this.ipagination = pagination;
+          this.loadData();
         },
       }
     }
