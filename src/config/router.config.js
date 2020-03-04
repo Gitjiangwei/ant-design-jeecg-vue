@@ -62,22 +62,6 @@ export const asyncRouterMap = [
         ]
       },
 
-      //人车4G
-      {
-        path: '/work',
-        name: 'work',
-        redirect: '/equipment/purchaseInfo',
-        component: RouteView,
-        meta: { title: '人车4G', icon: 'dashboard', permission: [ 'dashboard' ] },
-        children: [
-          {
-            path: '/equipment/purchaseInfo',
-            name: 'purchaseInfo',
-            component: () => import('@/views/work/equipment/purchaseInfo'),
-            meta: { title: '设备采购管理',permission:[ 'dashboard'] }
-          }
-        ]
-      },
 
 
       // dashboard
@@ -145,7 +129,7 @@ export const asyncRouterMap = [
           {
             path: '/work/purchaseInfo',
             name: 'purchaseList',
-            component: () => import('@/views/work/purchaseInfo'),
+            component: () => import('@/views/work/equipment/purchaseInfo'),
             meta: { title: '采购信息', permission: [ 'dashboard' ] }
           },
           {
