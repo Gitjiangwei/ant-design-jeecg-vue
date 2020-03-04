@@ -44,7 +44,7 @@
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
 
-<!--        <a-dropdown v-if="selectedRowKeys.length > 0">
+       <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel">
               <a-icon type="delete"/>
@@ -54,7 +54,7 @@
           <a-button style="margin-left: 8px"> 批量操作
             <a-icon type="down"/>
           </a-button>
-        </a-dropdown>-->
+        </a-dropdown>
       </div>
       <!-- table区域-begin -->
       <div>
@@ -76,9 +76,14 @@
           :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
           @change="handleTableChange">
 
+<!--          <span slot="purchaseItem" slot-scope="text,record">-->
+<!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
+<!--          </span>-->
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
+          <a-divider type="vertical"/>
+          <a @click="handleDetail(record)">详情</a>
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
@@ -106,7 +111,7 @@
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {filterObj} from '@/utils/util';
-    import {initDictOptions, filterDictText} from '@/components/dict/DictSelectUtil';
+   // import {initDictOptions, filterDictText} from '@/components/dict/DictSelectUtil';
 
     export default {
       name: "purchaseInfo",
@@ -135,7 +140,7 @@
             {
               title: '物品名称',
               align: "center",
-              dataIndex: 'purchaseItem'
+              dataIndex: 'purchaseItem',
             },
             {
               title: '设备型号',
@@ -246,9 +251,15 @@
             }
           })
         },
+
+
         handleAdd: function () {
            this.$refs.prochaseInfoMode.add();
            this.$refs.prochaseInfoMode.title = "新增";
+        },
+        handleEdit: function (record) {
+          this.$refs.jeecgDemoModal.edit(record);
+          this.$refs.jeecgDemoModal.title = "编辑";
         },
       modalFormOk() {
           // 新增/修改 成功时，重载列表
