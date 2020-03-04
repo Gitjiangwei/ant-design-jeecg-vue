@@ -6,7 +6,7 @@
 
             <a-col :span="6">
               <a-form-item label="物品名称" >
-                <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseName"></a-input>
+                <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseItem"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -241,7 +241,7 @@
           var params = this.getQueryParams();//查询条件
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
-              this.dataSource = res.result.records;
+              this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }
           })
@@ -281,6 +281,9 @@
         onClearSelected() {
           this.selectedRowKeys = [];
           this.selectionRows = [];
+        },
+        searchQuery(){
+          this.loadData(1);
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
