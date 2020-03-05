@@ -205,7 +205,7 @@
           var params = this.getQueryParams();//查询条件
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
-              this.dataSource = res.result.records;
+              this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }
           })
