@@ -16,15 +16,10 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="是否到货">
-                <a-select v-model="queryParam.isArrival">
+                <a-select v-model="queryParam.isarrival">
                   <a-select-option :key="1">是</a-select-option>
-                  <a-select-option :key="0">否</a-select-option>
+                  <a-select-option :key="2">否</a-select-option>
                 </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item label="到货时间">
-                <a-date-picker></a-date-picker>
               </a-form-item>
             </a-col>
           </a-row>
@@ -43,12 +38,15 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-
        <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
-            <a-menu-item key="1" @click="batchDel">
+            <a-menu-item key="1" @click="batchDel(1)">
               <a-icon type="delete"/>
               删除
+            </a-menu-item>
+            <a-menu-item key="1" @click="batchDel(2)">
+              <a-icon type="shopping-cart"/>
+              收货
             </a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px"> 批量操作
@@ -89,7 +87,7 @@
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -102,6 +100,7 @@
       <!-- table区域-end -->
       <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
 
+      <pruchase-info-detail ref="pruchaseInfoDetail" ></pruchase-info-detail>
     </a-card>
 
 </template>
@@ -109,15 +108,17 @@
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
+    import pruchaseInfoDetail from "./modules/pruchaseInfoDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {filterObj} from '@/utils/util';
-   // import {initDictOptions, filterDictText} from '@/components/dict/DictSelectUtil';
+
 
     export default {
       name: "purchaseInfo",
       components: {
         ARow,
-        prochaseInfoMode
+        prochaseInfoMode,
+        pruchaseInfoDetail,
       },
       data() {
         return{
@@ -227,8 +228,9 @@
           selectedRows: [],
           url: {
             list: "/renche/purchase/qryPurchase",
-/*            delete: "/test/jeecgDemo/delete",
-            deleteBatch: "/test/jeecgDemo/deleteBatch",*/
+            delete: "/renche/purchase/delete",
+            deleteBatch: "/renche/purchase/deleteBatch",
+            updateIsArrival: "/renche/purchase/updateIsArrival"
           },
         }
       },
@@ -258,10 +260,64 @@
            this.$refs.prochaseInfoMode.title = "新增";
         },
         handleEdit: function (record) {
-          this.$refs.jeecgDemoModal.edit(record);
-          this.$refs.jeecgDemoModal.title = "编辑";
+          this.$refs.prochaseInfoMode.edit(record);
+          this.$refs.prochaseInfoMode.title = "编辑";
         },
-      modalFormOk() {
+        handleDetail: function(record){
+          this.$refs.pruchaseInfoDetail.detail(record);
+          this.$refs.pruchaseInfoDetail.title = "详情";
+        },
+        batchDel: function (flag) {
+          if (this.selectedRowKeys.length <= 0) {
+            this.$message.warning('请选择一条记录！');
+            return;
+          } else {
+            var ids = "";
+            for (var a = 0; a < this.selectedRowKeys.length; a++) {
+              ids += this.selectionRows[a].purchaseId + ",";
+            }
+            var that = this;
+            var title = "";
+            var content = "";
+            var url = "";
+            if (flag==1){
+              title = "确认删除";
+              content = "是否删除选中数据";
+              url = that.url.deleteBatch;
+            } else {
+              title = "确认收货";
+              content = "再次确认设备已经到达";
+              url = that.url.updateIsArrival;
+            }
+            this.$confirm({
+              title: title,
+              content: content,
+              onOk: function () {
+                deleteAction(url, {ids: ids}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                });
+              }
+            });
+          }
+        },
+        handleDelete: function (id) {
+          var that = this;
+          deleteAction(that.url.delete, {id: id}).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message);
+              that.loadData();
+            } else {
+              that.$message.warning(res.message);
+            }
+          });
+        },
+        modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
         },
