@@ -53,13 +53,14 @@
           ref="table"
           size="middle"
           bordered
-          rowKey="companyId"
+          rowKey="id"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
           :loading="loading"
           :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
           @change="handleTableChange">
+
 
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
@@ -69,7 +70,7 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.companyId)">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.visitId )">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -81,26 +82,32 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <company-info-modal ref="companyInfoModal" @ok="modalFormOk"></company-info-modal>
+      <!--<company-info-modal ref="companyInfoModal" @ok="modalFormOk"></company-info-modal>-->
+
+      <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
+
 
     </a-card>
 
 </template>
 
 <script>
-   import addVisitInfo from "./modules/addVisitInfo;
-    import {filterObj} from '@/utils/util'
-    import {deleteAction, getAction, postAction} from '@/api/manage'
-    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
+    import ARow from "ant-design-vue/es/grid/Row";
+    import addVisit from './modules/addVisitInfo';
+    import {filterObj} from '@/utils/util';
+    import {deleteAction, getAction, postAction} from '@/api/manage';
+    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
     export default {
-      name: "companyList",
+      name: "vitIofo",
       components: {
-        CompanyInfoModal,
+        ARow,
+        addVisit,
+        //CompanyInfoModal,
       },
       data() {
         return{
-          description: '采购管理页面',
+          description: '客户拜访页面',
 
           // 查询条件
           queryParam: {},
@@ -180,8 +187,8 @@
           selectedRows: [],
           url: {
             list: "/renche/visit/qryVisit",
-            delete: "/renche/companyInfo/delete",
-            deleteBatch: "/renche/companyInfo/deleteBatch",
+            delete: "/renche/visit/delete",
+
           },
         }
       },
@@ -253,7 +260,8 @@
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectedRowKeys[a] + ",";
+              i
+              ids += this.selectionRows[a].visitId + ",";
             }
             var that = this;
             this.$confirm({
@@ -285,12 +293,12 @@
           });
         },
         handleEdit: function (record) {
-          this.$refs.companyInfoModal.edit(record);
-          this.$refs.companyInfoModal.title = "编辑";
+          this.$refs.addVisit.edit(record);
+          this.$refs.addVisit.title = "编辑";
         },
         handleAdd: function () {
-          this.$refs.companyInfoModal.add();
-          this.$refs.companyInfoModal.title = "新增";
+          this.$refs.addVisit.add();
+          this.$refs.addVisit.title = "新增";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
