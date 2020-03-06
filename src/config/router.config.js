@@ -121,16 +121,31 @@ export const asyncRouterMap = [
       //work
       {
         path: '/work',
-          name: 'work',
+        name: 'work',
         redirect: '/work',
         component: RouteView,
         meta: { title: '人车项目', icon: 'dashboard', permission: [ 'dashboard' ] },
         children: [
           {
-            path: '/work/purchaseInfo',
-            name: 'purchaseList',
-            component: () => import('@/views/work/equipment/purchaseInfo'),
-            meta: { title: '采购信息', permission: [ 'dashboard' ] }
+            path: '/work/PurchaseInfoStock',
+            name: 'purchase',
+            redirect: '/work/equipment',
+            component: RouteView,
+            meta:{title:'设备管理',icon:'dashboard',permission:['dashboard']},
+            children:[
+              {
+                path: '/work/equipment/purchaseInfo',
+                name: 'purchaseList',
+                component: () => import('@/views/work/equipment/purchaseInfo'),
+                meta: { title: '设备采购', permission: [ 'dashboard' ] }
+              },
+              {
+                  path: '/work/equipment/PurchaseInfoStock',
+                  name: 'purchaseStockList',
+                  component: () => import('@/views/work/equipment/PurchaseInfoStock'),
+                  meta: { title: '设备入库', permission: [ 'dashboard' ] }
+              },
+            ]
           },
           {
             path: '/work/customer/companyInfo',
