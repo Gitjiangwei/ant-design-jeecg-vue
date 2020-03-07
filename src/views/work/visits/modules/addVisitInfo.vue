@@ -15,7 +15,7 @@
           :wrapperCol="wrapperCol"
           label="客户名称"
           hasFeedback >
-          <a-select v-decorator="['companyName', {}]" placeholder="请选择客户名称">
+          <a-select v-decorator="['companyName', {rules: [{ required: true,message: '请输入客户名称' }]}]" placeholder="请选择客户名称">
             <a-select-option value="">请选择客户名称</a-select-option>
             <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
           </a-select>
@@ -26,7 +26,8 @@
           :wrapperCol="wrapperCol"
           label="拜访人"
           hasFeedback >
-          <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {}]" />
+          <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {rules: [{ required: true,message: '请输入拜访人' }]}]" />
+
         </a-form-item>
 
         <a-form-item
@@ -41,21 +42,21 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="拜访方式">
-          <a-input placeholder="请输入拜访方式" v-decorator="['way', {}]" />
+          <a-input placeholder="请输入拜访方式" v-decorator="['way', {rules: [{ required: true,message: '请输入拜访方式' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="拜访内容"
           hasFeedback >
-          <a-input placeholder="请输入拜访内容" v-decorator="['content', {}]" />
+          <a-input placeholder="请输入拜访内容" v-decorator="['content', {rules: [{ required: true,message: '请输入拜访内容' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="拜访结果"
           hasFeedback >
-          <a-input placeholder="请输入拜访结果" v-decorator="['result', {}]" />
+          <a-input placeholder="请输入拜访结果" v-decorator="['result', {rules: [{ required: true,message: '请输入拜访结果' }]}]" />
         </a-form-item>
       </a-form>
     </a-spin>
