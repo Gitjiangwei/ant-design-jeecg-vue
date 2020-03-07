@@ -139,12 +139,12 @@ export const asyncRouterMap = [
                 component: () => import('@/views/work/equipment/purchaseInfo'),
                 meta: { title: '设备采购', permission: [ 'dashboard' ] }
               },
-              // {
-              //     path: '/work/equipment/PurchaseInfoStock',
-              //     name: 'purchaseStockList',
-              //     component: () => import('@/views/work/equipment/PurchaseInfoStock'),
-              //     meta: { title: '设备入库', permission: [ 'dashboard' ] }
-              // },
+               {
+                   path: '/work/equipment/PurchaseInfoStock',
+                   name: 'purchaseStockList',
+                   component: () => import('@/views/work/equipment/PurchaseInfoStock'),
+                   meta: { title: '设备入库', permission: [ 'dashboard' ] }
+               },
             ]
           },
           {
