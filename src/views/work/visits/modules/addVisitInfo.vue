@@ -10,13 +10,15 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="客户名称"
           hasFeedback >
-          <a-input placeholder="请输入客户名称" v-decorator="['companyName', {}]" />
+          <a-select v-decorator="['companyName', {}]" placeholder="请选择客户名称">
+            <a-select-option value="">请选择客户名称</a-select-option>
+            <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
+          </a-select>
         </a-form-item>
 
         <a-form-item
@@ -24,7 +26,7 @@
           :wrapperCol="wrapperCol"
           label="拜访人"
           hasFeedback >
-          <a-input placeholder="请输入拜访人" v-decorator="['visitor', {}]" />
+          <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {}]" />
         </a-form-item>
 
         <a-form-item
@@ -32,7 +34,7 @@
           :wrapperCol="wrapperCol"
           label="拜访时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation" v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
         </a-form-item>
 
         <a-form-item
@@ -61,8 +63,7 @@
 </template>
 
 <script>
-  import { httpAction } from '@/api/manage'
-  import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
+  import {getAction, httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
 
@@ -73,8 +74,7 @@
         title:"操作",
         visible: false,
         model: {},
-        //字典数组缓存
-        typeDictOptions: [],
+        companyNames:[],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -91,26 +91,38 @@
         url: {
           add: "/renche/visit/add",
           edit: "/renche/visit/up",
+          getn:"/renche/visit/getn",
         },
       }
     },
     created () {
-      //初始化字典配置
-      this.initDictConfig();
+     //初始化公司名稱列表
+      this.initcompanyNames();
+
+
     },
     methods: {
-      initDictConfig() {
-        //初始化字典 - 客戶類型
-        initDictOptions('CUSTOMETYPE').then((res) => {
+
+      //初始化公司名稱列表
+      initcompanyNames(){
+
+        getAction(this.url.getn).then((res)=> {
+
           if (res.success) {
-            this.typeDictOptions = res.result;
+            this.companyNames = res.result;
+          } else {
+            that.$message.warning(res.message);
+            alert(" " + res.message);
           }
-        });
+        })
+
       },
       add () {
         this.edit({});
+
       },
       edit (record) {
+
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -135,12 +147,11 @@
             let httpurl = '';
             let method = '';
             if(!this.model.visitId){
-              alert("visitId="+this.model.visitId)
-              alert("post")
+
               httpurl+=this.url.add;
               method = 'post';
             }else{
-              alert("put")
+
               httpurl+=this.url.edit;
               method = 'put';
             }
@@ -154,9 +165,11 @@
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
+                alert(" "+res.message);
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
+                alert(" "+res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
