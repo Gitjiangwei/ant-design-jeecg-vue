@@ -82,7 +82,6 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <!--<company-info-modal ref="companyInfoModal" @ok="modalFormOk"></company-info-modal>-->
 
       <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
 
@@ -99,7 +98,7 @@
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
     export default {
-      name: "vitIofo",
+      name: "visitInfo",
       components: {
         ARow,
         addVisit,
@@ -114,7 +113,7 @@
           // 表头
           columns: [
             {
-              title: '#',
+              title: '序号',
               dataIndex: '',
               key: 'rowIndex',
               width: 60,
