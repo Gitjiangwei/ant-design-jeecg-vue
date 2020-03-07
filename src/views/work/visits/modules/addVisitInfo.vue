@@ -163,9 +163,15 @@
 
 
             httpAction(httpurl,formData,method).then((res)=>{
+              var meth = method;
               if(res.success){
-                that.$message.success(res.message);
-                alert(" "+res.message);
+               /* that.$message.success(res.message);*/
+                if(meth== "put"){
+                  alert("修改成功");
+                }else if(meth == "post"){
+                  alert("添加成功");
+                }
+
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);

@@ -285,7 +285,8 @@
           var that = this;
           deleteAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
-              that.$message.success(res.message);
+              /*that.$message.success(res.message);*/
+              alert("已删除");
               that.loadData();
             } else {
               that.$message.warning(res.message);
