@@ -139,12 +139,12 @@ export const asyncRouterMap = [
                 component: () => import('@/views/work/equipment/purchaseInfo'),
                 meta: { title: '设备采购', permission: [ 'dashboard' ] }
               },
-              {
-                  path: '/work/equipment/PurchaseInfoStock',
-                  name: 'purchaseStockList',
-                  component: () => import('@/views/work/equipment/PurchaseInfoStock'),
-                  meta: { title: '设备入库', permission: [ 'dashboard' ] }
-              },
+              // {
+              //     path: '/work/equipment/PurchaseInfoStock',
+              //     name: 'purchaseStockList',
+              //     component: () => import('@/views/work/equipment/PurchaseInfoStock'),
+              //     meta: { title: '设备入库', permission: [ 'dashboard' ] }
+              // },
             ]
           },
           {
@@ -152,6 +152,12 @@ export const asyncRouterMap = [
             name: 'companyList',
             component: () => import('@/views/work/customer/companyInfo'),
             meta: { title: '客户信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/visits/visitInfo',
+            name: 'companyList',
+            component: () => import('@/views/work/visits/visitInfo'),
+            meta: { title: '客户拜访记录', permission: [ 'dashboard' ] }
           }
         ]
       },
