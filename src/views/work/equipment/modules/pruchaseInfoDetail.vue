@@ -87,6 +87,13 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
+          label="是否收货"
+          hasFeedback  >
+          <a-input   disabled  v-decorator="['isstorage', {rules: [{ required: false,message: '请输入采购来源' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="备注"
           hasFeedback >
           <a-input  disabled placeholder="备注"  v-decorator="['remarks', {rules: [{ required: false,message: '请输入采购人员' }]}]" />
@@ -137,7 +144,7 @@
         this.model = Object.assign({},record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'purchaseItem','itemModel','price','quantity','totalPrice','purchaser','purchaseTime','whichCompany','arrivalTime','isarrival','remarks'))
+          this.form.setFieldsValue(pick(this.model,'purchaseItem','itemModel','price','quantity','totalPrice','purchaser','purchaseTime','whichCompany','arrivalTime','isarrival','isstorage','remarks'))
           //时间格式化
           this.form.setFieldsValue({purchaseTime:this.model.purchaseTime?moment(this.model.purchaseTime,'YYYY-MM-DD'):null});
           this.form.setFieldsValue({arrivalTime:this.model.arrivalTime?moment(this.model.arrivalTime,'YYYY-MM-DD'):null});

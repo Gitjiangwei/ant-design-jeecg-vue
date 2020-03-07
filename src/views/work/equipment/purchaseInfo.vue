@@ -22,6 +22,14 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :span="6">
+              <a-form-item label="是否入库">
+                <a-select v-model="queryParam.isstorage">
+                  <a-select-option :key="1">已入库</a-select-option>
+                  <a-select-option :key="2">未入库</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </a-row>
           <a-row>
             <a-col :span="6"  >
@@ -89,6 +97,16 @@
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
                   <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定收货吗?" @confirm="() => batchDel(record.purchaseId)">
+                  <a>收货</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定入库吗?程序会进行自动入库" @confirm="() => handleReceiving(record)">
+                  <a>入库</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
@@ -199,6 +217,20 @@
               }
             },
             {
+              title: '是否入库',
+              align: "center",
+              dataIndex: 'isstorage',
+              customRender: (text) => {
+                if(text==1){
+                  return "已入库";
+                }else if(text==2){
+                  return "未入库";
+                }else{
+                  return text;
+                }
+              }
+            },
+            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
@@ -230,7 +262,8 @@
             list: "/renche/purchase/qryPurchase",
             delete: "/renche/purchase/delete",
             deleteBatch: "/renche/purchase/deleteBatch",
-            updateIsArrival: "/renche/purchase/updateIsArrival"
+            updateIsArrival: "/renche/purchase/updateIsArrival",
+            receiningGoods: "/renche/purchase/insertReceiving",
           },
         }
       },
@@ -268,13 +301,17 @@
           this.$refs.pruchaseInfoDetail.title = "详情";
         },
         batchDel: function (flag) {
-          if (this.selectedRowKeys.length <= 0) {
+          if (this.selectedRowKeys.length <= 0 && (flag==1||flag==2)) {
             this.$message.warning('请选择一条记录！');
             return;
-          } else {
+          }else {
             var ids = "";
-            for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectionRows[a].purchaseId + ",";
+            if(flag==1||flag==2) {
+              for (var a = 0; a < this.selectedRowKeys.length; a++) {
+                ids += this.selectionRows[a].purchaseId + ",";
+              }
+            }else{
+              ids = flag;
             }
             var that = this;
             var title = "";
@@ -317,6 +354,25 @@
             }
           });
         },
+
+        handleReceiving: function (record) {
+          var that = this;
+          if(record.isarrival==2){
+            that.$message.warning("只能入库收货后的设备");
+            return;
+          }
+          debugger;
+          postAction(that.url.receiningGoods, {purchaseItem: record.purchaseItem,itemModel:record.itemModel,price:record.price,
+            quantity:record.quantity,purchaseId:record.purchaseId}).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message);
+              that.loadData();
+            } else {
+              that.$message.warning(res.message);
+            }
+          });
+        },
+
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
