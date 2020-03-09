@@ -137,6 +137,12 @@ export const asyncRouterMap = [
             name: 'companyList',
             component: () => import('@/views/work/customer/companyInfo'),
             meta: { title: '客户信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/project/projectItem',
+            name: 'projectItemList',
+            component: () => import('@/views/work/project/projectItem'),
+            meta: { title: '工程点信息', permission: [ 'dashboard' ] }
           }
         ]
       },
