@@ -71,6 +71,7 @@ const delDictItemList = (params)=>deleteAction("/sys/dictItem/deleteBatch",param
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
 export const ajaxGetRencheDictItems = (code, params)=>getAction(`/renche/dict/getDictItems/${code}`,params);
 
+
 //系统通告
 const doReleaseData = (params)=>getAction("/sys/annountCement/doReleaseData",params);
 const doReovkeData = (params)=>getAction("/sys/annountCement/doReovkeData",params);

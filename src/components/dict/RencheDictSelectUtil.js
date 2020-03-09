@@ -3,8 +3,9 @@
  * author: scott
  * date: 20190109
  */
-
 import {ajaxGetRencheDictItems} from '@/api/api'
+/*import {ajaxGetRencheCompanyName} from '@/api/api'*/
+
 import {getAction} from '@/api/manage'
 
 /**
@@ -20,6 +21,8 @@ export async function initDictOptions(dictCode) {
   let res = await ajaxGetRencheDictItems(dictCode);
   return res;
 }
+
+
 
 /**
  * 字典值替换文本通用方法
