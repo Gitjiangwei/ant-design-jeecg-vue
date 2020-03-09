@@ -94,7 +94,7 @@
       <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
 
       <!-- 高级查询区域 -->
-      <superQueryModal ref="superQueryModal" @ok="modalFormOk" @handleSuperQuery="handleSuperQuery"></superQueryModal>
+      <projectQueryModal ref="projectQueryModal" @ok="modalFormOk" @handleSuperQuery="handleSuperQuery"></projectQueryModal>
 
     </a-card>
 
@@ -102,7 +102,7 @@
 
 <script>
     import ProjectItemModal from './modules/ProjectItemModal'
-    import SuperQueryModal from './modules/SuperQueryModal'
+    import ProjectQueryModal from './modules/ProjectQueryModal'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
@@ -111,7 +111,7 @@
       name: "projectItenList",
       components: {
         ProjectItemModal,
-        SuperQueryModal,
+        ProjectQueryModal,
       },
       data() {
         return{
@@ -259,7 +259,7 @@
           this.loadData(1);
         },
         superQuery() {
-          this.$refs.superQueryModal.show();
+          this.$refs.projectQueryModal.show();
         },
         searchReset() {
           var that = this;

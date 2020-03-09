@@ -54,7 +54,7 @@
 <script>
 
   export default {
-    name: "SuperQueryModal",
+    name: "ProjectQueryModal",
     data () {
       return {
         visible: false,
