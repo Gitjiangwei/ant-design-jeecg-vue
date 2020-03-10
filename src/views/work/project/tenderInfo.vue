@@ -100,14 +100,13 @@
     import addTender from './modules/addTenderInfo';
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
-    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
     export default {
       name: "tenderInfo",
       components: {
         ARow,
         addTender,
-        //CompanyInfoModal,
+
       },
       data() {
         return{
@@ -143,12 +142,12 @@
               dataIndex: 'tenderCompany',
             },
             {
-              title: '报价',
+              title: '报价（万元）',
               align: "center",
               dataIndex: 'tenderOffer',
             },
             {
-              title: '保证金',
+              title: '保证金（万元）',
               align: "center",
               dataIndex: 'deposit',
 
@@ -197,14 +196,13 @@
           url: {
             list: "/renche/tender/qrytenderList",
             delete: "/renche/tender/delete",
-
+            deleteBatch: "/renche/tender/deleteBat",
           },
         }
       },
       created() {
         this.loadData();
-        //初始化字典配置
-        this.initDictConfig();
+
       },
       methods: {
         loadData(arg) {
@@ -219,14 +217,6 @@
               this.ipagination.total = res.result.total;
             }
           })
-        },
-        initDictConfig() {
-          //初始化字典 - 客戶類型
-          initDictOptions('CUSTOMETYPE').then((res) => {
-            if (res.success) {
-              this.typeDictOptions = res.result;
-            }
-          });
         },
         getQueryParams() {
           var param = Object.assign({}, this.queryParam, this.isorter);
@@ -263,23 +253,26 @@
           this.selectionRows = [];
         },
         batchDel: function () {
+
           if (this.selectedRowKeys.length <= 0) {
             this.$message.warning('请选择一条记录！');
             return;
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              i
-              ids += this.selectionRows[a].visitId + ",";
+
+              ids += this.selectionRows[a].tenderId + ",";
             }
             var that = this;
             this.$confirm({
               title: "确认删除",
               content: "是否删除选中数据?",
               onOk: function () {
+
                 deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                   if (res.success) {
                     that.$message.success(res.message);
+                    /*alert("批量删除成功");*/
                     that.loadData();
                     that.onClearSelected();
                   } else {
@@ -294,8 +287,8 @@
           var that = this;
           deleteAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
-              /*that.$message.success(res.message);*/
-              alert("已删除");
+              that.$message.success(res.message);
+              /*alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);

@@ -187,6 +187,7 @@
           url: {
             list: "/renche/visit/qryVisit",
             delete: "/renche/visit/delete",
+            deleteBatch:"/renche/visit/deleteBatch",
 
           },
         }
@@ -259,7 +260,7 @@
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              i
+
               ids += this.selectionRows[a].visitId + ",";
             }
             var that = this;
@@ -284,8 +285,8 @@
           var that = this;
           deleteAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
-              /*that.$message.success(res.message);*/
-              alert("已删除");
+              that.$message.success(res.message);
+             /* alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);
