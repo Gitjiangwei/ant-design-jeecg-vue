@@ -35,14 +35,14 @@
           :wrapperCol="wrapperCol"
           label="报价"
           hasFeedback >
-          <a-input placeholder="请输入报价" v-decorator="['tenderOffer', {rules: [{ required: true,message: '请输入报价' }]}]" />
+          <a-input placeholder="请输入报价(单位：万元)" v-decorator="['tenderOffer', {rules: [{ required: true,message: '请输入报价' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="保证金"
           hasFeedback >
-          <a-input placeholder="请输入保证金" v-decorator="['deposit', {rules: [{ required: true,message: '请输入保证金' }]}]" />
+          <a-input placeholder="请输入保证金(单位：万元)" v-decorator="['deposit', {rules: [{ required: true,message: '请输入保证金' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -87,7 +87,7 @@
         },
         url: {
           add: "/renche/tender/addTender",
-          /*edit: "/renche/tender/up",*/
+          edit: "/renche/tender/upTender",
 
         },
       }
@@ -125,7 +125,7 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.companyId){
+            if(!this.model.tenderId){
               httpurl+=this.url.add;
               method = 'post';
             }else{
