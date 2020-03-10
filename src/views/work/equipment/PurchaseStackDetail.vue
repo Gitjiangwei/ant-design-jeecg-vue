@@ -124,9 +124,14 @@
             }
           },
           {
-            title: '设备编号',
+            title: '库存设备编号',
             align: "center",
             dataIndex: 'equipNo'
+          },
+          {
+            title: '厂家设备编号',
+            align: "center",
+            dataIndex: 'manufacoryNo'
           },
           {
             title: '设备情况',
