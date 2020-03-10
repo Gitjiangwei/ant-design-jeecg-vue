@@ -128,7 +128,7 @@
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
     import pruchaseInfoDetail from "./modules/pruchaseInfoDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
-    import {filterObj} from '@/utils/util';
+    import {filterObj,timeFix} from '@/utils/util';
 
 
     export default {
@@ -141,7 +141,9 @@
       data() {
         return{
           description: '采购管理页面',
-
+          timer:"",
+          purchaseId:"",
+          value:0,
           // 查询条件
           queryParam: {},
           // 表头
@@ -264,6 +266,7 @@
             deleteBatch: "/renche/purchase/deleteBatch",
             updateIsArrival: "/renche/purchase/updateIsArrival",
             receiningGoods: "/renche/purchase/insertReceiving",
+            qryReceivingKey:"/renche/purchase/qryPurchaseKey"
           },
         }
       },
@@ -354,25 +357,71 @@
             }
           });
         },
+        timelog(purchaseId){
+          var that = this;
+          this.value++;
+          if(this.value==10){
+            that.beforeDestroy();
+            that.ReceivingError();
+          }
+          getAction(that.url.qryReceivingKey, {purchaseId:this.purchaseId}).then((res) => {
+            if (res.success) {
+              that.loadData();
+              that.beforeDestroy();
+              that.ReceivingSuccess();
+            }
 
+          });
+
+        },
+        mounted(){
+          // 设置用间隔时间3s，每隔三秒调用一次。
+          if(this.value==10){
+            var that = this;
+            that.beforeDestroy();
+            that.ReceivingError();
+          }
+          if(this.purchaseId!=""){
+            this.value++;
+            this.timer = setInterval(this.timelog,3000);
+          }
+        },
         handleReceiving: function (record) {
           var that = this;
           if(record.isarrival==2){
             that.$message.warning("只能入库收货后的设备");
             return;
           }
-          debugger;
           postAction(that.url.receiningGoods, {purchaseItem: record.purchaseItem,itemModel:record.itemModel,price:record.price,
             quantity:record.quantity,purchaseId:record.purchaseId}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
-              that.loadData();
+              this.purchaseId = record.purchaseId;
+              that.mounted(record.purchaseId);
             } else {
               that.$message.warning(res.message);
             }
           });
         },
-
+        //定时任务销毁
+        beforeDestroy()
+        {
+          clearInterval(this.timer)
+        },
+        ReceivingSuccess () {
+          //this.$router.push({ name: "dashboard" })
+          this.$notification.success({
+            message: '成功',
+            description: `设备入库成功，请查收！`,
+          });
+        },
+        ReceivingError () {
+          //this.$router.push({ name: "dashboard" })
+          this.$notification.success({
+            message: '失败！',
+            description: `设备入库失败，请及时排查！`,
+          });
+        },
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
