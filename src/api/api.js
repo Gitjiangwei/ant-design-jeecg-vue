@@ -46,6 +46,7 @@ const loadAllRoleIds = (params)=>getAction("/sys/permission/loadAllRoleIds",para
 
 // 部门管理
 const queryDepartTreeList = (params)=>getAction("/sysdepart/sysDepart/queryTreeList",params);
+const queryDepartCGTreeList   = (params)=>getAction("/sysdepart/sysDepart/queryTreeLists",params);
 const queryIdTree = (params)=>getAction("/sysdepart/sysDepart/queryIdTree",params);
 const queryParentName   = (params)=>getAction("/sysdepart/sysDepart/queryParentName",params);
 const searchByKeywords   = (params)=>getAction("/sysdepart/sysDepart/searchBy",params);
@@ -109,6 +110,7 @@ export {
   queryPermissionsByUser,
   loadAllRoleIds,
   queryDepartTreeList,
+  queryDepartCGTreeList,
   queryIdTree,
   queryParentName,
   searchByKeywords,

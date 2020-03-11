@@ -60,7 +60,14 @@
           label="备注">
           <a-textarea placeholder="请输入备注" v-decorator="['memo', {}]"  />
         </a-form-item>
-
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="是否为设备来源商"
+          :hidden="true"
+          hasFeedback >
+          <a-input id="witchCompany"  :hidden="true" v-decorator="['witchCompany']"/>
+        </a-form-item>
       </a-form>
     </a-spin>
   </a-modal>
@@ -126,22 +133,34 @@
 
         })
       },
-      add (depart) {
-        if(depart){
-          this.seen = false;
-        }else{
-          this.seen = true;
+      add (depart,num) {
+        debugger;
+        if(depart==3 ){
+            this.seen = true;
+        }else {
+          if (depart) {
+            this.seen = false;
+          } else {
+            this.seen = true;
+          }
         }
-        this.edit(depart);
+        this.edit(depart,num);
       },
-      edit (record) {
+      edit (record,num) {
           this.form.resetFields();
           this.model = Object.assign({}, {});
           this.visible = true;
           this.loadTreeData();
-          this.model.parentId = record!=null?record.toString():null;
+          if(record==3){
+            this.model.witchCompany = num != null ? num.toString() : null;
+          }else if(num == 3){
+            this.model.witchCompany = num != null ? num.toString() : null;
+            this.model.parentId = record != null ? record.toString() : null;
+          } else {
+            this.model.parentId = record != null ? record.toString() : null;
+          }
           this.$nextTick(() => {
-            this.form.setFieldsValue(pick(this.model,'departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag'))
+            this.form.setFieldsValue(pick(this.model,'departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag',"witchCompany"))
           });
       },
       close () {

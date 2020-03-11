@@ -388,8 +388,13 @@
         },
         handleReceiving: function (record) {
           var that = this;
+          debugger;
           if(record.isarrival==2){
             that.$message.warning("只能入库收货后的设备");
+            return;
+          }
+          if(record.isstorage==1){
+            that.$message.warning("当前的设备已经入库，不能重放入库！");
             return;
           }
           postAction(that.url.receiningGoods, {purchaseItem: record.purchaseItem,itemModel:record.itemModel,price:record.price,

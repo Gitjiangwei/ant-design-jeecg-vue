@@ -50,7 +50,7 @@ export function getAction(url,parameter) {
 export function deleteAction(url,parameter) {
   return axios({
     url: url,
-    method: 'delete',
+    method: 'post',
     params: parameter
   })
 }
