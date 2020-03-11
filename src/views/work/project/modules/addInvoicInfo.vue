@@ -13,52 +13,68 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="客户名称"
+          label="发票名称"
           hasFeedback >
-          <a-select v-decorator="['companyName', {rules: [{ required: true,message: '请输入客户名称' }]}]" placeholder="请选择客户名称">
-            <a-select-option value="">请选择客户名称</a-select-option>
-            <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
-          </a-select>
+          <a-input placeholder="请输入发票名称"  v-decorator="['invociName', {rules: [{ required: true,message: '请输入发票名称' }]}]" />
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访人"
+          label="开票时间"
           hasFeedback >
-          <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {rules: [{ required: true,message: '请输入拜访人' }]}]" />
-
-        </a-form-item>
-
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="拜访时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
-        </a-form-item>
-
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="拜访方式">
-          <a-input placeholder="请输入拜访方式" v-decorator="['way', {rules: [{ required: true,message: '请输入拜访方式' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'invociTime', {rules: [{ required: true,message: '请选择开票时间' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访内容"
-          hasFeedback >
-          <a-textarea placeholder="请输入拜访内容" v-decorator="['content', {rules: [{ required: true,message: '请输入拜访内容' }]}]" :row="2" />
+          label="发票内容">
+          <a-input placeholder="请输入发票内容" v-decorator="['content', {rules: [{ required: true,message: '请输入发票内容' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访结果"
+          label="税号"
           hasFeedback >
-          <a-textarea placeholder="请输入拜访结果" v-decorator="['result', {rules: [{ required: true,message: '请输入拜访结果' }]}]" :row="2" />
+          <a-input placeholder="请输入税号" v-decorator="['shuihao', {rules: [{ required: true,message: '请输入税号' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="单位地址"
+          hasFeedback >
+          <a-input placeholder="请输入单位地址" v-decorator="['address', {rules: [{ required: true,message: '请输入单位地址' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="电话号码"
+          hasFeedback >
+          <a-input placeholder="请输入电话号码" v-decorator="['tel', {rules: [{ required: true,message: '请输入电话号码' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="开户银行"
+          hasFeedback >
+          <a-input placeholder="请输入开户银行" v-decorator="['bank', {rules: [{ required: true,message: '请输入开户银行' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="银行账户"
+          hasFeedback >
+          <a-input placeholder="请输入银行账户" v-decorator="['bankNo', {rules: [{ required: true,message: '请输入银行账户' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="附件"
+          hasFeedback >
+          <a>上传</a> <a v-decorator="['fileRelNum',{}]"/>
         </a-form-item>
       </a-form>
+
     </a-spin>
   </a-modal>
 </template>
@@ -67,17 +83,14 @@
   import {getAction, httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
-  import ATextarea from "ant-design-vue/es/input/TextArea";
 
   export default {
-    name: "addVisit",
-    components: {ATextarea},
+    name: "addInvoicInfo",
     data () {
       return {
         title:"操作",
         visible: false,
         model: {},
-        companyNames:[],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -92,34 +105,16 @@
         validatorRules:{
         },
         url: {
-          add: "/renche/visit/add",
-          edit: "/renche/visit/up",
-          getn:"/renche/visit/getn",
+          add: "/renche/invoic/addInvoic",
+          edit: "/renche/invoic/upInvoic",
+
         },
       }
     },
     created () {
-     //初始化公司名稱列表
-      this.initcompanyNames();
-
-
     },
     methods: {
 
-      //初始化公司名稱列表
-      initcompanyNames(){
-
-        getAction(this.url.getn).then((res)=> {
-
-          if (res.success) {
-            this.companyNames = res.result;
-          } else {
-            that.$message.warning(res.message);
-            alert(" " + res.message);
-          }
-        })
-
-      },
       add () {
 
         this.edit({});
@@ -131,9 +126,9 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'companyName','visitor','visitTime','way','content','result'))
+          this.form.setFieldsValue(pick(this.model,'invociName','invociTime','content','shuihao','address','tel','bank','bankNo','fileRelNum'))
           //时间格式化
-          this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD'):null});
+             this.form.setFieldsValue({invociTime:this.model.invociTime?moment(this.model.invociTime,'YYYY-MM-DD'):null});
 
         });
 
@@ -150,42 +145,30 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.visitId){
-
+            if(!this.model.invociId){
               httpurl+=this.url.add;
               method = 'post';
             }else{
-
               httpurl+=this.url.edit;
               method = 'put';
             }
             let formData = Object.assign(this.model, values);
-
             //时间格式化
 
-            formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD'):null;
+            formData.invociTime = formData.invociTime?formData.invociTime.format('YYYY-MM-DD'):null;
 
 
             httpAction(httpurl,formData,method).then((res)=>{
-              var meth = method;
               if(res.success){
-               that.$message.success(res.message);
-                /*if(meth== "put"){
-                  alert("修改成功");
-                }else if(meth == "post"){
-                  alert("添加成功");
-                }*/
-
+                that.$message.success(res.message);
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
-                alert(" "+res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
             })
-
 
 
           }
