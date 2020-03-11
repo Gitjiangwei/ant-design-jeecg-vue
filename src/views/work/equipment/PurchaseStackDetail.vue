@@ -34,10 +34,6 @@
             <a-icon type="delete"/>
             删除
           </a-menu-item>
-          <a-menu-item key="1" @click="batchDel(2)">
-            <a-icon type="shopping-cart"/>
-            收货
-          </a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作
           <a-icon type="down"/>
@@ -258,7 +254,12 @@
           return;
         } else {
           var ids = "";
+          debugger;
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            if(this.selectionRows[a].equipStatus != "SCRAP"){
+              this.$message.warning('您要删除的设备中有未报废的设备，请重新选择！');
+              return;
+            }
             ids += this.selectionRows[a].purchaseId + ",";
           }
           var that = this;

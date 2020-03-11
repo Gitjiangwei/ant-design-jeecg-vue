@@ -23,7 +23,7 @@
             </a-input>
           </a-form-item>
         </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登陆">
+<!--        <a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item
             fieldDecoratorId="mobile"
             :fieldDecoratorOptions="{rules: [{ required: true, pattern: /^1[34578]\d{9}$/, message: '请输入正确的手机号' }], validateTrigger: 'change'}">
@@ -51,14 +51,14 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
+        </a-tab-pane>-->
       </a-tabs>
 
       <a-form-item>
         <a-checkbox v-model="formLogin.rememberMe">自动登陆</a-checkbox>
-        <router-link :to="{ name: 'recover', params: { user: 'aaa'} }" class="forge-password" style="float: right;">
+<!--        <router-link :to="{ name: 'recover', params: { user: 'aaa'} }" class="forge-password" style="float: right;">
           忘记密码
-        </router-link>
+        </router-link>-->
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
@@ -74,13 +74,13 @@
       </a-form-item>
 
       <div class="user-login-other">
-        <span>其他登陆方式</span>
+<!--        <span>其他登陆方式</span>
         <a><a-icon class="item-icon" type="alipay-circle"></a-icon></a>
         <a><a-icon class="item-icon" type="taobao-circle"></a-icon></a>
-        <a><a-icon class="item-icon" type="weibo-circle"></a-icon></a>
-        <router-link class="register" :to="{ name: 'register' }">
+        <a><a-icon class="item-icon" type="weibo-circle"></a-icon></a>-->
+<!--        <router-link class="register" :to="{ name: 'register' }">
           注册账户
-        </router-link>
+        </router-link>-->
       </div>
     </a-form>
 
