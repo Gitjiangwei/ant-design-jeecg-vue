@@ -5,6 +5,7 @@
         <!-- 按钮操作区域 -->
         <a-button @click="handleAdd(2)" style="margin-left: 18px" type="primary" icon="plus">添加子部门</a-button>
         <a-button @click="handleAdd(1)" type="default" icon="plus">添加一级部门</a-button>
+        <a-button @click="handleAdd(3)" type="default" icon="plus">添加设备来源商</a-button>
         <a-button title="删除多条数据" @click="batchDel" type="default" icon="delete">批量删除</a-button>
         <a-button @click="refresh" type="default" icon="reload">刷新</a-button>
       </div>
@@ -75,6 +76,13 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
+              :hidden="true"
+              label="设备来源商">
+              <a-input  :hidden="true" v-decorator="['witchCompany', {}]" />
+            </a-form-item>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
               label="备注">
               <a-textarea placeholder="请输入备注" v-decorator="['memo', {}]" />
             </a-form-item>
@@ -122,6 +130,10 @@
     {
       title: '地址',
       dataIndex: 'address'
+    },
+    {
+      title:'设备来源标记',
+      dataIndex:'witchCompany'
     },
     {
       title:'排序',
@@ -252,6 +264,7 @@
       },
       onSearch(value){
         let that = this;
+        debugger;
         if(value){
           searchByKeywords({keyWord:value}).then((res) =>{
             if(res.success){
@@ -282,14 +295,16 @@
       onSelect (selectedKeys,e) {
         console.log('selected', selectedKeys, e)
         this.hiding = false;
+        debugger;
         let record = e.node.dataRef;
         console.log("onSelect-record",record);
         this.currSelected = Object.assign({},record);
         this.model = this.currSelected;
         this.selectedKeys = [record.key];
         this.model.parentId = record.parentId;
+        this.model.witchCompany = record.witchCompany;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(record,'departName','departOrder','mobile','fax','address','memo'))
+          this.form.setFieldsValue(pick(record,'departName','departOrder','mobile','fax','address','witchCompany','memo'))
         });
 
       },
@@ -345,6 +360,7 @@
           address:"",
           memo:"",
           description:"",
+          witchCompany:"",
         });
       },
       nodeSettingFormSubmit(){
@@ -358,17 +374,27 @@
         this.$refs.sysDirectiveModal.show();
       },
       handleAdd(num){
+        debugger;
         if(num == 1){
           this.$refs.DepartModal.add();
           this.$refs.DepartModal.title="新增";
-        }else{
+        }else if(num == 3){
+          this.$refs.DepartModal.add(num);
+          this.$refs.DepartModal.title="新增设备来源商";
+        }else {
           let key = this.currSelected.key;
+          let witchCompany = this.currSelected.witchCompany;
           if(!key){
             this.$message.warning("请先选中一条记录!");
             return false;
           }
-          this.$refs.DepartModal.add(this.selectedKeys);
-          this.$refs.DepartModal.title="新增";
+          if(witchCompany){
+            this.$refs.DepartModal.add(this.selectedKeys,witchCompany);
+            this.$refs.DepartModal.title = "新增设备来源商子部门";
+          }else {
+            this.$refs.DepartModal.add(this.selectedKeys);
+            this.$refs.DepartModal.title = "新增";
+          }
         }
       },
       selectDirectiveOk(record){

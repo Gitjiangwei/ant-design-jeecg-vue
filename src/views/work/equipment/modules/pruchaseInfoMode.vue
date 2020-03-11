@@ -64,11 +64,18 @@
           <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation" v-decorator="[ 'purchaseTime', {rules: [{ required: true,message: '请选择采购时间' }]}]" />
         </a-form-item>
         <a-form-item
-          :labelCol="labelCols"
-          :wrapperCol="wrapperCols"
+          v-show="localMenuType!=0"
           label="采购来源"
-          hasFeedback >
-          <a-input   placeholder="采购来源" v-on:focus="calculation" v-on:blur="calculation" v-decorator="['whichCompany', {rules: [{ required: false,message: '请输入采购来源' }]}]" />
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol" >
+          <a-tree-select
+            style="width:100%"
+            :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
+            :treeData="treeData"
+            v-model="model.whichCompany"
+            placeholder="请选择采购来源"
+            :disabled="disableSubmit">
+          </a-tree-select>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -99,6 +106,7 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import {queryDepartCGTreeList} from '@/api/api'
   //import $ from 'jquery'
 
   export default{
@@ -108,21 +116,16 @@
         title:"操作",
         visible: false,
         model: {},
+        treeData:[],
+        treeValue: '0-0-4',
+        disableSubmit:false,
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
-        },
-        labelCols: {
-          xs: { span: 18 },
           sm: { span: 5 },
         },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
-        },
-        wrapperCols: {
-          xs: { span: 18 },
-          sm: { span: 10 },
         },
         isArris:false,
         confirmLoading: false,
@@ -138,6 +141,23 @@
     created () {
     },
     methods: {
+      loadTree(){
+        debugger;
+        var that = this;
+        queryDepartCGTreeList().then((res)=>{
+          if(res.success){
+            console.log('----queryTreeList---')
+            console.log(res)
+            that.treeData = [];
+            let treeList = res.result;
+            for(let a=0;a<treeList.length;a++){
+              let temp = treeList[a];
+              temp.isLeaf = temp.leaf;
+              that.treeData.push(temp);
+            }
+          }
+        });
+      },
      add () {
         this.edit({});
       },
@@ -146,6 +166,7 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.loadTree();
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'purchaseItem','itemModel','price','totalPrice','quantity','purchaser','purchaseTime','whichCompany','arrivalTime','remarks'))
           //时间格式化

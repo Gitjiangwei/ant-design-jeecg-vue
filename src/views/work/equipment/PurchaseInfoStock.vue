@@ -24,43 +24,11 @@
               </span>
           </a-col>
         </a-row>
-        <a-col :span="6">
-          <a-form-item label="状态">
-            <a-select v-model="queryParam.isarrival">
-              <a-select-option :key="1">是</a-select-option>
-              <a-select-option :key="2">否</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel(1)">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-          <a-menu-item key="1" @click="batchDel(2)">
-            <a-icon type="shopping-cart"/>
-            收货
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
-    </div>
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-        selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
 
       <a-table
         ref="table"
@@ -74,25 +42,19 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <!--          <span slot="purchaseItem" slot-scope="text,record">-->
-        <!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
-        <!--          </span>-->
-
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <!--          <a-divider type="vertical"/>
+                    <a-dropdown>
+                      <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+                      <a-menu slot="overlay">
+                        <a-menu-item>
+                          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
+                            <a>删除</a>
+                          </a-popconfirm>
+                        </a-menu-item>
+                      </a-menu>
+                    </a-dropdown>-->
         </span>
 
       </a-table>
@@ -245,46 +207,8 @@
       handleDetail: function(record){
         this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
       },
-      batchDel: function (flag) {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        } else {
-          var ids = "";
-          for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            ids += this.selectionRows[a].purchaseId + ",";
-          }
-          var that = this;
-          var title = "";
-          var content = "";
-          var url = "";
-          if (flag==1){
-            title = "确认删除";
-            content = "是否删除选中数据";
-            url = that.url.deleteBatch;
-          } else {
-            title = "确认收货";
-            content = "再次确认设备已经到达";
-            url = that.url.updateIsArrival;
-          }
-          this.$confirm({
-            title: title,
-            content: content,
-            onOk: function () {
-              deleteAction(url, {ids: ids}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleDelete: function (id) {
+
+/*      handleDelete: function (id) {
         var that = this;
         deleteAction(that.url.delete, {id: id}).then((res) => {
           if (res.success) {
@@ -294,7 +218,7 @@
             that.$message.warning(res.message);
           }
         });
-      },
+      },*/
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         this.loadData();

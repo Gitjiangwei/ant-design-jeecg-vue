@@ -28,7 +28,6 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel(1)">
@@ -72,13 +71,13 @@
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
-          <a @click="handleDetail(record)">详情</a>
+          <a @click="handleRepair(record)">维修</a>
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -87,6 +86,7 @@
         </span>
 
       </a-table>
+      <purchase-info-stock-edit ref="purchaseInfoStockEdit" @ok="modalFormOk"></purchase-info-stock-edit>
     </div>
   </a-card>
 
@@ -94,14 +94,16 @@
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, httpAction} from '@/api/manage';
   import {filterObj} from '@/utils/util';
-  import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
+  import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
+  import purchaseInfoStockEdit  from ".//modules/PurchaseInfoStockEdit.vue";
 
   export default {
     name: "PurchaseStackDetail",
     components: {
       ARow,
+      purchaseInfoStockEdit
     },
     data() {
       return{
@@ -122,6 +124,11 @@
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
             }
+          },
+          {
+            title: '库存设备名称',
+            align: "center",
+            dataIndex: 'equipName'
           },
           {
             title: '库存设备编号',
@@ -186,7 +193,7 @@
           list: "/renche/equip/equipKeyDetail",
           // delete: "/renche/purchase/delete",
           // deleteBatch: "/renche/purchase/deleteBatch",
-          // updateIsArrival: "/renche/purchase/updateIsArrival"
+          repair: "/renche/equip/equipKeyDetail"
         },
       }
     },
@@ -223,17 +230,27 @@
           }
         });
       },
-      handleAdd: function () {
-        this.$refs.prochaseInfoMode.add();
-        this.$refs.prochaseInfoMode.title = "新增";
-      },
       handleEdit: function (record) {
-        this.$refs.prochaseInfoMode.edit(record);
-        this.$refs.prochaseInfoMode.title = "编辑";
+        this.$refs.purchaseInfoStockEdit.edit(record);
+        this.$refs.purchaseInfoStockEdit.title = record.equipName+"编辑";
       },
-      handleDetail: function(record){
-        this.$refs.pruchaseInfoDetail.detail(record);
-        this.$refs.pruchaseInfoDetail.title = "详情";
+      handleRepair: function(record){
+        var that = this;
+        debugger;
+        let httpurl = this.url.repair;
+        let method = 'post';
+        httpAction(httpurl,record,method).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              that.loadData();
+            }else{
+              that.$message.warning(res.message);
+              that.loadData();
+            }
+         }).finally(() => {
+            that.confirmLoading = false;
+            that.close();
+        })
       },
       batchDel: function (flag) {
         if (this.selectedRowKeys.length <= 0) {
@@ -274,9 +291,14 @@
           });
         }
       },
-      handleDelete: function (id) {
+      handleDelete: function (record) {
         var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
+        debugger;
+        if(record.equipStatus != "SCRAP"){
+          that.$message.warning("只能删除报废的设备！")
+          return;
+        }
+        deleteAction(that.url.delete, {id: record.id}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
             that.loadData();

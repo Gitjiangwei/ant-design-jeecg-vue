@@ -64,8 +64,8 @@
           <a-date-picker disabled showTime format="YYYY-MM-DD"  v-decorator="[ 'purchaseTime', {rules: [{ required: true,message: '请选择采购时间' }]}]" />
         </a-form-item>
         <a-form-item
-          :labelCol="labelCols"
-          :wrapperCol="wrapperCols"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
           label="采购来源"
           hasFeedback >
           <a-input disabled  placeholder="采购来源"  v-decorator="['whichCompany', {rules: [{ required: false,message: '请输入采购来源' }]}]" />
@@ -87,7 +87,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="是否收货"
+          label="是否入库"
           hasFeedback  >
           <a-input   disabled  v-decorator="['isstorage', {rules: [{ required: false,message: '请输入采购来源' }]}]" />
         </a-form-item>
@@ -117,17 +117,9 @@
           xs: { span: 24 },
           sm: { span: 5 },
         },
-        labelCols: {
-          xs: { span: 18 },
-          sm: { span: 5 },
-        },
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
-        },
-        wrapperCols: {
-          xs: { span: 18 },
-          sm: { span: 10 },
         },
         isArris:false,
         confirmLoading: false,
@@ -141,6 +133,16 @@
     methods: {
       detail (record){
         this.form.resetFields();
+        if(record.isarrival==1){
+          record.isarrival = "是";
+        }else {
+          record.isarrival = "否";
+        }
+        if(record.isstorage==1){
+          record.isstorage = "已入库";
+        }else {
+          record.isstorage = "未入库";
+        }
         this.model = Object.assign({},record);
         this.visible = true;
         this.$nextTick(() => {
