@@ -42,11 +42,12 @@
           hasFeedback >
           <a-input placeholder="请输入项目名称" v-decorator="['prjName', {}]" />
         </a-form-item>
-        <a-form-item
+        <a-form-item id="company"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="所属公司">
-          <a-input placeholder="请输入所属公司" v-decorator="['belongCompany', {}]"  />
+          label="所属公司"
+          >
+          <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @blur="checkThisCompanyIsExsit"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -97,7 +98,7 @@
 </template>
 
 <script>
-  import { httpAction } from '@/api/manage'
+  import { httpAction,getAction } from '@/api/manage'
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -109,6 +110,10 @@
         title:"操作",
         visible: false,
         model: {},
+        isOk: true,
+        companyId:"",
+        thisMessage: "",
+        dateFormat: 'YYYY-MM-DD',
         //字典数组缓存
         typeDictOptions: [],
         labelCol: {
@@ -127,6 +132,7 @@
         url: {
           add: "/renche/projectItem/add",
           edit: "/renche/projectItem/edit",
+          checkCompany:"/renche/companyInfo/checkNameIsExsit",
         },
       }
     },
@@ -151,7 +157,9 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','belongCompany','personInCharge','personTel','entryTime','progressOfItem','finishTime','prjItemPlace'))
+          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
+          this.form.setFieldsValue({entryTime:this.model.entryTime?moment(this.model.entryTime):null});
+          this.form.setFieldsValue({finishTime:this.model.finishTime?moment(this.model.finishTime):null});
         });
 
       },
@@ -164,31 +172,38 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.prjItemId){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-              method = 'put';
-            }
-            let formData = Object.assign(this.model, values);
+            if(that.isOk){
 
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
+              that.confirmLoading = true;
+              let httpurl = '';
+              let method = '';
+              if(!this.model.prjItemId){
+                httpurl+=this.url.add;
+                method = 'post';
               }else{
-                that.$message.warning(res.message);
+                httpurl+=this.url.edit;
+                method = 'put';
               }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
+              if(this.companyId != ''){
+                this.model.belongCompany = this.companyId;
+              }
+              let formData = Object.assign(this.model, values);
 
-
+              httpAction(httpurl,formData,method).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                }else{
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }else{
+              that.$message.warning(this.thisMessage);
+              that.thisMessage = "";
+            }
 
           }
         })
@@ -196,7 +211,25 @@
       handleCancel () {
         this.close()
       },
-
+      checkThisCompanyIsExsit(){
+        // 触发表单验证
+        this.form.validateFields(['companyName'], (errors, values) => {
+          var companyName = values.companyName;//查询条件
+          if(companyName != null && companyName != "") {
+            getAction(this.url.checkCompany, {name: companyName}).then((res) => {
+              if (res.success) {
+                this.isOk = true;
+                this.companyId = res.message;
+              } else {
+                this.isOk = false;
+                if (res.code = '200') {
+                  this.$message.warning(res.message);
+                }
+              }
+            })
+          }
+        });
+      }
 
     }
   }

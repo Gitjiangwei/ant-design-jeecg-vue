@@ -20,9 +20,38 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="所属公司">
-                <RencheDictSelectTag v-model="queryParam.prjItemType" placeholder="请输入所属公司" dictCode="PROJECTITEMTYPE"/>
+                <a-input placeholder="请输入所属公司名称" v-model="queryParam.belongCompany"></a-input>
               </a-form-item>
             </a-col>
+          </a-row>
+          <a-row  :gutter="24" v-show="isShow">
+            <a-col :span="6">
+              <a-form-item label="工程编号">
+                <a-input placeholder="请输入工程编号" v-model="queryParam.prjItemNum"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="负责人">
+                <a-input placeholder="请输入负责人" v-model="queryParam.personInCharge"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="工程进度">
+                <a-input placeholder="请输入工程进度" v-model="queryParam.progressOfItem"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="进场时间">
+                <a-date-picker placeholder="请输入进场时间" v-model="queryParam.entryTime"></a-date-picker>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="完成时间">
+                <a-date-picker placeholder="请输入完成时间" v-model="queryParam.finishTime"></a-date-picker>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row  :gutter="24">
             <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -93,25 +122,23 @@
       <!-- 表单区域 -->
       <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
 
-      <!-- 高级查询区域 -->
-      <projectQueryModal ref="projectQueryModal" @ok="modalFormOk" @handleSuperQuery="handleSuperQuery"></projectQueryModal>
-
     </a-card>
 
 </template>
 
 <script>
     import ProjectItemModal from './modules/ProjectItemModal'
-    import ProjectQueryModal from './modules/ProjectQueryModal'
     import {filterObj} from '@/utils/util'
-    import {deleteAction, getAction, postAction} from '@/api/manage'
+    import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
+    import ARow from "ant-design-vue/es/grid/Row";
+    import moment from "moment"
 
     export default {
       name: "projectItenList",
       components: {
+        ARow,
         ProjectItemModal,
-        ProjectQueryModal,
       },
       data() {
         return{
@@ -121,6 +148,7 @@
           queryParam: {},
           //字典数组缓存
           typeDictOptions: [],
+          isShow:false,
           // 表头
           columns: [
             {
@@ -160,7 +188,7 @@
             {
               title: '所属公司',
               align: "center",
-              dataIndex: 'belongCompany'
+              dataIndex: 'companyName'
             },
             {
               title: '负责人',
@@ -214,9 +242,13 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          if(params.entryTime != undefined){
+            var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
+            params.entryTime = entryTime;
+          }
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
-              this.dataSource = res.result.records;
+              this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }
           })
@@ -233,7 +265,7 @@
           let params = {'superQueryParams':encodeURI(JSON.stringify(arg))};
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
-              this.dataSource = res.result.records;
+              this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
             }else{
               that.$message.warn(res.message);
@@ -259,7 +291,11 @@
           this.loadData(1);
         },
         superQuery() {
-          this.$refs.projectQueryModal.show();
+          if(this.isShow){
+            this.isShow = false;
+          }else{
+            this.isShow = true;
+          }
         },
         searchReset() {
           var that = this;
