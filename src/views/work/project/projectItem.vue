@@ -142,7 +142,7 @@
       },
       data() {
         return{
-          description: '客户信息管理页面',
+          description: '工程点管理页面',
 
           // 查询条件
           queryParam: {},

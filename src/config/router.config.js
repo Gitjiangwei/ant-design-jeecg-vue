@@ -143,6 +143,12 @@ export const asyncRouterMap = [
             name: 'projectItemList',
             component: () => import('@/views/work/project/projectItem'),
             meta: { title: '工程点信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/project/contractInfo',
+            name: 'contractList',
+            component: () => import('@/views/work/project/contractInfo'),
+            meta: { title: '合同信息', permission: [ 'dashboard' ] }
           }
         ]
       },

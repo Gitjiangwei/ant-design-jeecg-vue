@@ -16,7 +16,7 @@
           :wrapperCol="wrapperCol"
           label="工程名称"
           hasFeedback >
-          <a-input placeholder="请输入工程名称" v-decorator="['prjItemName', {}]" />
+          <a-input placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -30,8 +30,8 @@
           :wrapperCol="wrapperCol"
           label="工程类型"
           hasFeedback >
-          <a-select v-decorator="['prjItemType', {}]" placeholder="请选择工程类型">
-            <a-select-option value="">请选择工程类型</a-select-option>
+          <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
+            <a-select-option value="">请选择</a-select-option>
             <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
           </a-select>
         </a-form-item>
