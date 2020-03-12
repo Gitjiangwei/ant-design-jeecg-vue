@@ -8,66 +8,73 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
-    >
+  >
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form" >
+      <a-form :form="form">
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="设备名称"
           hasFeedback
-          >
-          <a-input placeholder="请输入设备名称" v-on:focus="calculation" v-on:blur="calculation"  v-decorator="['purchaseItem', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
+        >
+          <a-input placeholder="请输入设备名称" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['purchaseItem', {rules: [{ required: true, message: '请输入设备名称', }]}]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="设备型号"
-          hasFeedback >
-          <a-input placeholder="请输入设备型号" v-on:focus="calculation" v-on:blur="calculation" v-decorator="['itemModel', {rules: [{ required: true, message: '请输入设备型号' }]}]" />
+          hasFeedback>
+          <a-input placeholder="请输入设备型号" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['itemModel', {rules: [{ required: true, message: '请输入设备型号' }]}]"/>
         </a-form-item>
         <a-form-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="单价"
-        hasFeedback >
-        <a-input placeholder="请输入单价" id="price" v-on:focus="calculation" v-on:blur="calculation"  v-decorator="['price', {rules: [{ required: true, message: '请输入单价' }]}]" />
-      </a-form-item>
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="单价"
+          hasFeedback>
+          <a-input placeholder="请输入单价" id="price" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['price', {rules: [{ required: true, message: '请输入单价' }]}]"/>
+        </a-form-item>
         <a-form-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="采购数量"
-        hasFeedback >
-        <a-input   placeholder="请输入采购数量"  id="quantity" v-on:focus="calculation" v-on:blur="calculation" v-decorator="['quantity', {rules: [{ required: true, message: '请输入采购数量' }]}]" />
-      </a-form-item>
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="采购数量"
+          hasFeedback>
+          <a-input placeholder="请输入采购数量" id="quantity" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['quantity', {rules: [{ required: true, message: '请输入采购数量' }]}]"/>
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="总价"
-          hasFeedback >
-          <a-input  disabled  placeholder="0" readonly="true" id="totalPrice"  v-decorator="['totalPrice', {rules: [{ required: false,message:'请计算设备总价'}]}]" />
+          hasFeedback>
+          <a-input disabled placeholder="0" readonly="true" id="totalPrice"
+                   v-decorator="['totalPrice', {rules: [{ required: false,message:'请计算设备总价'}]}]"/>
         </a-form-item>
 
         <a-form-item
-        :labelCol="labelCol"
-        :wrapperCol="wrapperCol"
-        label="采购人员"
-        hasFeedback >
-        <a-input   placeholder="采购人员" v-on:focus="calculation" v-on:blur="calculation" v-decorator="['purchaser', {rules: [{ required: true,message: '请输入采购人员' }]}]" />
-      </a-form-item>
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="采购人员"
+          hasFeedback>
+          <a-input placeholder="采购人员" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['purchaser', {rules: [{ required: true,message: '请输入采购人员' }]}]"/>
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="采购时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation" v-decorator="[ 'purchaseTime', {rules: [{ required: true,message: '请选择采购时间' }]}]" />
+          hasFeedback>
+          <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation"
+                         v-decorator="[ 'purchaseTime', {rules: [{ required: true,message: '请选择采购时间' }]}]"/>
         </a-form-item>
         <a-form-item
           v-show="localMenuType!=0"
           label="采购来源"
           :labelCol="labelCol"
-          :wrapperCol="wrapperCol" >
+          :wrapperCol="wrapperCol">
           <a-tree-select
             style="width:100%"
             :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
@@ -81,76 +88,109 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="到货日期"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation" v-decorator="[ 'arrivalTime', {rules: [{ required: true,message: '请选择到货日期' }]}]" />
+          hasFeedback>
+          <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation"
+                         v-decorator="[ 'arrivalTime', {rules: [{ required: true,message: '请选择到货日期' }]}]"/>
         </a-form-item>
-          <a-form-item style="display: none" class="isarr"
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="是否收货"
-            hasFeedback  >
-            <a-input  style="display: none" class="isarr"  v-on:focus="calculation" v-on:blur="calculation" v-decorator="['isarrival', {rules: [{ required: false,message: '请输入采购来源' }]}]" />
-          </a-form-item>
+        <a-form-item style="display: none" class="isarr"
+                     :labelCol="labelCol"
+                     :wrapperCol="wrapperCol"
+                     label="是否收货"
+                     hasFeedback>
+          <a-input style="display: none" class="isarr" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['isarrival', {rules: [{ required: false,message: '请输入采购来源' }]}]"/>
+        </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="附件"
+          hasFeedback>
+          <!--  -->
+          <a-upload
+            name="file"
+            :multiple="true"
+            :action="uploadAction"
+            :headers="headers"
+            @change="handleChange"
+          >
+            <a-button> <a-icon type="upload" /> 上传 </a-button>
+          </a-upload>
+<!--          <a @click="handleUpload()">上传</a> <a v-decorator="['fileRelId',{}]"/>-->
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="备注"
-          hasFeedback >
-          <a-input   placeholder="备注" v-on:focus="calculation" v-on:blur="calculation" v-decorator="['remarks', {rules: [{ required: false,message: '请输入采购人员' }]}]" />
+          hasFeedback>
+          <a-input placeholder="备注" v-on:focus="calculation" v-on:blur="calculation"
+                   v-decorator="['remarks', {rules: [{ required: false,message: '请输入采购人员' }]}]"/>
         </a-form-item>
       </a-form>
     </a-spin>
+    <file-detail ref="fileDetail"></file-detail>
   </a-modal>
+
 </template>
 <script>
-  import { httpAction } from '@/api/manage'
+  import {httpAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
-  import {queryDepartCGTreeList} from '@/api/api'
+  import {queryDepartCGTreeList,doMian} from '@/api/api'
+  import fileDetail from './FileDetail';
   //import $ from 'jquery'
 
-  export default{
-    name:"prochaseInfoMode",
-    data(){
-      return{
-        title:"操作",
+  export default {
+    name: "prochaseInfoMode",
+    components: {fileDetail},
+    data() {
+      return {
+        isShowFile:false,
+        title: "操作",
         visible: false,
         model: {},
-        treeData:[],
+        treeData: [],
         treeValue: '0-0-4',
-        disableSubmit:false,
+        disableSubmit: false,
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
+          xs: {span: 24},
+          sm: {span: 5},
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
+          xs: {span: 24},
+          sm: {span: 16},
         },
-        isArris:false,
+        isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-        },
+        validatorRules: {},
         url: {
           add: "/renche/purchase/savePurchase",
           edit: "/renche/purchase/editPurchase",
+          fileUpload:doMian+"/sys/common/upload"
         },
       }
     },
-    created () {
+    created() {
+    },
+    computed:{
+      uploadAction:function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
-      loadTree(){
-        debugger;
+      handleUpload(){
+        let files = new FileReader();
+      },
+      loadTree() {
         var that = this;
-        queryDepartCGTreeList().then((res)=>{
-          if(res.success){
+        queryDepartCGTreeList().then((res) => {
+          if (res.success) {
             console.log('----queryTreeList---')
             console.log(res)
             that.treeData = [];
             let treeList = res.result;
-            for(let a=0;a<treeList.length;a++){
+            for (let a = 0; a < treeList.length; a++) {
               let temp = treeList[a];
               temp.isLeaf = temp.leaf;
               that.treeData.push(temp);
@@ -158,28 +198,28 @@
           }
         });
       },
-     add () {
+      add() {
         this.edit({});
       },
-      edit (record) {
+      edit(record) {
         this.isArris = true;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.loadTree();
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'purchaseItem','itemModel','price','totalPrice','quantity','purchaser','purchaseTime','whichCompany','arrivalTime','remarks'))
+          this.form.setFieldsValue(pick(this.model, 'purchaseItem', 'itemModel', 'price', 'totalPrice', 'quantity', 'purchaser', 'purchaseTime', 'whichCompany', 'arrivalTime', 'remarks'))
           //时间格式化
-          this.form.setFieldsValue({purchaseTime:this.model.purchaseTime?moment(this.model.purchaseTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({arrivalTime:this.model.arrivalTime?moment(this.model.arrivalTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({purchaseTime: this.model.purchaseTime ? moment(this.model.purchaseTime, 'YYYY-MM-DD') : null});
+          this.form.setFieldsValue({arrivalTime: this.model.arrivalTime ? moment(this.model.arrivalTime, 'YYYY-MM-DD') : null});
         });
 
       },
-     close () {
+      close() {
         this.$emit('close');
         this.visible = false;
       },
-      handleOk () {
+      handleOk() {
         const that = this;
         this.calculation();
         // 触发表单验证
@@ -188,24 +228,24 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.purchaseId){
-              httpurl+=this.url.add;
+            if (!this.model.purchaseId) {
+              httpurl += this.url.add;
               method = 'post';
-            }else{
-              httpurl+=this.url.edit;
+            } else {
+              httpurl += this.url.edit;
               method = 'put';
             }
             let formData = Object.assign(this.model, values);
             //时间格式化
-            formData.purchaseTime = formData.purchaseTime?formData.purchaseTime.format('YYYY-MM-DD'):null;
-            formData.arrivalTime = formData.arrivalTime?formData.arrivalTime.format('YYYY-MM-DD'):null;
+            formData.purchaseTime = formData.purchaseTime ? formData.purchaseTime.format('YYYY-MM-DD') : null;
+            formData.arrivalTime = formData.arrivalTime ? formData.arrivalTime.format('YYYY-MM-DD') : null;
 
             console.log(formData)
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
                 that.$message.success(res.message);
                 that.$emit('ok');
-              }else{
+              } else {
                 that.$message.warning(res.message);
               }
             }).finally(() => {
@@ -214,20 +254,19 @@
             })
 
 
-
           }
         })
       },
-      calculation: function(){
+      calculation: function () {
         var price = document.getElementById("price").value.toString();
         var quantity = document.getElementById("quantity").value.toString();
-        var totalPrice = parseFloat(price)*parseInt(quantity);
-        if(price!=""&&quantity!="") {
+        var totalPrice = parseFloat(price) * parseInt(quantity);
+        if (price != "" && quantity != "") {
           document.getElementById("totalPrice").value = totalPrice;
         }
 
       },
-      handleCancel () {
+      handleCancel() {
         this.close()
       },
 
