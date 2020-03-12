@@ -128,7 +128,6 @@
         </a-form-item>
       </a-form>
     </a-spin>
-    <file-detail ref="fileDetail"></file-detail>
   </a-modal>
 
 </template>
@@ -137,12 +136,11 @@
   import pick from 'lodash.pick'
   import moment from "moment"
   import {queryDepartCGTreeList,doMian} from '@/api/api'
-  import fileDetail from './FileDetail';
   //import $ from 'jquery'
 
   export default {
     name: "prochaseInfoMode",
-    components: {fileDetail},
+    components: {},
     data() {
       return {
         isShowFile:false,
@@ -179,9 +177,6 @@
       }
     },
     methods: {
-      handleUpload(){
-        let files = new FileReader();
-      },
       loadTree() {
         var that = this;
         queryDepartCGTreeList().then((res) => {
