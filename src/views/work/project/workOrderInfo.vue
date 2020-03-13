@@ -4,28 +4,17 @@
         <a-form layout="inline">
           <a-row :gutter="24">
             <a-col :span="6">
-              <a-form-item label="发票名称" >
-                <a-input placeholder="请输入发票名称" v-model="queryParam.invociName"></a-input>
+              <a-form-item label="工单名称" >
+                <a-input placeholder="请输入工单名称" v-model="queryParam.workName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="税号">
-                <a-input placeholder="请输入税号" v-model="queryParam.shuihao"></a-input>
+              <a-form-item label="负责人">
+                <a-input placeholder="请输入负责人" v-model="queryParam.chargePerson"></a-input>
               </a-form-item>
             </a-col>
-<!--
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="开票时间"
-              hasFeedback >
-              <a-date-picker showTime format="YYYY-MM-DD"  v-model="queryParam.invociTime" />
-            </a-form-item>
--->
 
-
-
-            <a-col :span="6"  >
+          <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -81,7 +70,7 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.invociId )">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.visitId )">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -93,7 +82,8 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-        <add-invoic-info ref="addInvoicInfo" @ok="modalFormOk"></add-invoic-info>
+
+      <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
 
 
     </a-card>
@@ -102,20 +92,21 @@
 
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
-    import addInvoicInfo from './modules/addInvoicInfo';
+   /* import addVisit from './modules/addVisitInfo';*/
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
+    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
     export default {
-      name: "invoicInfo",
+      name: "workOrderInfo",
       components: {
         ARow,
-        addInvoicInfo,
-
+       /* addVisit,*/
+        //CompanyInfoModal,
       },
       data() {
         return{
-          description: '招标管理页面',
+          description: '工单预览',
 
           // 查询条件
           queryParam: {},
@@ -132,45 +123,25 @@
               }
             },
             {
-              title: '发票名称',
+              title: '工单名称',
               align: "center",
-              dataIndex: 'invociName',
+              dataIndex: 'workName',
             },
             {
-              title: '开票时间',
+              title: '创建人',
               align: "center",
-              dataIndex: 'invociTime',
+              dataIndex: 'createPerson',
             },
             {
-              title: '发票内容',
+              title: '负责人',
               align: "center",
-              dataIndex: 'content',
+              dataIndex: 'chargePerson',
             },
             {
-              title: '税号',
+              title: '任务描述',
               align: "center",
-              dataIndex: 'shuihao',
-            },
-            {
-              title: '单位地址',
-              align: "center",
-              dataIndex: 'address',
+              dataIndex: 'describe',
 
-            },
-            {
-              title: '电话号码',
-              align: "center",
-              dataIndex: 'tel',
-            },
-            {
-              title: '开户银行',
-              align: "center",
-              dataIndex: 'bank',
-            },
-            {
-              title: '银行账户',
-              align: "center",
-              dataIndex: 'bankNo',
             },
             {
               title: '创建时间',
@@ -178,16 +149,16 @@
               dataIndex: 'createTime',
             },
             {
-              title: '附件',
+              title: '完成时间',
               align: "center",
-              dataIndex: 'fileRelNum',
+              dataIndex: 'completeTime',
             },
             {
-              title: '操作',
-              dataIndex: 'action',
+              title: '状态',
               align: "center",
-              scopedSlots: {customRender: 'action'},
+              dataIndex: 'status',
             }
+
           ],
 
 
@@ -213,15 +184,16 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/invoic/qryInvoicList",
-            delete: "/renche/invoic/delete",
-            deleteBatch: "/renche/invoic/deleteBat",
+            list: "/renche/workOrder/qryWorkOrderInfo",
+
+
           },
         }
       },
       created() {
         this.loadData();
-
+        //初始化字典配置f
+        this.initDictConfig();
       },
       methods: {
         loadData(arg) {
@@ -233,9 +205,18 @@
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
+
               this.ipagination.total = res.result.total;
             }
           })
+        },
+        initDictConfig() {
+          //初始化字典 - 客戶類型
+          initDictOptions('CUSTOMETYPE').then((res) => {
+            if (res.success) {
+              this.typeDictOptions = res.result;
+            }
+          });
         },
         getQueryParams() {
           var param = Object.assign({}, this.queryParam, this.isorter);
@@ -271,56 +252,7 @@
           this.selectedRowKeys = [];
           this.selectionRows = [];
         },
-        batchDel: function () {
 
-          if (this.selectedRowKeys.length <= 0) {
-            this.$message.warning('请选择一条记录！');
-            return;
-          } else {
-            var ids = "";
-            for (var a = 0; a < this.selectedRowKeys.length; a++) {
-
-              ids += this.selectionRows[a].invociId + ",";
-            }
-            var that = this;
-            this.$confirm({
-              title: "确认删除",
-              content: "是否删除选中数据?",
-              onOk: function () {
-
-                deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
-                  if (res.success) {
-                    that.$message.success(res.message);
-                    that.loadData();
-
-                    that.onClearSelected();
-                  } else {
-                    that.$message.warning(res.message);
-                  }
-                });
-              }
-            });
-          }
-        },
-        handleDelete: function (id) {
-          var that = this;
-          deleteAction(that.url.delete, {id: id}).then((res) => {
-            if (res.success) {
-              that.$message.success(res.message);
-              that.loadData();
-            } else {
-              that.$message.warning(res.message);
-            }
-          });
-        },
-        handleEdit: function (record) {
-          this.$refs.addInvoicInfo.edit(record);
-          this.$refs.addInvoicInfo.title = "编辑";
-        },
-        handleAdd: function () {
-          this.$refs.addInvoicInfo.add();
-          this.$refs.addInvoicInfo.title = "新增";
-        },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
           console.log(sorter);
@@ -339,14 +271,9 @@
         },
         modalFormOk() {
           // 新增/修改 成功时，重载列表
-          this.searchQuery();
-
-
+          this.loadData();
         }
-      },
-   /*   mounted() {
-        /!*this.timer = setInterval(this.loadData, 10000);*!/
-      },*/
+      }
     }
 
 </script>

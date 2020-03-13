@@ -283,7 +283,7 @@
         },
         handleDelete: function (id) {
           var that = this;
-          deleteAction(that.url.delete, {id: id}).then((res) => {
+          postAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
              /* alert("已删除");*/
