@@ -81,14 +81,14 @@
           :wrapperCol="wrapperCol"
           label="个人爱好"
           hasFeedback >
-          <a-textarea  placeholder="请输入个人爱好" v-decorator="['hobby', {}]" :row="2" />
+          <a-textarea  placeholder="请输入个人爱好" v-decorator="['hobby', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="公司地址"
           hasFeedback >
-          <a-textarea placeholder="请输入公司地址" v-decorator="['address', {}]" :row="2" />
+          <a-textarea placeholder="请输入公司地址" v-decorator="['address', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
 
       </a-form>
