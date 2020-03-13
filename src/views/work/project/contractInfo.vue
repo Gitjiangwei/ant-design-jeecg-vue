@@ -4,26 +4,53 @@
         <a-form layout="inline">
           <a-row :gutter="24">
             <a-col :span="6">
-              <a-form-item label="项目名称" >
-                <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+              <a-form-item label="合同名称">
+                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="招标编号">
-                <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
+              <a-form-item label="合同类型">
+                <RencheDictSelectTag v-model="queryParam.contractType" placeholder="请选择合同类型" dictCode="CONTRACTTYPE"/>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="投标单位">
-                <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
+              <a-form-item label="甲方公司">
+                <a-input placeholder="请输入甲方公司名称" v-model="queryParam.partyA"></a-input>
               </a-form-item>
             </a-col>
-
-
+            <a-col :span="6">
+              <a-form-item label="乙方公司">
+                <a-input placeholder="请输入乙方公司名称" v-model="queryParam.partyB"></a-input>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row  :gutter="24" v-show="isShow">
+            <a-col :span="6"  >
+              <a-form-item label="合同签订状态">
+                <a-select placeholder="请选择合同签订状态" v-model="queryParam.contractStatus">
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option value="1">已签订</a-select-option>
+                  <a-select-option value="0">未签订</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="甲方合同编号">
+                <a-input placeholder="请输入甲方合同编号" v-model="queryParam.contractNoA"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="乙方合同编号">
+                <a-input placeholder="请输入乙方合同编号" v-model="queryParam.contractNoB"></a-input>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row  :gutter="24">
             <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>
               </span>
             </a-col>
           </a-row>
@@ -49,24 +76,23 @@
 
       <!-- table区域-begin -->
       <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-        selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+          <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
+          selectedRowKeys.length }}</a>项
+          <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+        </div>
 
-      <a-table
-        ref="table"
-        size="middle"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        @change="handleTableChange">
-
+        <a-table
+          ref="table"
+          size="middle"
+          bordered
+          rowKey="contractId"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="ipagination"
+          :loading="loading"
+          :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+          @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
@@ -76,48 +102,50 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.tenderId )">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.contractId)">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
           </span>
-      </a-table>
-    </div>
+        </a-table>
+      </div>
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <add-tender ref="addTender" @ok="modalFormOk" ></add-tender>
-
+      <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
 
     </a-card>
 
 </template>
 
 <script>
+    import ContractInfoModal from './modules/ContractInfoModal'
+    import {filterObj} from '@/utils/util'
+    import {deleteAction, getAction} from '@/api/manage'
+    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import ARow from "ant-design-vue/es/grid/Row";
-    import addTender from './modules/addTenderInfo';
-    import {filterObj} from '@/utils/util';
-    import {deleteAction, getAction, postAction} from '@/api/manage';
 
     export default {
-      name: "tenderInfo",
+      name: "contractInfoList",
       components: {
         ARow,
-        addTender,
-
+        ContractInfoModal,
       },
       data() {
         return{
-          description: '招标管理页面',
+          description: '合同信息管理页面',
 
           // 查询条件
           queryParam: {},
+          //字典数组缓存
+          typeDictOptions: [],
+          isShow:false,
           // 表头
           columns: [
             {
-              title: '序号',
+              title: '#',
               dataIndex: '',
               key: 'rowIndex',
               width: 60,
@@ -127,42 +155,47 @@
               }
             },
             {
-              title: '项目名称',
+              title: '合同名称',
               align: "center",
-              dataIndex: 'prjName',
+              dataIndex: 'contractName'
             },
             {
-              title: '招标编号',
+              title: '合同类型',
               align: "center",
-              dataIndex: 'tenderNo',
+              dataIndex: 'contractType',
+              customRender: (text, record, index) => {
+                //字典值替换通用方法
+                return filterDictText(this.typeDictOptions, text);
+              }
             },
             {
-              title: '投标单位',
+              title: '甲方公司',
               align: "center",
-              dataIndex: 'tenderCompany',
+              dataIndex: 'companyNameA'
             },
             {
-              title: '报价（万元）',
+              title: '乙方公司',
               align: "center",
-              dataIndex: 'tenderOffer',
+              dataIndex: 'companyNameB'
             },
             {
-              title: '保证金（万元）',
+              title: '合同金额(万元)',
               align: "center",
-              dataIndex: 'deposit',
-
+              dataIndex: 'contractMoney'
             },
             {
-              title: '保证金是否退回',
+              title: '合同签订状态',
               align: "center",
-              dataIndex: 'isBack',
+              dataIndex: 'contractStatus',
+              customRender: (text, record, index) => {
+                //字典值替换通用方法
+                if(text = '0'){
+                  return "未签订";
+                }else if (text = '1'){
+                  return "已签订";
+                }
+              }
             },
-            {
-              title: '创建时间',
-              align: "center",
-              dataIndex: 'createTime',
-            },
-
             {
               title: '操作',
               dataIndex: 'action',
@@ -170,8 +203,6 @@
               scopedSlots: {customRender: 'action'},
             }
           ],
-
-
           //数据集
           dataSource: [],
           // 分页参数
@@ -194,15 +225,16 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/tender/qrytenderList",
-            delete: "/renche/tender/delete",
-            deleteBatch: "/renche/tender/deleteBat",
+            list: "/renche/contractInfo/list",
+            delete: "/renche/contractInfo/delete",
+            deleteBatch: "/renche/contractInfo/deleteBatch",
           },
         }
       },
       created() {
         this.loadData();
-
+        //初始化字典配置
+        this.initDictConfig();
       },
       methods: {
         loadData(arg) {
@@ -215,6 +247,25 @@
             if (res.success) {
               this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
+            }
+          })
+        },
+        initDictConfig() {
+          //初始化字典 - 合同类型
+          initDictOptions('CONTRACTTYPE').then((res) => {
+            if (res.success) {
+              this.typeDictOptions = res.result;
+            }
+          });
+        },
+        handleSuperQuery(arg) {//高级查询方法
+          let params = {'superQueryParams':encodeURI(JSON.stringify(arg))};
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }else{
+              that.$message.warn(res.message);
             }
           })
         },
@@ -237,7 +288,11 @@
           this.loadData(1);
         },
         superQuery() {
-          this.$refs.superQueryModal.show();
+          if(this.isShow){
+            this.isShow = false;
+          }else{
+            this.isShow = true;
+          }
         },
         searchReset() {
           var that = this;
@@ -253,26 +308,22 @@
           this.selectionRows = [];
         },
         batchDel: function () {
-
           if (this.selectedRowKeys.length <= 0) {
             this.$message.warning('请选择一条记录！');
             return;
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-
-              ids += this.selectionRows[a].tenderId + ",";
+              ids += this.selectedRowKeys[a] + ",";
             }
             var that = this;
             this.$confirm({
               title: "确认删除",
               content: "是否删除选中数据?",
               onOk: function () {
-
                 deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                   if (res.success) {
                     that.$message.success(res.message);
-                    /*alert("批量删除成功");*/
                     that.loadData();
                     that.onClearSelected();
                   } else {
@@ -288,7 +339,6 @@
           deleteAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
-              /*alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);
@@ -296,12 +346,12 @@
           });
         },
         handleEdit: function (record) {
-          this.$refs.addTender.edit(record);
-          this.$refs.addTender.title = "编辑";
+          this.$refs.contractInfoModal.edit(record);
+          this.$refs.contractInfoModal.title = "编辑";
         },
         handleAdd: function () {
-          this.$refs.addTender.add();
-          this.$refs.addTender.title = "新增";
+          this.$refs.contractInfoModal.add();
+          this.$refs.contractInfoModal.title = "新增";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发

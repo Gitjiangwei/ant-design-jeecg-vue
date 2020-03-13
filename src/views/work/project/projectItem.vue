@@ -4,26 +4,59 @@
         <a-form layout="inline">
           <a-row :gutter="24">
             <a-col :span="6">
-              <a-form-item label="项目名称" >
+              <a-form-item label="工程名称">
+                <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="项目名称">
                 <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="招标编号">
-                <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
+              <a-form-item label="工程类型">
+                <RencheDictSelectTag v-model="queryParam.prjItemType" placeholder="请输入工程类型" dictCode="PROJECTITEMTYPE"/>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="投标单位">
-                <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
+              <a-form-item label="所属公司">
+                <a-input placeholder="请输入所属公司名称" v-model="queryParam.belongCompany"></a-input>
               </a-form-item>
             </a-col>
-
-
+          </a-row>
+          <a-row  :gutter="24" v-show="isShow">
+            <a-col :span="6">
+              <a-form-item label="工程编号">
+                <a-input placeholder="请输入工程编号" v-model="queryParam.prjItemNum"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="负责人">
+                <a-input placeholder="请输入负责人" v-model="queryParam.personInCharge"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="工程进度">
+                <a-input placeholder="请输入工程进度" v-model="queryParam.progressOfItem"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="进场时间">
+                <a-date-picker placeholder="请输入进场时间" v-model="queryParam.entryTime"></a-date-picker>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="完成时间">
+                <a-date-picker placeholder="请输入完成时间" v-model="queryParam.finishTime"></a-date-picker>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row  :gutter="24">
             <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>
               </span>
             </a-col>
           </a-row>
@@ -49,24 +82,23 @@
 
       <!-- table区域-begin -->
       <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-        selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+          <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
+          selectedRowKeys.length }}</a>项
+          <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+        </div>
 
-      <a-table
-        ref="table"
-        size="middle"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        @change="handleTableChange">
-
+        <a-table
+          ref="table"
+          size="middle"
+          bordered
+          rowKey="prjItemId"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="ipagination"
+          :loading="loading"
+          :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+          @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
@@ -76,48 +108,51 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.tenderId )">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.prjItemId)">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
           </span>
-      </a-table>
-    </div>
+        </a-table>
+      </div>
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <add-tender ref="addTender" @ok="modalFormOk" ></add-tender>
-
+      <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
 
     </a-card>
 
 </template>
 
 <script>
+    import ProjectItemModal from './modules/ProjectItemModal'
+    import {filterObj} from '@/utils/util'
+    import {deleteAction, getAction} from '@/api/manage'
+    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import ARow from "ant-design-vue/es/grid/Row";
-    import addTender from './modules/addTenderInfo';
-    import {filterObj} from '@/utils/util';
-    import {deleteAction, getAction, postAction} from '@/api/manage';
+    import moment from "moment"
 
     export default {
-      name: "tenderInfo",
+      name: "projectItenList",
       components: {
         ARow,
-        addTender,
-
+        ProjectItemModal,
       },
       data() {
         return{
-          description: '招标管理页面',
+          description: '工程点管理页面',
 
           // 查询条件
           queryParam: {},
+          //字典数组缓存
+          typeDictOptions: [],
+          isShow:false,
           // 表头
           columns: [
             {
-              title: '序号',
+              title: '#',
               dataIndex: '',
               key: 'rowIndex',
               width: 60,
@@ -127,42 +162,39 @@
               }
             },
             {
+              title: '工程编号',
+              align: "center",
+              dataIndex: 'prjItemNum'
+            },
+            {
+              title: '工程名称',
+              align: "center",
+              dataIndex: 'prjItemName'
+            },
+            {
+              title: '工程类型',
+              align: "center",
+              dataIndex: 'prjItemType',
+              customRender: (text, record, index) => {
+                //字典值替换通用方法
+                return filterDictText(this.typeDictOptions, text);
+              }
+            },
+            {
               title: '项目名称',
               align: "center",
-              dataIndex: 'prjName',
+              dataIndex: 'prjName'
             },
             {
-              title: '招标编号',
+              title: '所属公司',
               align: "center",
-              dataIndex: 'tenderNo',
+              dataIndex: 'companyName'
             },
             {
-              title: '投标单位',
+              title: '负责人',
               align: "center",
-              dataIndex: 'tenderCompany',
+              dataIndex: 'personInCharge'
             },
-            {
-              title: '报价（万元）',
-              align: "center",
-              dataIndex: 'tenderOffer',
-            },
-            {
-              title: '保证金（万元）',
-              align: "center",
-              dataIndex: 'deposit',
-
-            },
-            {
-              title: '保证金是否退回',
-              align: "center",
-              dataIndex: 'isBack',
-            },
-            {
-              title: '创建时间',
-              align: "center",
-              dataIndex: 'createTime',
-            },
-
             {
               title: '操作',
               dataIndex: 'action',
@@ -170,8 +202,6 @@
               scopedSlots: {customRender: 'action'},
             }
           ],
-
-
           //数据集
           dataSource: [],
           // 分页参数
@@ -194,15 +224,16 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/tender/qrytenderList",
-            delete: "/renche/tender/delete",
-            deleteBatch: "/renche/tender/deleteBat",
+            list: "/renche/projectItem/list",
+            delete: "/renche/projectItem/delete",
+            deleteBatch: "/renche/projectItem/deleteBatch",
           },
         }
       },
       created() {
         this.loadData();
-
+        //初始化字典配置
+        this.initDictConfig();
       },
       methods: {
         loadData(arg) {
@@ -211,10 +242,33 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          if(params.entryTime != undefined){
+            var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
+            params.entryTime = entryTime;
+          }
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
+            }
+          })
+        },
+        initDictConfig() {
+          //初始化字典 - 工程类型
+          initDictOptions('PROJECTITEMTYPE').then((res) => {
+            if (res.success) {
+              this.typeDictOptions = res.result;
+            }
+          });
+        },
+        handleSuperQuery(arg) {//高级查询方法
+          let params = {'superQueryParams':encodeURI(JSON.stringify(arg))};
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }else{
+              that.$message.warn(res.message);
             }
           })
         },
@@ -237,7 +291,11 @@
           this.loadData(1);
         },
         superQuery() {
-          this.$refs.superQueryModal.show();
+          if(this.isShow){
+            this.isShow = false;
+          }else{
+            this.isShow = true;
+          }
         },
         searchReset() {
           var that = this;
@@ -253,26 +311,22 @@
           this.selectionRows = [];
         },
         batchDel: function () {
-
           if (this.selectedRowKeys.length <= 0) {
             this.$message.warning('请选择一条记录！');
             return;
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-
-              ids += this.selectionRows[a].tenderId + ",";
+              ids += this.selectedRowKeys[a] + ",";
             }
             var that = this;
             this.$confirm({
               title: "确认删除",
               content: "是否删除选中数据?",
               onOk: function () {
-
                 deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                   if (res.success) {
                     that.$message.success(res.message);
-                    /*alert("批量删除成功");*/
                     that.loadData();
                     that.onClearSelected();
                   } else {
@@ -288,7 +342,6 @@
           deleteAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
-              /*alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);
@@ -296,12 +349,12 @@
           });
         },
         handleEdit: function (record) {
-          this.$refs.addTender.edit(record);
-          this.$refs.addTender.title = "编辑";
+          this.$refs.projectItemModal.edit(record);
+          this.$refs.projectItemModal.title = "编辑";
         },
         handleAdd: function () {
-          this.$refs.addTender.add();
-          this.$refs.addTender.title = "新增";
+          this.$refs.projectItemModal.add();
+          this.$refs.projectItemModal.title = "新增";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
