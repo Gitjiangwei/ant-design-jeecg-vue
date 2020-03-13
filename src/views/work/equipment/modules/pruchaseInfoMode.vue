@@ -114,10 +114,16 @@
             :headers="headers"
             @change="handleChange"
           >
-            <a-button> <a-icon type="upload" /> 上传 </a-button>
+            <a-button>
+              <a-icon type="upload"/>
+              上传
+            </a-button>
           </a-upload>
-<!--          <a @click="handleUpload()">上传</a> <a v-decorator="['fileRelId',{}]"/>-->
+          <div>
+            <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+          </div>
         </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -132,10 +138,12 @@
 
 </template>
 <script>
-  import {httpAction} from '@/api/manage'
+  import {httpAction,getAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
-  import {queryDepartCGTreeList,doMian} from '@/api/api'
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import {queryDepartCGTreeList, doMian} from '@/api/api'
   //import $ from 'jquery'
 
   export default {
@@ -143,10 +151,11 @@
     components: {},
     data() {
       return {
-        isShowFile:false,
+        isShowFile: false,
         title: "操作",
         visible: false,
         model: {},
+        isarrivals: "",
         treeData: [],
         treeValue: '0-0-4',
         disableSubmit: false,
@@ -158,6 +167,9 @@
           xs: {span: 24},
           sm: {span: 16},
         },
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
         isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
@@ -165,14 +177,17 @@
         url: {
           add: "/renche/purchase/savePurchase",
           edit: "/renche/purchase/editPurchase",
-          fileUpload:doMian+"/sys/common/upload"
+          fileUpload: doMian + "/sys/common/upload",
+          listKey: "/renche/purchase/qryPurchaseId",
         },
       }
     },
     created() {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
     },
-    computed:{
-      uploadAction:function () {
+    computed: {
+      uploadAction: function () {
         return this.url.fileUpload;
       }
     },
@@ -181,8 +196,6 @@
         var that = this;
         queryDepartCGTreeList().then((res) => {
           if (res.success) {
-            console.log('----queryTreeList---')
-            console.log(res)
             that.treeData = [];
             let treeList = res.result;
             for (let a = 0; a < treeList.length; a++) {
@@ -193,11 +206,43 @@
           }
         });
       },
+      beforeUpload: function (file) {
+        var fileType = file.type;
+        if (fileType.indexOf('image') < 0) {
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
       add() {
         this.edit({});
       },
       edit(record) {
+        debugger;
+        this.avatar = record.fileRelId;
         this.isArris = true;
+        getAction(this.url.listKey, {purchaseId:record.purchaseId}).then((res) => {
+          if (res.success) {
+           this.isarrivals = res.message;
+          }
+        });
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -230,6 +275,18 @@
               httpurl += this.url.edit;
               method = 'put';
             }
+            let a = this.avatar.charAt(this.avatar.length - 1);
+            debugger;
+            if(a == ",") {
+              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            }
+            this.model.fileRelId = this.avatar;
+            debugger;
+            var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
+            if(reg.test(this.model.whichCompany)){
+              this.model.whichCompany = this.isarrivals;
+            }
+            console.log(this.model);
             let formData = Object.assign(this.model, values);
             //时间格式化
             formData.purchaseTime = formData.purchaseTime ? formData.purchaseTime.format('YYYY-MM-DD') : null;

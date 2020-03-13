@@ -82,11 +82,10 @@
           :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
           @change="handleTableChange">
 
-<!--          <span slot="purchaseItem" slot-scope="text,record">-->
-<!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
-<!--          </span>-->
 
         <span slot="action" slot-scope="text, record">
+          <a @click="fileDeteil(record)">附件</a>
+           <a-divider type="vertical"/>
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
@@ -119,6 +118,8 @@
       <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
 
       <pruchase-info-detail ref="pruchaseInfoDetail" ></pruchase-info-detail>
+
+      <file-detail ref="fileDetail"></file-detail>
     </a-card>
 
 </template>
@@ -127,6 +128,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
     import pruchaseInfoDetail from "./modules/pruchaseInfoDetail";
+    import fileDetail from "./modules/FileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {filterObj,timeFix} from '@/utils/util';
 
@@ -137,12 +139,14 @@
         ARow,
         prochaseInfoMode,
         pruchaseInfoDetail,
+        fileDetail,
       },
       data() {
         return{
           description: '采购管理页面',
           timer:"",
           purchaseId:"",
+          fileRelId:"",
           value:0,
           // 查询条件
           queryParam: {},
@@ -233,6 +237,26 @@
               }
             },
             {
+              title: '附件',
+              align: "center",
+              dataIndex: 'fileRelId',
+              customRender: (text) => {
+                if(text!=null && text !="" && text != undefined) {
+                  if(text.indexOf(",") != -1) {
+                    var count = text.match(/,/g).length;
+                    return parseInt(count) + 1;
+                  }else{
+                    return 1;
+                  }
+                }else{
+                  return 0;
+                }
+
+
+              }
+
+            },
+            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
@@ -266,7 +290,8 @@
             deleteBatch: "/renche/purchase/deleteBatch",
             updateIsArrival: "/renche/purchase/updateIsArrival",
             receiningGoods: "/renche/purchase/insertReceiving",
-            qryReceivingKey:"/renche/purchase/qryPurchaseKey"
+            qryReceivingKey:"/renche/purchase/qryPurchaseKey",
+            filelist: "/renche/purchase/fileList",
           },
         }
       },
@@ -290,12 +315,19 @@
           })
         },
 
-
+        fileDeteil:function(record){
+            console.log(record);
+            this.$refs.fileDetail.fileLoad(record.fileRelId);
+            this.$refs.fileDetail.title = "附件";
+        },
         handleAdd: function () {
            this.$refs.prochaseInfoMode.add();
           this.$refs.prochaseInfoMode.title = "新增";
         },
-        handleEdit: function (record) {
+       async handleEdit  (record) {
+        let {result} = await  getAction(this.url.filelist, {fileRelId:record.fileRelId});
+          record.filelist = result.list;
+          //let results = this.handleKey(record);
           this.$refs.prochaseInfoMode.edit(record);
           this.$refs.prochaseInfoMode.title = "编辑";
         },
