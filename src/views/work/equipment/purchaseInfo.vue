@@ -293,7 +293,7 @@
 
         handleAdd: function () {
            this.$refs.prochaseInfoMode.add();
-           this.$refs.prochaseInfoMode.title = "新增";
+          this.$refs.prochaseInfoMode.title = "新增";
         },
         handleEdit: function (record) {
           this.$refs.prochaseInfoMode.edit(record);
