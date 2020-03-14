@@ -5,6 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
+    @ok="handleCancel"
     cancelText="关闭"
   >
     <div class="table-page-search-wrapper">
@@ -92,6 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
+        purchaseId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -146,6 +148,8 @@
         url: {
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
+          deleteFile: "/renche/file/deleteIds",
+          listFileUpdate: "/renche/file/updateIds",
         },
       }
     },
@@ -186,35 +190,26 @@
       fileLoad:function(record){
         debugger;
         this.visible = true;
-        this.fileRelId = record;
+        this.fileRelId = record.fileRelId;
+        this.purchaseId = record.purchaseId;
         this.loadData(1);
       },
-      batchDel: function (flag) {
-        if (this.selectedRowKeys.length <= 0 && (flag==1||flag==2)) {
+      batchDel: function () {
+        let ids = "";
+        if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return;
         }else {
-          var ids = "";
-          if(flag==1||flag==2) {
-            for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectionRows[a].purchaseId + ",";
-            }
-          }else{
-            ids = flag;
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectionRows[a].fileRelId + ",";
           }
           var that = this;
           var title = "";
           var content = "";
           var url = "";
-          if (flag==1){
-            title = "确认删除";
-            content = "是否删除选中数据";
-            url = that.url.deleteBatch;
-          } else {
-            title = "确认收货";
-            content = "再次确认设备已经到达";
-            url = that.url.updateIsArrival;
-          }
+          title = "确认删除";
+          content = "是否删除选中数据";
+          url = that.url.deleteFile;
           this.$confirm({
             title: title,
             content: content,
@@ -223,6 +218,7 @@
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
+                  that.handleUpdate();
                   that.onClearSelected();
                 } else {
                   that.$message.warning(res.message);
@@ -232,22 +228,30 @@
           });
         }
       },
-      handleDelete: function (id) {
+      handleUpdate: function () {
         var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
+        var ids = "";
+        for (var a = 0; a < this.selectedRowKeys.length; a++) {
+          ids += this.selectionRows[a].fileRelId + ",";
+        }
+        var a = ids.charAt(ids.length - 1);
+        if(a == ",") {
+          ids = ids.substring(0, ids.length - 1);
+        }
+        debugger;
+        deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
-            that.loadData();
           } else {
             that.$message.warning(res.message);
           }
         });
       },
       handleCancel() {
-        this.close()
+        this.close();
       },
       close() {
-        this.$emit('close');
+        this.$emit('ok');
         this.visible = false;
       },
       modalFormOk() {

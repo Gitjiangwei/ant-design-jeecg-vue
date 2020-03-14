@@ -119,7 +119,7 @@
 
       <pruchase-info-detail ref="pruchaseInfoDetail" ></pruchase-info-detail>
 
-      <file-detail ref="fileDetail"></file-detail>
+      <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
     </a-card>
 
 </template>
@@ -317,7 +317,7 @@
 
         fileDeteil:function(record){
             console.log(record);
-            this.$refs.fileDetail.fileLoad(record.fileRelId);
+            this.$refs.fileDetail.fileLoad(record);
             this.$refs.fileDetail.title = "附件";
         },
         handleAdd: function () {
@@ -325,8 +325,11 @@
           this.$refs.prochaseInfoMode.title = "新增";
         },
        async handleEdit  (record) {
-        let {result} = await  getAction(this.url.filelist, {fileRelId:record.fileRelId});
+        debugger;
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
           record.filelist = result.list;
+        }
           //let results = this.handleKey(record);
           this.$refs.prochaseInfoMode.edit(record);
           this.$refs.prochaseInfoMode.title = "编辑";
