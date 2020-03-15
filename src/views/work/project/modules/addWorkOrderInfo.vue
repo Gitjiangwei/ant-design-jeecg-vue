@@ -31,13 +31,19 @@
           label="负责人">
           <a-input placeholder="请输入负责人" v-decorator="['chargePerson', {rules: [{ required: true,message: '请输入负责人' }]}]" />
         </a-form-item>
-
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="完成时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'completeTime', {}]" />
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="任务描述"
           hasFeedback >
-          <a-textarea placeholder="请输入任务描述" v-decorator="['content', {rules: [{ required: true,message: '请输入任务描述' }]}]" :row="3" />
+          <a-textarea placeholder="请输入任务描述" v-decorator="['describe', {rules: [{ required: true,message: '请输入任务描述' }]}]" :row="3" />
         </a-form-item>
 
 
@@ -52,13 +58,7 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="完成时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'completeTime', {}]" />
-        </a-form-item>
+
 
         <a-form-item
           :labelCol="labelCol"
@@ -160,6 +160,7 @@
 
         // 触发表单验证
         this.form.validateFields((err, values) => {
+          alert("values="+values);
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
