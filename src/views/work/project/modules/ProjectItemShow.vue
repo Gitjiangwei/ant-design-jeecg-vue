@@ -12,18 +12,13 @@
       <a-form  layout="inline">
         <a-row :gutter="24">
           <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-          <a-form-item label="项目名称" >
-            <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
-          </a-form-item>
-        </a-col>
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="招标编号">
-              <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
+            <a-form-item label="工程名称">
+              <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="投标单位">
-              <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
+            <a-form-item label="项目名称">
+              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6" style="width: 18%;padding-left: 8px;padding-right: 0px;">
@@ -47,7 +42,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="tenderId"
+        rowKey="prjItemId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -62,13 +57,14 @@
 </template>
 
 <script>
-  import { getAction} from '@/api/manage'
+  import { getAction,httpAction} from '@/api/manage'
   import ARow from "ant-design-vue/es/grid/Row";
   import ACol from "ant-design-vue/es/grid/Col";
   import {filterObj} from '@/utils/util';
+  import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
 
   export default {
-    name: "tenderInfoShow",
+    name: "projectItemShow",
     components: {ACol, ARow},
     data () {
       return {
@@ -76,11 +72,12 @@
         visible: false,
         // 查询条件
         queryParam: {},
+        contractId: "",
         confirmLoading: false,
         // 表头
         columns: [
           {
-            title: '序号',
+            title: '#',
             dataIndex: '',
             key: 'rowIndex',
             width: 60,
@@ -90,40 +87,38 @@
             }
           },
           {
+            title: '工程编号',
+            align: "center",
+            dataIndex: 'prjItemNum'
+          },
+          {
+            title: '工程名称',
+            align: "center",
+            dataIndex: 'prjItemName'
+          },
+          {
+            title: '工程类型',
+            align: "center",
+            dataIndex: 'prjItemType',
+            customRender: (text, record, index) => {
+              //字典值替换通用方法
+              return filterDictText(this.typeDictOptions, text);
+            }
+          },
+          {
             title: '项目名称',
             align: "center",
-            dataIndex: 'prjName',
+            dataIndex: 'prjName'
           },
           {
-            title: '招标编号',
+            title: '所属公司',
             align: "center",
-            dataIndex: 'tenderNo',
+            dataIndex: 'companyName'
           },
           {
-            title: '投标单位',
+            title: '负责人',
             align: "center",
-            dataIndex: 'tenderCompany',
-          },
-          {
-            title: '报价（万元）',
-            align: "center",
-            dataIndex: 'tenderOffer',
-          },
-          {
-            title: '保证金（万元）',
-            align: "center",
-            dataIndex: 'deposit',
-
-          },
-          {
-            title: '保证金是否退回',
-            align: "center",
-            dataIndex: 'isBack',
-          },
-          {
-            title: '创建时间',
-            align: "center",
-            dataIndex: 'createTime',
+            dataIndex: 'personInCharge'
           }
         ],
 
@@ -149,12 +144,15 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/tender/qrytenderList",
+          list: "/renche/contractInfo/allPrjItemWithoutContractList",
+          add: "/renche/contractInfo/addProjectItem"
         },
       }
     },
     created () {
       this.loadData();
+      //初始化字典配置
+      this.initDictConfig();
     },
     methods: {
       loadData(arg) {
@@ -170,8 +168,17 @@
           }
         })
       },
-      show () {
+      initDictConfig() {
+        //初始化字典 - 工程类型
+        initDictOptions('PROJECTITEMTYPE').then((res) => {
+          if (res.success) {
+            this.typeDictOptions = res.result;
+          }
+        });
+      },
+      show (recode) {
         this.visible = true;
+        this.contractId = recode;
         this.loadData();
       },
       close () {
@@ -183,10 +190,28 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
-          this.$emit('func',this.selectedRows);
-          this.close();
+          var that = this;
+          that.confirmLoading = true;
+          let httpurl = this.url.add;
+          let method = 'post';
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+
+          httpAction(httpurl,{contractId: this.contractId, prjItemIds: ids},method).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              this.$emit('func');
+            }else{
+              that.$message.warning(res.message);
+            }
+          }).finally(() => {
+            that.confirmLoading = false;
+            that.selectedRowKeys = [];
+            that.selectionRows = [];
+            that.close();
+          })
         }
       },
       handleCancel () {
@@ -197,6 +222,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.contractId = this.contractId;
         return filterObj(param);
       },
       getQueryField() {
@@ -213,20 +239,6 @@
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectedRows = selectionRows;
-        if(selectionRows.length > 1){
-          var selectKey = this.selectedRowKeys[1];
-          var selectRow0 = this.selectedRows[0];
-          var selectRow1 = this.selectedRows[1];
-          this.selectedRowKeys = [];
-          this.selectedRowKeys.push(selectKey);
-          this.selectedRows = [];
-          if(selectKey == selectRow0.tenderId){
-            this.selectedRows.push(selectRow0);
-          }else{
-            this.selectedRows.push(selectRow1);
-          }
-
-        }
       },
       onClearSelected() {
         this.selectedRowKeys = [];
