@@ -224,9 +224,6 @@
           this.uploadLoading = false;
           console.log(response);
           if (response.success) {
-            if (this.avatar==null){
-               this.avatar = "";
-            }
             this.avatar = response.message + "," + this.avatar;
             console.log(this.avatar);
           } else {
@@ -279,6 +276,7 @@
               method = 'put';
             }
             let a = this.avatar.charAt(this.avatar.length - 1);
+            debugger;
             if(a == ",") {
               this.avatar = this.avatar.substring(0, this.avatar.length - 1);
             }

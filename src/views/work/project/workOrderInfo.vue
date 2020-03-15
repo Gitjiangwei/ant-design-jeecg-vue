@@ -14,7 +14,7 @@
               </a-form-item>
             </a-col>
 
-          <a-col :span="6"  >
+            <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -70,7 +70,7 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.visitId )">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.workId )">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
@@ -83,7 +83,9 @@
 
       <!-- 表单区域 -->
 
-      <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
+
+      <add-work-order-info ref="addWorkOrderInfo" @ok="modalFormOk"></add-work-order-info>
+
 
 
     </a-card>
@@ -92,16 +94,18 @@
 
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
-   /* import addVisit from './modules/addVisitInfo';*/
+    import addWorkOrderInfo from './modules/addWorkOrderInfo';
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
+
+
 
     export default {
       name: "workOrderInfo",
       components: {
         ARow,
-       /* addVisit,*/
+        addWorkOrderInfo,
         //CompanyInfoModal,
       },
       data() {
@@ -154,11 +158,22 @@
               dataIndex: 'completeTime',
             },
             {
+              title: '工程点',
+              align: "center",
+              dataIndex: 'prjItemName',
+            },
+            {
               title: '状态',
               align: "center",
               dataIndex: 'status',
-            }
+            },
 
+            {
+              title: '操作',
+              dataIndex: 'action',
+              align: "center",
+              scopedSlots: {customRender: 'action'},
+            }
           ],
 
 
@@ -185,14 +200,15 @@
           selectedRows: [],
           url: {
             list: "/renche/workOrder/qryWorkOrderInfo",
-
+            delete: "/renche/workOrder/removeWorkOrder",
+            deleteBatch:"/renche/workOrder/removeWorkOrders",
 
           },
         }
       },
       created() {
         this.loadData();
-        //初始化字典配置f
+        //初始化字典配置
         this.initDictConfig();
       },
       methods: {
@@ -205,7 +221,6 @@
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
-
               this.ipagination.total = res.result.total;
             }
           })
@@ -252,7 +267,54 @@
           this.selectedRowKeys = [];
           this.selectionRows = [];
         },
+        batchDel: function () {
+          if (this.selectedRowKeys.length <= 0) {
+            this.$message.warning('请选择一条记录！');
+            return;
+          } else {
+            var ids = "";
+            for (var a = 0; a < this.selectedRowKeys.length; a++) {
 
+              ids += this.selectionRows[a].workId + ",";
+            }
+            var that = this;
+            this.$confirm({
+              title: "确认删除",
+              content: "是否删除选中数据?",
+              onOk: function () {
+                postAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                });
+              }
+            });
+          }
+        },
+        handleDelete: function (id) {
+          var that = this;
+          postAction(that.url.delete, {id: id}).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message);
+             /* alert("已删除");*/
+              that.loadData();
+            } else {
+              that.$message.warning(res.message);
+            }
+          });
+        },
+        handleEdit: function (record) {
+          this.$refs.addWorkOrderInfo.edit(record);
+          this.$refs.addWorkOrderInfo.title = "编辑";
+        },
+        handleAdd: function () {
+          this.$refs.addWorkOrderInfo.add();
+          this.$refs.addWorkOrderInfo.title = "新增";
+        },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
           console.log(sorter);
