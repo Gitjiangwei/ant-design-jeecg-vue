@@ -91,23 +91,40 @@
           hasFeedback >
           <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   />
         </a-form-item>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="关联设备" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入设备信息" v-decorator="['prjName', {}]" @click="showTender"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
 
       </a-form>
     </a-spin>
-    <purchase-info-stock-show ref="PurchaseInfoStockShow" @func="addProjectItem"></purchase-info-stock-show>
+    <a-tabs type="card" v-show="isEdit">
+    <a-tab-pane tab="添加设备" key="1" style="border-bottom: 1px #e6e5e4 solid;padding-bottom: 14px">
+      <div style="float: right;">
+        <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
+      </div>
+        <div style="padding-top: 42px;">
+          <a-table
+            ref="table"
+            size="middle"
+            bordered
+            rowKey="prjItemId"
+            :columns="columns"
+            :dataSource="dataSource"
+            :pagination="ipagination"
+            :loading="loading"
+            @change="handleTableChange" style="padding-top: 10px;">
+
+                <span slot="action" slot-scope="text, record">
+                  <a @click="handleDelete(record.outId)">删除</a>
+                </span>
+          </a-table>
+        </div>
+    </a-tab-pane>
+    </a-tabs>
+    <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
 
   </a-modal>
 </template>
 
 <script>
-  import { httpAction,getAction } from '@/api/manage'
+  import { httpAction,getAction,deleteAction } from '@/api/manage'
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -115,6 +132,7 @@
   import ACol from "ant-design-vue/es/grid/Col";
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ARow from "ant-design-vue/es/grid/Row";
+  import {filterObj} from '@/utils/util';
 
   export default {
     name: "projectItemModal",
@@ -124,7 +142,9 @@
         title:"操作",
         visible: false,
         model: {},
+        isEdit:false,
         isOk: true,
+        projectId:"",
         companyId:"",
         thisMessage: "",
         dateFormat: 'YYYY-MM-DD',
@@ -138,7 +158,60 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        //表头
+        columns:[
+          {
+            title: '#',
+            dataIndex: '',
+            key: 'rowIndex',
+            width: 60,
+            align: "center",
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1;
+            }
+          },
+          {
+            title: '设备名称',
+            align: "center",
+            dataIndex: 'equipName'
+          },
+          {
+            title: '设备型号',
+            align: "center",
+            dataIndex: 'equipModel'
+          },
+          {
+            title: '库存设备编号',
+            align: "center",
+            dataIndex: 'equipNo'
+          },
+          {
+            title: '使用次数',
+            align: "center",
+            dataIndex: 'useTimes'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align: "center",
+            scopedSlots: {customRender: 'action'},
+          }
+        ],
+        //数据集
+        dataSource: [],
+        // 分页参数
+        ipagination: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0,
+        },
+        loading: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -147,6 +220,8 @@
           add: "/renche/projectItem/add",
           edit: "/renche/projectItem/edit",
           checkCompany:"/renche/companyInfo/checkNameIsExsit",
+          projectIdList:"/renche/projectItem/projectIdList",
+          delOutId: "/renche/outEquip/delOutEquip",
         },
       }
     },
@@ -163,11 +238,50 @@
           }
         });
       },
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        getAction(this.url.projectIdList, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.list;
+            this.ipagination.total = res.result.total;
+          }
+        })
+      },
+      getQueryParams() {
+        var param = {};
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.projectId = this.projectId;
+        return filterObj(param);
+      },
+      handleTableChange(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        console.log(sorter);
+        //TODO 筛选
+        if (Object.keys(sorter).length > 0) {
+          this.isorter.column = sorter.field;
+          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+        }
+        this.ipagination = pagination;
+        this.loadData();
+      },
       add () {
+        this.isEdit = false;
         this.edit({});
       },
       edit (record) {
+        debugger;
         this.form.resetFields();
+        this.dataSource = [];
+        this.projectId = record.prjItemId;
+        if(this.projectId != null && this.projectId != "",this.projectId != undefined){
+          this.isEdit = true;
+          this.loadData();
+        }
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
@@ -222,12 +336,32 @@
           }
         })
       },
-
-      addProjectItem(data) {
+      handleDelete: function (id) {
+        var that = this;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.delOutId, {outId: id}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        })
+      },
+      addProjectItem() {
         this.loadData();
       },
       showTender:function (){
-        this.$refs.PurchaseInfoStockShow.show();
+        if(this.projectId==null || this.projectId == "" || this.projectId == undefined){
+          this.$message.warning("请先保存基本信息，再添加设备");
+          return;
+        }
+        this.$refs.PurchaseInfoStockShow.show(this.projectId);
         this.$refs.PurchaseInfoStockShow.title = "选择关联设备信息";
       },
 

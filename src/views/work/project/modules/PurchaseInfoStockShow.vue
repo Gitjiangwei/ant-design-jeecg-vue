@@ -82,6 +82,7 @@
       return{
         description: '设备库存页面',
         visible: false,
+        projectId:"",
         // 查询条件
         queryParam: {},
         confirmLoading: false,
@@ -194,7 +195,8 @@
           }
         })
       },
-      show () {
+      show (record) {
+        this.projectId = record;
         this.visible = true;
         this.loadData();
       },
@@ -224,7 +226,7 @@
       },
       handleDetail: function(record){
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
-        this.$refs.PurchaseDetailShow.show(record);
+        this.$refs.PurchaseDetailShow.show(record,this.projectId);
         this.$refs.PurchaseDetailShow.title("设备详情");
 
       },
@@ -243,6 +245,8 @@
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         //this.loadData();
+        debugger;
+        this.$emit('ok');
         this.close();
       },
       searchReset() {
