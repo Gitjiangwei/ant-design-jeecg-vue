@@ -63,8 +63,9 @@
 
 
           <span slot="action" slot-scope="text, record">
+            <a @click="fileDeteil(record)">附件</a>
+            <a-divider type="vertical"/>
             <a @click="handleEdit(record)">编辑</a>
-
             <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
@@ -84,7 +85,7 @@
       <!-- 表单区域 -->
 
       <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
-
+      <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
 
     </a-card>
 
@@ -94,6 +95,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addVisit from './modules/addVisitInfo';
     import {filterObj} from '@/utils/util';
+    import fileDetail from "./modules/FileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
@@ -103,12 +105,12 @@
       components: {
         ARow,
         addVisit,
-        //CompanyInfoModal,
+        fileDetail,
       },
       data() {
         return{
           description: '客户拜访页面',
-
+          fileRelId:"",
           // 查询条件
           queryParam: {},
           // 表头
@@ -153,6 +155,7 @@
               title: '拜访结果',
               align: "center",
               dataIndex: 'result',
+
             },
 
             {
@@ -294,9 +297,16 @@
             }
           });
         },
-        handleEdit: function (record) {
+         handleEdit: function (record) {
           this.$refs.addVisit.edit(record);
           this.$refs.addVisit.title = "编辑";
+        },
+
+
+        fileDeteil:function(record){
+          console.log(record);
+          this.$refs.fileDetail.fileLoad(record);
+          this.$refs.fileDetail.title = "附件";
         },
         handleAdd: function () {
           this.$refs.addVisit.add();

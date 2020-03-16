@@ -275,12 +275,17 @@
               httpurl += this.url.edit;
               method = 'put';
             }
+
+
             let a = this.avatar.charAt(this.avatar.length - 1);
             debugger;
             if(a == ",") {
               this.avatar = this.avatar.substring(0, this.avatar.length - 1);
             }
             this.model.fileRelId = this.avatar;
+
+
+
             debugger;
             var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
             if(reg.test(this.model.whichCompany)){

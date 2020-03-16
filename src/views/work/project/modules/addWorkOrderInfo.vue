@@ -68,6 +68,29 @@
           <a-input placeholder="请输入状态" v-decorator="['status', {rules: [{ required: true,message: '请输入状态' }]}]" />
         </a-form-item>
       </a-form>
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="附件"
+        hasFeedback>
+        <!--  -->
+        <a-upload
+          name="file"
+          :multiple="true"
+          :action="uploadAction"
+          :headers="headers"
+          @change="handleChange"
+        >
+          <a-button>
+            <a-icon type="upload"/>
+            上传
+          </a-button>
+        </a-upload>
+        <div>
+          <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+        </div>
+      </a-form-item>
+
     </a-spin>
   </a-modal>
 </template>
@@ -77,6 +100,9 @@
   import pick from 'lodash.pick'
   import moment from "moment"
   import ATextarea from "ant-design-vue/es/input/TextArea";
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import {queryDepartCGTreeList, doMian} from '@/api/api'
 
 
   export default {
@@ -96,7 +122,10 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -105,18 +134,50 @@
           add: "/renche/workOrder/addWorkOrderInfo",
           edit: "/renche/workOrder/up",
           getn:"/renche/workOrder/getn",
-
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
       //初始化工程点名稱列表
       this.initprojectNames();
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
 
 
     },
-    methods: {
 
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
+    },
+    methods: {
+      beforeUpload: function (file) {
+        var fileType = file.type;
+        if (fileType.indexOf('image') < 0) {
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
       //初始化工程点名稱列表
       initprojectNames(){
         var that=this;
@@ -138,7 +199,7 @@
 
       },
       edit (record) {
-
+        this.avatar = record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -160,7 +221,6 @@
 
         // 触发表单验证
         this.form.validateFields((err, values) => {
-          alert("values="+values);
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
@@ -174,6 +234,17 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+
+            let a = this.avatar.charAt(this.avatar.length - 1);
+
+            debugger;
+            if(a == ",") {
+              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            }
+            this.model.fileRelId = this.avatar;
+
+
+
             let formData = Object.assign(this.model, values);
 
             //时间格式化
