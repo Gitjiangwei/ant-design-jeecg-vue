@@ -63,10 +63,12 @@
 
 
           <span slot="action" slot-scope="text, record">
+            <a @click="fileDeteil(record)">附件</a>
+              <a-divider type="vertical"/>
             <a @click="handleEdit(record)">编辑</a>
-
             <a-divider type="vertical"/>
             <a-dropdown>
+
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
@@ -85,7 +87,7 @@
 
 
       <add-work-order-info ref="addWorkOrderInfo" @ok="modalFormOk"></add-work-order-info>
-
+      <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
 
 
     </a-card>
@@ -96,6 +98,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addWorkOrderInfo from './modules/addWorkOrderInfo';
     import {filterObj} from '@/utils/util';
+    import fileDetail from "./modules/FileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
@@ -106,7 +109,7 @@
       components: {
         ARow,
         addWorkOrderInfo,
-        //CompanyInfoModal,
+        fileDetail,
       },
       data() {
         return{
@@ -310,6 +313,11 @@
         handleEdit: function (record) {
           this.$refs.addWorkOrderInfo.edit(record);
           this.$refs.addWorkOrderInfo.title = "编辑";
+        },
+        fileDeteil:function(record){
+          console.log(record);
+          this.$refs.fileDetail.fileLoad(record);
+          this.$refs.fileDetail.title = "附件";
         },
         handleAdd: function () {
           this.$refs.addWorkOrderInfo.add();
