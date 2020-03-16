@@ -160,7 +160,6 @@
     },
     methods: {
       loadData(arg) {
-        debugger;
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -175,20 +174,8 @@
       },
       fileDownload:function(record){
         console.log(record.fileRelId)
-        // let that = this;
-        // getAction(this.url.download, {fileRelId: record.fileRelId}).then((res) => {
-        //   console.log(res)
-        //   if (res.success) {
-        //     that.$message.success(res.message);
-        //     that.loadData();
-        //     that.onClearSelected();
-        //   } else {
-        //     that.$message.warning("下载出错");
-        //   }
-        // });
       },
       fileLoad:function(record){
-        debugger;
         this.visible = true;
         this.fileRelId = record.fileRelId;
         this.purchaseId = record.purchaseId;
@@ -238,7 +225,6 @@
         if(a == ",") {
           ids = ids.substring(0, ids.length - 1);
         }
-        debugger;
         deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
