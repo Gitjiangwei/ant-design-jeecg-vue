@@ -52,7 +52,7 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="合同金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                        <a-input placeholder="请输入合同金额(万元)" v-decorator="['contractMoney', {rules:[{pattern: /^-?\d+\.?\d{0,2}$/, message: '请输入正确数据', trigger: 'blur'}]}]" />
+                <a-input placeholder="请输入合同金额(万元)" v-decorator="['contractMoney', {rules:[{pattern: /^-?\d+\.?\d{0,2}$/, message: '请输入正确数据', trigger: 'blur'}]}]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -88,6 +88,18 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row v-show="isEdit">
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="回款金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input v-decorator="['allReturnMoney', {}]"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="回款占比" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input v-decorator="['returnMoneyPercent', {}]"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="关联招标" :wrapperCol="wrapperCol" :labelCol="labelCol">
@@ -105,7 +117,7 @@
       </a-form>
     </a-spin>
 
-    <a-tabs type="card" v-show="isEdit">
+    <a-tabs :activeKey="defaultActiveKey" @change="callback" type="card" v-show="isEdit" >
       <a-tab-pane tab="关联工程点" key="1" style="border-bottom: 1px #e6e5e4 solid;padding-bottom: 14px">
         <div style="float: right;">
           <a-button @click="showProjectItem" type="primary" icon="plus">新增</a-button>
@@ -129,11 +141,39 @@
           </a-table>
         </div>
       </a-tab-pane>
+
+      <a-tab-pane tab="开票信息" key="2" style="border-bottom: 1px #e6e5e4 solid;padding-bottom: 14px">
+        <div style="float: right;">
+          <a-button @click="addInvoiceInfo" type="primary" icon="plus">新增</a-button>
+        </div>
+
+        <div style="padding-top: 42px;">
+          <a-table
+            ref="table"
+            size="middle"
+            bordered
+            rowKey="invoiceId"
+            :columns="invoiceColumns"
+            :dataSource="invoiceDataSource"
+            :pagination="invoiceIpagination"
+            :loading="invoiceLoading"
+            @change="handleTableChangeInvoice" style="padding-top: 10px;">
+
+            <span slot="action" slot-scope="text, record">
+              <a @click="handleEdit(record)">编辑</a>
+              <a-divider type="vertical"/>
+              <a @click="handleDelete(record.invoiceId)">删除</a>
+            </span>
+          </a-table>
+        </div>
+      </a-tab-pane>
     </a-tabs>
 
     <TenderInfoShow ref="tenderInfoShow" @func="modalFormOk"></TenderInfoShow>
 
     <project-item-show  ref="projectItemShow" @func="addProjectItem"></project-item-show>
+
+    <InvoiceInfoModel  ref="invoiceInfoModel" @func="invoiceInfoShowList"></InvoiceInfoModel>
   </a-modal>
 </template>
 
@@ -148,10 +188,11 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
   import ProjectItemShow from "./ProjectItemShow";
+  import InvoiceInfoModel from "./InvoiceInfoModel";
 
   export default {
     name: "projectItemModal",
-    components: {ProjectItemShow, ACol, ATextarea, ARow,TenderInfoShow},
+    components: {ProjectItemShow, ACol, ATextarea, ARow,TenderInfoShow,InvoiceInfoModel},
     data () {
       return {
         title:"操作",
@@ -165,6 +206,7 @@
         companyIdA:"",
         companyIdB:"",
         thisMessage:"",
+        defaultActiveKey: '1',
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -178,7 +220,7 @@
         form: this.$form.createForm(this),
         validatorRules:{
         },
-        // 表头
+        // 工程点表头
         columns: [
           {
             title: '#',
@@ -236,8 +278,8 @@
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSize: 5,
+          pageSizeOptions: ['5', '10', '15'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -252,12 +294,75 @@
         loading: false,
         selectedRowKeys: [],
         selectedRows: [],
+
+        // 开票信息表头
+        invoiceColumns: [
+          {
+            title: '#',
+            dataIndex: '',
+            key: 'rowIndex',
+            width: 60,
+            align: "center",
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1;
+            }
+          },
+          {
+            title: '开票时间',
+            align: "center",
+            dataIndex: 'invoiceTime'
+          },
+          {
+            title: '开票金额(万元)',
+            align: "center",
+            dataIndex: 'invoiceMoney'
+          },
+          {
+            title: '回款时间',
+            align: "center",
+            dataIndex: 'returnTime'
+          },
+          {
+            title: '回款金额(万元)',
+            align: "center",
+            dataIndex: 'returnMoney'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align: "center",
+            scopedSlots: {customRender: 'action'},
+          }
+        ],
+        //数据集
+        invoiceDataSource: [],
+        // 分页参数
+        invoiceIpagination: {
+          current: 1,
+          pageSize: 5,
+          pageSizeOptions: ['5', '10', '15'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        invoiceIsorter: {
+          column: 'createTime',
+          order: 'desc',
+        },
+        invoiceLoading: false,
+        invoiceSelectedRowKeys: [],
+        invoiceSelectedRows: [],
         url: {
           add: "/renche/contractInfo/add",
           edit: "/renche/contractInfo/edit",
           checkCompany: "/renche/companyInfo/checkNameIsExsit",
           prjItemList: "/renche/contractInfo/contractPrjItemList",
-          delprjItem: "/renche/contractInfo/delPrjItem"
+          delprjItem: "/renche/contractInfo/delPrjItem",
+          invoiceList: "/renche/invoiceInfo/contractInvoiceList",
+          delInvoiceInfo: "/renche/invoiceInfo/delete",
         },
       }
     },
@@ -293,6 +398,18 @@
           }
         })
       },
+      loadInvoiceData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.invoiceIpagination.current = 1;
+        }
+        getAction(this.url.invoiceList, {pageNo: this.invoiceIpagination.current,pageSize: this.invoiceIpagination.pageSize,contractId: this.model.contractId}).then((res) => {
+          if (res.success) {
+            this.invoiceDataSource = res.result.list;
+            this.invoiceIpagination.total = res.result.total;
+          }
+        })
+      },
       getQueryParams() {
         var param = {};
         param.pageNo = this.ipagination.current;
@@ -320,6 +437,12 @@
             if (res.success) {
               this.dataSource = res.result.list;
               this.ipagination.total = res.result.total;
+            }
+          })
+          getAction(this.url.invoiceList, {pageNo: this.invoiceIpagination.current,pageSize: this.invoiceIpagination.pageSize,contractId: this.model.contractId}).then((res) => {
+            if (res.success) {
+              this.invoiceDataSource = res.result.list;
+              this.invoiceIpagination.total = res.result.total;
             }
           })
         }
@@ -384,6 +507,17 @@
         this.ipagination = pagination;
         this.loadData();
       },
+      handleTableChangeInvoice(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        console.log(sorter);
+        //TODO 筛选
+        if (Object.keys(sorter).length > 0) {
+          this.invoiceIsorter.column = sorter.field;
+          this.invoiceIsorter.order = "ascend" == sorter.order ? "asc" : "desc"
+        }
+        this.ipagination = pagination;
+        this.loadInvoiceData();
+      },
       checkThisCompanyIsExsit(e){
         var id = e.target.id;
         var companyName = e.target.value;//查询条件
@@ -415,6 +549,9 @@
         this.model.tenderId = data[0].tenderId;
         this.form.setFieldsValue({prjName:data[0].prjName});
       },
+      callback: function(key){
+          this.defaultActiveKey = key;
+      },
       showProjectItem:function (){
         this.$refs.projectItemShow.show(this.model.contractId);
         this.$refs.projectItemShow.title = "选择添加关联工程点信息";
@@ -424,14 +561,50 @@
       },
       handleDel: function (id) {
         var that = this;
-        deleteAction(that.url.delprjItem, {prjItemId: id, contractId: this.model.contractId}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
+        var contractId = this.model.contractId;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.delprjItem, {prjItemId: id, contractId: contractId}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
           }
-        });
+        })
+      },
+      addInvoiceInfo:function (){
+        var record = {contractId: this.model.contractId};
+        this.$refs.invoiceInfoModel.edit(record);
+        this.$refs.invoiceInfoModel.title = "新增开票信息";
+      },
+      invoiceInfoShowList(data) {
+        this.loadInvoiceData();
+      },
+      handleEdit:function (record){
+        this.$refs.invoiceInfoModel.edit(record);
+        this.$refs.invoiceInfoModel.title = "编辑开票信息";
+      },
+      handleDelete: function (id) {
+        var that = this;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.delInvoiceInfo, {id: id}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadInvoiceData();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        })
       },
 
     }
