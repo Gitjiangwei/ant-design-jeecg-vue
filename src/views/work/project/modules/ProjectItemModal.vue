@@ -91,9 +91,18 @@
           hasFeedback >
           <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   />
         </a-form-item>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="关联设备" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input placeholder="请输入设备信息" v-decorator="['prjName', {}]" @click="showTender"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
       </a-form>
     </a-spin>
+    <purchase-info-stock-show ref="PurchaseInfoStockShow" @func="addProjectItem"></purchase-info-stock-show>
+
   </a-modal>
 </template>
 
@@ -102,9 +111,14 @@
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import PurchaseInfoStockShow from './PurchaseInfoStockShow'
+  import ACol from "ant-design-vue/es/grid/Col";
+  import ATextarea from "ant-design-vue/es/input/TextArea";
+  import ARow from "ant-design-vue/es/grid/Row";
 
   export default {
     name: "projectItemModal",
+    components: {PurchaseInfoStockShow, ACol, ATextarea, ARow},
     data () {
       return {
         title:"操作",
@@ -208,6 +222,16 @@
           }
         })
       },
+
+      addProjectItem(data) {
+        this.loadData();
+      },
+      showTender:function (){
+        this.$refs.PurchaseInfoStockShow.show();
+        this.$refs.PurchaseInfoStockShow.title = "选择关联设备信息";
+      },
+
+
       handleCancel () {
         this.close()
       },
