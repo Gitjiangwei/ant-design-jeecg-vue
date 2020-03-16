@@ -58,6 +58,30 @@
           hasFeedback >
           <a-textarea placeholder="请输入拜访结果" v-decorator="['result', {rules: [{ required: true,message: '请输入拜访结果' }]}]" :row="2" />
         </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="附件"
+          hasFeedback>
+          <!--  -->
+          <a-upload
+            name="file"
+            :multiple="true"
+            :action="uploadAction"
+            :headers="headers"
+            @change="handleChange"
+          >
+            <a-button>
+              <a-icon type="upload"/>
+              上传
+            </a-button>
+          </a-upload>
+          <div>
+            <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+          </div>
+        </a-form-item>
+
       </a-form>
     </a-spin>
   </a-modal>
@@ -68,7 +92,10 @@
   import pick from 'lodash.pick'
   import moment from "moment"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {validateContacts} from '@/utils/jiaoyan';
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import {queryDepartCGTreeList, doMian} from '@/api/api'
+
 
   export default {
     name: "addVisit",
@@ -87,7 +114,8 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        uploadLoading: false,
+        headers: {},
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -96,16 +124,41 @@
           add: "/renche/visit/add",
           edit: "/renche/visit/up",
           getn:"/renche/visit/getn",
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
      //初始化公司名稱列表
       this.initcompanyNames();
-
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
 
     },
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
+    },
     methods: {
+
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
 
       //初始化公司名稱列表
       initcompanyNames(){
@@ -144,12 +197,7 @@
         this.visible = false;
       },
       handleOk () {
-
-
-
         const that = this;
-
-        this.form.validateContacts(this.model.content, callback);
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
