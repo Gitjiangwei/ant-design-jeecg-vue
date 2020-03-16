@@ -116,6 +116,8 @@
         },
         uploadLoading: false,
         headers: {},
+        avatar: "",
+        isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -141,7 +143,14 @@
       }
     },
     methods: {
-
+      beforeUpload: function (file) {
+        var fileType = file.type;
+        if (fileType.indexOf('image') < 0) {
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
       handleChange(info) {
         if (info.file.status === 'uploading') {
           this.uploadLoading = true
@@ -180,7 +189,7 @@
 
       },
       edit (record) {
-
+        this.avatar = record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -213,6 +222,16 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+
+            let a = this.avatar.charAt(this.avatar.length - 1);
+            debugger;
+            if(a == ",") {
+              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            }
+            this.model.fileRelId = this.avatar;
+
+
+
             let formData = Object.assign(this.model, values);
 
             //时间格式化
