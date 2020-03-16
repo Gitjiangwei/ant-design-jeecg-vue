@@ -161,12 +161,14 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.list;
-            this.ipagination.total = res.result.total;
-          }
-        })
+        if(this.contractId != ""){
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }
+          })
+        }
       },
       initDictConfig() {
         //初始化字典 - 工程类型
