@@ -113,8 +113,9 @@
             :action="uploadAction"
             :headers="headers"
             @change="handleChange"
+            :showUploadList="isEdit"
           >
-            <a-button>
+            <a-button v-on:click="load">
               <a-icon type="upload"/>
               上传
             </a-button>
@@ -155,6 +156,7 @@
         title: "操作",
         visible: false,
         model: {},
+        isEdit:true,
         isarrivals: "",
         treeData: [],
         treeValue: '0-0-4',
@@ -184,7 +186,8 @@
     },
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token}
+      this.headers = {"X-Access-Token": token};
+      this.isEdit = true;
     },
     computed: {
       uploadAction: function () {
@@ -206,6 +209,9 @@
           }
         });
       },
+      load: function(){
+        this.isEdit = true;
+      },
       beforeUpload: function (file) {
         var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
@@ -219,6 +225,7 @@
           this.uploadLoading = true
           return
         }
+        debugger;
         if (info.file.status === 'done') {
           var response = info.file.response;
           this.uploadLoading = false;
@@ -236,6 +243,7 @@
       },
       edit(record) {
         debugger;
+        this.isEdit= false;
         this.avatar = record.fileRelId;
         this.isArris = true;
         getAction(this.url.listKey, {purchaseId:record.purchaseId}).then((res) => {
@@ -245,6 +253,7 @@
         });
         this.form.resetFields();
         this.model = Object.assign({}, record);
+        this.fileList = this.model.filelist;
         this.visible = true;
         this.loadTree();
         this.$nextTick(() => {
