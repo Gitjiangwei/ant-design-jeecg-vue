@@ -66,13 +66,30 @@
           hasFeedback >
           <a-input placeholder="请输入银行账户" v-decorator="['bankNo', {rules: [{ required: true,message: '请输入银行账户' }]}]" />
         </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="附件"
-          hasFeedback >
-          <a>上传</a> <a v-decorator="['fileRelNum',{}]"/>
+          hasFeedback>
+          <!--  -->
+          <a-upload
+            name="file"
+            :multiple="true"
+            :action="uploadAction"
+            :headers="headers"
+            @change="handleChange"
+          >
+            <a-button>
+              <a-icon type="upload"/>
+              上传
+            </a-button>
+          </a-upload>
+          <div>
+            <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+          </div>
         </a-form-item>
+
       </a-form>
 
     </a-spin>
@@ -100,6 +117,10 @@
           sm: { span: 16 },
         },
 
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -113,7 +134,40 @@
     },
     created () {
     },
+
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
+    },
+
     methods: {
+      beforeUpload: function (file) {
+        var fileType = file.type;
+        if (fileType.indexOf('image') < 0) {
+          this.$message.warning('请上传图片');
+          return false;
+        }
+        //TODO 验证文件大小
+      },
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true
+          return
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
+
 
       add () {
 
@@ -121,7 +175,7 @@
 
       },
       edit (record) {
-
+        this.avatar = record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -152,6 +206,15 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+
+            let a = this.avatar.charAt(this.avatar.length - 1);
+            debugger;
+            if(a == ",") {
+              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            }
+            this.model.fileRelId = this.avatar;
+
+
             let formData = Object.assign(this.model, values);
             //时间格式化
 

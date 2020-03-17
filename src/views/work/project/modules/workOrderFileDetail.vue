@@ -84,7 +84,7 @@
 
 
   export default {
-    name: "FileDetail",
+    name: "workOrderFileDetail",
     components: {
       ARow,
     },
@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        purchaseId:"",
+        workId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/file/updateIds",
+          listFileUpdate: "/renche/file/updateWorkFileIds",
         },
       }
     },
@@ -191,7 +191,7 @@
         debugger;
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.purchaseId = record.purchaseId;
+        this.workId = record.workId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -239,7 +239,7 @@
           ids = ids.substring(0, ids.length - 1);
         }
         debugger;
-        deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {workId:this.workId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
           } else {
