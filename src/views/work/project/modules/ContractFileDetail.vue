@@ -21,7 +21,6 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
         </a-row>
@@ -30,7 +29,6 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-<!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel(1)">
@@ -93,7 +91,8 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        invoiceId:"",
+        elecFileRel:"",
+        contractId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +148,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/invoiceInfo/updateFileIds",
+          listFileUpdate: "/renche/contractInfo/updateFileIds",
         },
       }
     },
@@ -178,7 +177,8 @@
       fileLoad:function(record){
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.invoiceId = record.invoiceId;
+        this.elecFileRel = record.elecFileRel;
+        this.contractId = record.contractId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -225,7 +225,7 @@
         if(a == ",") {
           ids = ids.substring(0, ids.length - 1);
         }
-        deleteAction(that.url.listFileUpdate, {invoiceId:this.invoiceId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {contractId:this.contractId,ids: ids}).then((res) => {
           if (!res.success) {
             that.$message.warning(res.message);
           }
@@ -234,11 +234,11 @@
       handleCancel() {
         this.selectedRowKeys = [];
         this.selectionRows = [];
-        this.$emit('func');
+        this.$emit('ok');
         this.close();
       },
       close() {
-        this.$emit('func');
+        this.$emit('ok');
         this.visible = false;
       },
       modalFormOk() {
@@ -255,7 +255,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.fileRelId = this.fileRelId;
+        param.fileRelId = this.fileRelId+','+this.elecFileRel;
         return filterObj(param);
       },
       getQueryField() {

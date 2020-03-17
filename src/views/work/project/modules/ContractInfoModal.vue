@@ -114,6 +114,60 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="电子版附件"
+              hasFeedback>
+              <!--  -->
+              <a-upload
+                name="file"
+                :multiple="true"
+                :action="uploadAction"
+                :headers="headers"
+                @change="handleChangeElec"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="扫描件附件"
+              :isShowUploadList="isEdit"
+              hasFeedback>
+              <!--  -->
+              <a-upload
+                name="file"
+                :multiple="true"
+                :action="uploadAction"
+                :headers="headers"
+                @change="handleChange"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
       </a-form>
     </a-spin>
 
@@ -160,6 +214,8 @@
             @change="handleTableChangeInvoice" style="padding-top: 10px;">
 
             <span slot="action" slot-scope="text, record">
+              <a @click="fileDeteil(record)">附件</a>
+              <a-divider type="vertical"/>
               <a @click="handleEdit(record)">编辑</a>
               <a-divider type="vertical"/>
               <a @click="handleDelete(record.invoiceId)">删除</a>
@@ -174,6 +230,8 @@
     <project-item-show  ref="projectItemShow" @func="addProjectItem"></project-item-show>
 
     <InvoiceInfoModel  ref="invoiceInfoModel" @func="invoiceInfoShowList"></InvoiceInfoModel>
+
+    <file-detail ref="fileDetail" @func="invoiceInfoShowList"></file-detail>
   </a-modal>
 </template>
 
@@ -189,10 +247,14 @@
   import ACol from "ant-design-vue/es/grid/Col";
   import ProjectItemShow from "./ProjectItemShow";
   import InvoiceInfoModel from "./InvoiceInfoModel";
+  import { doMian} from '@/api/api'
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import fileDetail from "./FileDetail";
 
   export default {
     name: "projectItemModal",
-    components: {ProjectItemShow, ACol, ATextarea, ARow,TenderInfoShow,InvoiceInfoModel},
+    components: {ProjectItemShow, ACol, ATextarea, ARow,TenderInfoShow,InvoiceInfoModel,fileDetail},
     data () {
       return {
         title:"操作",
@@ -215,7 +277,10 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        avatarElec: "",
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -328,6 +393,21 @@
             dataIndex: 'returnMoney'
           },
           {
+            title: '附件',
+            align: "center",
+            dataIndex: 'fileRelId',
+            customRender: (text) => {
+              if(text!=null && text !="" && text != undefined) {
+                if(text.indexOf(",") != -1) {
+                  var count = text.match(/,/g).length;
+                  return parseInt(count);
+                }
+              }else{
+                return 0;
+              }
+            }
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align: "center",
@@ -363,12 +443,20 @@
           delprjItem: "/renche/contractInfo/delPrjItem",
           invoiceList: "/renche/invoiceInfo/contractInvoiceList",
           delInvoiceInfo: "/renche/invoiceInfo/delete",
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token};
       //初始化字典配置
       this.initDictConfig();
+    },
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
       initDictConfig() {
@@ -421,6 +509,9 @@
         this.edit({});
       },
       edit (record) {
+        this.avatar = record.fileRelId;
+        this.avatarElec = record.elecFileRel;
+
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -473,6 +564,10 @@
               if(that.companyIdB != ''){
                 this.model.partyB = that.companyIdB;
               }
+
+              this.model.fileRelId = that.avatar;
+              this.model.elecFileRel = that.avatarElec;
+
               let formData = Object.assign(this.model, values);
 
               httpAction(httpurl,formData,method).then((res)=>{
@@ -606,7 +701,45 @@
           }
         })
       },
-
+      handleChangeElec(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return;
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatarElec = response.message + "," + this.avatarElec;
+            console.log(this.avatarElec);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return;
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
+      fileDeteil:function(record){
+        console.log(record);
+        this.$refs.fileDetail.fileLoad(record);
+        this.$refs.fileDetail.title = "附件";
+      },
     }
   }
 </script>

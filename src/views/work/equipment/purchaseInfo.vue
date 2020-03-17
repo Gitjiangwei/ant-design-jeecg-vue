@@ -325,7 +325,6 @@
           this.$refs.prochaseInfoMode.title = "新增";
         },
        async handleEdit  (record) {
-        debugger;
         if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
           let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
           record.filelist = result.list;
