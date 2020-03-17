@@ -76,6 +76,9 @@
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
+                <a-popconfirm title="确定将设备投入使用吗?" @confirm="() => handleStatus(record)">
+                  <a>投入使用</a>
+                </a-popconfirm>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -188,7 +191,7 @@
         url: {
           list: "/renche/equip/equipKeyDetail",
           // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
+          equipStatus: "/renche/equip/updateStatus",
           repair: "/renche/equip/equipKeyDetail"
         },
       }
@@ -291,6 +294,22 @@
             }
           });
         }
+      },
+      handleStatus: function(record){
+        var that = this;
+        debugger;
+        if(record.equipStatus != "INREPAIR"){
+          that.$message.warning("只能将维修中的设备投入使用！")
+          return;
+        }
+        deleteAction(that.url.equipStatus, {equipId: record.equipId}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
       },
       handleDelete: function (record) {
         var that = this;

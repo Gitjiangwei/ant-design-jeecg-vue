@@ -234,9 +234,11 @@
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectionRows[a].fileRelId + ",";
         }
-        var a = ids.charAt(ids.length - 1);
-        if(a == ",") {
-          ids = ids.substring(0, ids.length - 1);
+        if (ids != null && ids!="" && ids!=undefined) {
+          var a = ids.charAt(ids.length - 1);
+          if (a == ",") {
+            ids = ids.substring(0, ids.length - 1);
+          }
         }
         debugger;
         deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {

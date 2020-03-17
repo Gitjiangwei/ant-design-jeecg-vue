@@ -175,23 +175,11 @@
       },
       fileDownload:function(record){
         console.log(record.fileRelId)
-        // let that = this;
-        // getAction(this.url.download, {fileRelId: record.fileRelId}).then((res) => {
-        //   console.log(res)
-        //   if (res.success) {
-        //     that.$message.success(res.message);
-        //     that.loadData();
-        //     that.onClearSelected();
-        //   } else {
-        //     that.$message.warning("下载出错");
-        //   }
-        // });
       },
       fileLoad:function(record){
-        debugger;
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.workId = record.workId;
+        this.purchaseId = record.purchaseId;
         this.loadData(1);
       },
       batchDel: function () {
