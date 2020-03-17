@@ -84,7 +84,7 @@
 
 
   export default {
-    name: "FileDetail",
+    name: "workOrderFileDetail",
     components: {
       ARow,
     },
@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        purchaseId:"",
+        workId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/file/updateIds",
+          listFileUpdate: "/renche/file/updateWorkFileIds",
         },
       }
     },
@@ -160,6 +160,7 @@
     },
     methods: {
       loadData(arg) {
+        debugger;
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -225,7 +226,8 @@
         if(a == ",") {
           ids = ids.substring(0, ids.length - 1);
         }
-        deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {
+        debugger;
+        deleteAction(that.url.listFileUpdate, {workId:this.workId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
           } else {

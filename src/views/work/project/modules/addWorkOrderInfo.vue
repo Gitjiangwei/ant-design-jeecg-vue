@@ -235,6 +235,7 @@
               method = 'put';
             }
 
+
             let a = this.avatar.charAt(this.avatar.length - 1);
 
             debugger;

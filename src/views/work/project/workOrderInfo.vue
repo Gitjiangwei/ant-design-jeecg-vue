@@ -98,7 +98,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addWorkOrderInfo from './modules/addWorkOrderInfo';
     import {filterObj} from '@/utils/util';
-    import fileDetail from "./modules/FileDetail";
+    import fileDetail from "./modules/workOrderFileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
