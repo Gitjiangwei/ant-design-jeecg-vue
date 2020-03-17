@@ -96,7 +96,7 @@
 
       <!-- 表单区域 -->
         <add-invoic-info ref="addInvoicInfo" @ok="modalFormOk"></add-invoic-info>
-      <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
+      <invoic-info-file-detail ref="invoicInfoFileDetail" @ok="modalFormOk"></invoic-info-file-detail>
 
 
     </a-card>
@@ -107,7 +107,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addInvoicInfo from './modules/addInvoicInfo';
     import {filterObj} from '@/utils/util';
-    import fileDetail from "./modules/workOrderFileDetail";
+    import invoicInfoFileDetail from "./modules/invoicInfoFileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
 
     export default {
@@ -115,7 +115,7 @@
       components: {
         ARow,
         addInvoicInfo,
-        fileDetail,
+        invoicInfoFileDetail,
 
       },
       data() {
@@ -325,8 +325,8 @@
 
         fileDeteil:function(record){
           console.log(record);
-          this.$refs.fileDetail.fileLoad(record);
-          this.$refs.fileDetail.title = "附件";
+          this.$refs.invoicInfoFileDetail.fileLoad(record);
+          this.$refs.invoicInfoFileDetail.title = "附件";
         },
 
         handleAdd: function () {

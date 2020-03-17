@@ -59,13 +59,24 @@
         </a-form-item>
 
 
-
+<!--
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="状态"
           hasFeedback >
           <a-input placeholder="请输入状态" v-decorator="['status', {rules: [{ required: true,message: '请输入状态' }]}]" />
+        </a-form-item>-->
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="状态"
+          hasFeedback >
+          <a-select v-decorator="['status', {rules: [{ required: true,message: '请输入工单状态' }]}]" placeholder="请选择状态">
+            <a-select-option :key="1">未提交</a-select-option>
+            <a-select-option :key="2">审批中</a-select-option>
+            <a-select-option :key="3">已完成</a-select-option>
+          </a-select>
         </a-form-item>
       </a-form>
       <a-form-item
