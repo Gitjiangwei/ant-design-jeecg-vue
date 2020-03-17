@@ -5,7 +5,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="设备编号">
-              <a-input placeholder="请输入设备编号" v-model="queryParam.equipNo"></a-input>
+              <a-input placeholder="请输入设备编号" maxlength="15" v-model="queryParam.equipNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -75,6 +75,9 @@
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
+                </a-popconfirm>
+                <a-popconfirm title="确定将设备投入使用吗?" @confirm="() => handleStatus(record)">
+                  <a>投入使用</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
@@ -188,7 +191,7 @@
         url: {
           list: "/renche/equip/equipKeyDetail",
           // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
+          equipStatus: "/renche/equip/updateStatus",
           repair: "/renche/equip/equipKeyDetail"
         },
       }
@@ -291,6 +294,22 @@
             }
           });
         }
+      },
+      handleStatus: function(record){
+        var that = this;
+        debugger;
+        if(record.equipStatus != "INREPAIR"){
+          that.$message.warning("只能将维修中的设备投入使用！")
+          return;
+        }
+        deleteAction(that.url.equipStatus, {equipId: record.equipId}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
       },
       handleDelete: function (record) {
         var that = this;

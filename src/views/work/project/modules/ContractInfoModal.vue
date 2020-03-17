@@ -515,6 +515,8 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.isEdit = false;
+        this.dataSource = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'contractName','companyNameA','contractNoA','companyNameB','contractNoB','contractType','contractMoney','contractStatus','remindPeriod','prjName','remark'))
         });

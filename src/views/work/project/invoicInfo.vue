@@ -74,8 +74,10 @@
 
 
           <span slot="action" slot-scope="text, record">
-            <a @click="handleEdit(record)">编辑</a>
+             <a @click="fileDeteil(record)">附件</a>
+            <a-divider type="vertical"/>
 
+            <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
@@ -94,6 +96,7 @@
 
       <!-- 表单区域 -->
         <add-invoic-info ref="addInvoicInfo" @ok="modalFormOk"></add-invoic-info>
+      <invoic-info-file-detail ref="invoicInfoFileDetail" @ok="modalFormOk"></invoic-info-file-detail>
 
 
     </a-card>
@@ -104,6 +107,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addInvoicInfo from './modules/addInvoicInfo';
     import {filterObj} from '@/utils/util';
+    import invoicInfoFileDetail from "./modules/invoicInfoFileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
 
     export default {
@@ -111,6 +115,7 @@
       components: {
         ARow,
         addInvoicInfo,
+        invoicInfoFileDetail,
 
       },
       data() {
@@ -317,6 +322,13 @@
           this.$refs.addInvoicInfo.edit(record);
           this.$refs.addInvoicInfo.title = "编辑";
         },
+
+        fileDeteil:function(record){
+          console.log(record);
+          this.$refs.invoicInfoFileDetail.fileLoad(record);
+          this.$refs.invoicInfoFileDetail.title = "附件";
+        },
+
         handleAdd: function () {
           this.$refs.addInvoicInfo.add();
           this.$refs.addInvoicInfo.title = "新增";

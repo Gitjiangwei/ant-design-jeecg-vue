@@ -13,12 +13,12 @@
 
           <a-col :span="6">
             <a-form-item label="设备名称" >
-              <a-input placeholder="请输入设备名称" v-model="queryParam.equipName"></a-input>
+              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
             <a-form-item label="设备型号">
-              <a-input placeholder="请输入设备型号" v-model="queryParam.equipModel"></a-input>
+              <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -82,6 +82,7 @@
       return{
         description: '设备库存页面',
         visible: false,
+        projectId:"",
         // 查询条件
         queryParam: {},
         confirmLoading: false,
@@ -194,7 +195,8 @@
           }
         })
       },
-      show () {
+      show (record) {
+        this.projectId = record;
         this.visible = true;
         this.loadData();
       },
@@ -224,7 +226,7 @@
       },
       handleDetail: function(record){
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
-        this.$refs.PurchaseDetailShow.show(record);
+        this.$refs.PurchaseDetailShow.show(record,this.projectId);
         this.$refs.PurchaseDetailShow.title("设备详情");
 
       },
@@ -243,6 +245,8 @@
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         //this.loadData();
+        debugger;
+        this.$emit('ok');
         this.close();
       },
       searchReset() {

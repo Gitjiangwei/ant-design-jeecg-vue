@@ -12,7 +12,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="设备编号">
-              <a-input placeholder="请输入设备编号" v-model="queryParam.equipNo"></a-input>
+              <a-input placeholder="请输入设备编号" maxlength="15" v-model="queryParam.equipNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -110,7 +110,6 @@
         visible:false,
         confirmLoading: false,
         description: '采购管理页面',
-
         // 查询条件
         queryParam: {},
         //字典数组缓存
@@ -170,6 +169,7 @@
           }*/
         ],
         purchaseId:"",
+        projectId:"",
         //数据集
         dataSource: [],
         // 分页参数
@@ -193,8 +193,7 @@
         selectedRows: [],
         url: {
           list: "/renche/equip/equipKeyDetail",
-          // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
+          outEquip: "/renche/outEquip/inserOutEquip",
           repair: "/renche/equip/equipKeyDetail"
         },
       }
@@ -222,8 +221,9 @@
           }
         })
       },
-      show:function(record){
+      show:function(record,projectId){
         this.visible = true;
+        this.projectId = projectId;
         this.purchaseId = record.purchaseId;
         this.loadData(1);
       },
@@ -258,60 +258,40 @@
           that.close();
         })
       },
-      batchDel: function (flag) {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        } else {
-          var ids = "";
-          debugger;
-          for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            if(this.selectionRows[a].equipStatus != "SCRAP"){
-              this.$message.warning('您要删除的设备中有未报废的设备，请重新选择！');
-              return;
-            }
-            ids += this.selectionRows[a].purchaseId + ",";
-          }
-          var that = this;
-          var title = "";
-          var content = "";
-          var url = "";
-          if (flag==1){
-            title = "确认删除";
-            content = "是否删除选中数据";
-            url = that.url.deleteBatch;
-          } else {
-            title = "确认收货";
-            content = "再次确认设备已经到达";
-            url = that.url.updateIsArrival;
-          }
-          this.$confirm({
-            title: title,
-            content: content,
-            onOk: function () {
-              deleteAction(url, {ids: ids}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData(1);
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
-      handleOk () {
+
+      handleOk(){
         if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条数据！');
           return;
         } else {
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
-          this.$emit('func',this.selectedRows);
-          this.confirmLoading = false;
-          this.close();
+          var that = this;
+          that.confirmLoading = true;
+          let httpurl = this.url.outEquip;
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            if(this.selectionRows[a].equipStatus == "FREE") {
+              ids += this.selectionRows[a].equipId + ",";
+            }else{
+              this.$message.warning('只能选择空闲中的设备！');
+              return;
+            }
+            if (this.selectionRows[a].usrTimes > "3"){
+              this.$message.warning('您选择的设备有使用过3次的设备');
+            }
+          }
+          deleteAction(httpurl,{equipIds: ids, prjItemId: this.projectId}).then((res)=> {
+            if (res.success) {
+              that.$message.success(res.message);
+              this.$emit('ok');
+            } else {
+              that.$message.warning(res.message);
+            }
+          }).finally(() => {
+            that.confirmLoading = false;
+            that.selectedRowKeys = [];
+            that.selectionRows = [];
+            that.close();
+          });
         }
       },
       handleCancel() {
@@ -320,22 +300,6 @@
       close() {
         this.$emit('close');
         this.visible = false;
-      },
-      handleDelete: function (record) {
-        var that = this;
-        debugger;
-        if(record.equipStatus != "SCRAP"){
-          that.$message.warning("只能删除报废的设备！")
-          return;
-        }
-        deleteAction(that.url.delete, {id: record.id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
       },
       modalFormOk() {
         // 新增/修改 成功时，重载列表

@@ -30,7 +30,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
+<!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel(1)">
@@ -84,7 +84,7 @@
 
 
   export default {
-    name: "FileDetail",
+    name: "workOrderFileDetail",
     components: {
       ARow,
     },
@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        invoiceId:"",
+        workId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,17 +149,18 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/invoiceInfo/updateFileIds",
+          listFileUpdate: "/renche/file/updateWorkFileIds",
         },
       }
     },
     created() {
-      // this.loadData();
+     // this.loadData();
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token":token}
     },
     methods: {
       loadData(arg) {
+        debugger;
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -178,7 +179,7 @@
       fileLoad:function(record){
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.invoiceId = record.invoiceId;
+        this.workId = record.workId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -221,24 +222,27 @@
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectionRows[a].fileRelId + ",";
         }
-        var a = ids.charAt(ids.length - 1);
-        if(a == ",") {
-          ids = ids.substring(0, ids.length - 1);
+        if (ids != null && ids!="" && ids!=undefined) {
+          var a = ids.charAt(ids.length - 1);
+          if (a == ",") {
+            ids = ids.substring(0, ids.length - 1);
+          }
         }
-        deleteAction(that.url.listFileUpdate, {invoiceId:this.invoiceId,ids: ids}).then((res) => {
-          if (!res.success) {
+        debugger;
+        deleteAction(that.url.listFileUpdate, {workId:this.workId,ids: ids}).then((res) => {
+          alert("workId="+workId);
+          if (res.success) {
+            that.$message.success(res.message);
+          } else {
             that.$message.warning(res.message);
           }
         });
       },
       handleCancel() {
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
-        this.$emit('func');
         this.close();
       },
       close() {
-        this.$emit('func');
+        this.$emit('ok');
         this.visible = false;
       },
       modalFormOk() {

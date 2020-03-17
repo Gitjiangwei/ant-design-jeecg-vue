@@ -25,14 +25,14 @@
           :wrapperCol="wrapperCol"
           label="厂家设备编号"
           hasFeedback >
-          <a-input placeholder="厂家设备编号"  v-decorator="['manufacoryNo', {}]" />
+          <a-input placeholder="厂家设备编号" maxlength="15" v-decorator="['manufacoryNo', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="设备情况"
           hasFeedback >
-          <a-input placeholder="请输入设备情况" id="price"   v-decorator="['condition', {}]" />
+          <a-input placeholder="请输入设备情况" id="price" maxlength="100"  v-decorator="['condition', {}]" />
         </a-form-item>
       </a-form>
     </a-spin>

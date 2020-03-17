@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        purchaseId:"",
+        visitId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/file/updateIds",
+          listFileUpdate: "/renche/file/updateVisitInfoIds",
         },
       }
     },
@@ -191,7 +191,7 @@
         debugger;
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.purchaseId = record.purchaseId;
+        this.visitId = record.visitId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -234,12 +234,14 @@
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectionRows[a].fileRelId + ",";
         }
-        var a = ids.charAt(ids.length - 1);
-        if(a == ",") {
-          ids = ids.substring(0, ids.length - 1);
+        if (ids != null && ids!="" && ids!=undefined) {
+          var a = ids.charAt(ids.length - 1);
+          if (a == ",") {
+            ids = ids.substring(0, ids.length - 1);
+          }
         }
         debugger;
-        deleteAction(that.url.listFileUpdate, {purchaseId:this.purchaseId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {visitId:this.visitId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
           } else {
