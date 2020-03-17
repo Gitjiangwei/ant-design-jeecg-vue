@@ -78,15 +78,15 @@
               <a-date-picker placeholder="请输入签收时间" v-decorator="['signInTime', {}]" />
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-select v-decorator="['remindPeriod', {}]" placeholder="请选择提醒周期">
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option value="0">未签订</a-select-option>
-                <a-select-option value="1">已签订</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :span="12" style="padding-left: 0px;">-->
+<!--            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--              <a-select v-decorator="['remindPeriod', {}]" placeholder="请选择提醒周期">-->
+<!--                <a-select-option value="">请选择</a-select-option>-->
+<!--                <a-select-option value="0">未签订</a-select-option>-->
+<!--                <a-select-option value="1">已签订</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
         </a-row>
         <a-row v-show="isEdit">
           <a-col :span="12" style="padding-left: 40px;">
