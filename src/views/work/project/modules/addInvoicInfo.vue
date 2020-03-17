@@ -100,9 +100,14 @@
   import {getAction, httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import ATextarea from "ant-design-vue/es/input/TextArea";
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import {queryDepartCGTreeList, doMian} from '@/api/api'
 
   export default {
     name: "addInvoicInfo",
+    components: {ATextarea},
     data () {
       return {
         title:"操作",
@@ -128,11 +133,13 @@
         url: {
           add: "/renche/invoic/addInvoic",
           edit: "/renche/invoic/upInvoic",
-
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
     },
 
     computed: {

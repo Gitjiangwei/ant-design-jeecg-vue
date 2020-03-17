@@ -84,7 +84,7 @@
 
 
   export default {
-    name: "FileDetail",
+    name: "invoicInfoFileDetail",
     components: {
       ARow,
     },
@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        visitId:"",
+        invociId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/file/updateVisitInfoIds",
+          listFileUpdate: "/renche/file/updateInvoicFileIds",
         },
       }
     },
@@ -175,23 +175,11 @@
       },
       fileDownload:function(record){
         console.log(record.fileRelId)
-        // let that = this;
-        // getAction(this.url.download, {fileRelId: record.fileRelId}).then((res) => {
-        //   console.log(res)
-        //   if (res.success) {
-        //     that.$message.success(res.message);
-        //     that.loadData();
-        //     that.onClearSelected();
-        //   } else {
-        //     that.$message.warning("下载出错");
-        //   }
-        // });
       },
       fileLoad:function(record){
-        debugger;
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.visitId = record.visitId;
+        this.invociId = record.invociId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -241,7 +229,7 @@
           }
         }
         debugger;
-        deleteAction(that.url.listFileUpdate, {visitId:this.visitId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {invociId:this.invociId,ids: ids}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
           } else {

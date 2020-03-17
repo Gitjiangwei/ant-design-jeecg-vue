@@ -179,7 +179,7 @@
       fileLoad:function(record){
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.purchaseId = record.purchaseId;
+        this.workId = record.workId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -222,12 +222,15 @@
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectionRows[a].fileRelId + ",";
         }
-        var a = ids.charAt(ids.length - 1);
-        if(a == ",") {
-          ids = ids.substring(0, ids.length - 1);
+        if (ids != null && ids!="" && ids!=undefined) {
+          var a = ids.charAt(ids.length - 1);
+          if (a == ",") {
+            ids = ids.substring(0, ids.length - 1);
+          }
         }
         debugger;
         deleteAction(that.url.listFileUpdate, {workId:this.workId,ids: ids}).then((res) => {
+          alert("workId="+workId);
           if (res.success) {
             that.$message.success(res.message);
           } else {
