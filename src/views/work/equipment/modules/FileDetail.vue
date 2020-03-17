@@ -14,7 +14,7 @@
 
           <a-col :span="12">
             <a-form-item label="附件名称" >
-              <a-input placeholder="请输入物品名称" v-model="queryParam.fileName"></a-input>
+              <a-input placeholder="请输入附件名称"  v-model="queryParam.fileName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12"  >
