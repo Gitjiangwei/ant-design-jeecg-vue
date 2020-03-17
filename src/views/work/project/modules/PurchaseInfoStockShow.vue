@@ -13,12 +13,12 @@
 
           <a-col :span="6">
             <a-form-item label="设备名称" >
-              <a-input placeholder="请输入设备名称" v-model="queryParam.equipName"></a-input>
+              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
             <a-form-item label="设备型号">
-              <a-input placeholder="请输入设备型号" v-model="queryParam.equipModel"></a-input>
+              <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
             </a-form-item>
           </a-col>
         </a-row>

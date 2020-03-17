@@ -5,7 +5,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="设备编号">
-              <a-input placeholder="请输入设备编号" v-model="queryParam.equipNo"></a-input>
+              <a-input placeholder="请输入设备编号" maxlength="15" v-model="queryParam.equipNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">

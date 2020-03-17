@@ -6,12 +6,12 @@
 
             <a-col :span="6">
               <a-form-item label="物品名称" >
-                <a-input placeholder="请输入物品名称" v-model="queryParam.purchaseItem"></a-input>
+                <a-input placeholder="请输入物品名称" maxlength="30" v-model="queryParam.purchaseItem"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="采购人">
-                <a-input placeholder="请输入采购人" v-model="queryParam.purchaser"></a-input>
+                <a-input placeholder="请输入采购人" maxlength="6" v-model="queryParam.purchaser"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">

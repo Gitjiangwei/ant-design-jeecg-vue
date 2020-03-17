@@ -18,7 +18,7 @@
           label="设备名称"
           hasFeedback
         >
-          <a-input placeholder="请输入设备名称" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="请输入设备名称" maxlength="30" v-on:focus="calculation" v-on:blur="calculation"
                    v-decorator="['purchaseItem', {rules: [{ required: true, message: '请输入设备名称', }]}]"/>
         </a-form-item>
         <a-form-item
@@ -26,7 +26,7 @@
           :wrapperCol="wrapperCol"
           label="设备型号"
           hasFeedback>
-          <a-input placeholder="请输入设备型号" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="请输入设备型号" maxlength="15" v-on:focus="calculation" v-on:blur="calculation"
                    v-decorator="['itemModel', {rules: [{ required: true, message: '请输入设备型号' }]}]"/>
         </a-form-item>
         <a-form-item
@@ -34,7 +34,7 @@
           :wrapperCol="wrapperCol"
           label="单价"
           hasFeedback>
-          <a-input placeholder="请输入单价" id="price" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="请输入单价" id="price" onblur="value=value.replace(/[^\d|.]/g,'')" onkeyup="value=value.replace(/[^\d|.]/g,'')" maxlength="6" v-on:focus="calculation" v-on:blur="calculation"
                    v-decorator="['price', {rules: [{ required: true, message: '请输入单价' }]}]"/>
         </a-form-item>
         <a-form-item
@@ -42,7 +42,7 @@
           :wrapperCol="wrapperCol"
           label="采购数量"
           hasFeedback>
-          <a-input placeholder="请输入采购数量" id="quantity" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="请输入采购数量" onblur="value=value.replace(/[^\d]/g,'')" onkeyup="value=value.replace(/[^\d]/g,'')" id="quantity" maxlength="5" v-on:focus="calculation" v-on:blur="calculation"
                    v-decorator="['quantity', {rules: [{ required: true, message: '请输入采购数量' }]}]"/>
         </a-form-item>
         <a-form-item
@@ -59,7 +59,7 @@
           :wrapperCol="wrapperCol"
           label="采购人员"
           hasFeedback>
-          <a-input placeholder="采购人员" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="采购人员" v-on:focus="calculation" maxlength="6" v-on:blur="calculation"
                    v-decorator="['purchaser', {rules: [{ required: true,message: '请输入采购人员' }]}]"/>
         </a-form-item>
         <a-form-item
@@ -129,7 +129,7 @@
           :wrapperCol="wrapperCol"
           label="备注"
           hasFeedback>
-          <a-input placeholder="备注" v-on:focus="calculation" v-on:blur="calculation"
+          <a-input placeholder="备注" v-on:focus="calculation" maxlength="300" v-on:blur="calculation"
                    v-decorator="['remarks', {rules: [{ required: false,message: '请输入采购人员' }]}]"/>
         </a-form-item>
       </a-form>
