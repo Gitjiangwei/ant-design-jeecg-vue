@@ -70,7 +70,6 @@
 
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">编辑</a>
-
             <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
@@ -97,9 +96,10 @@
 
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
-    import addTender from './modules/addTenderInfo';
+    import addTender from './modules/AddTenderInfo';
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
+
 
     export default {
       name: "tenderInfo",
@@ -299,6 +299,8 @@
           this.$refs.addTender.edit(record);
           this.$refs.addTender.title = "编辑";
         },
+
+
         handleAdd: function () {
           this.$refs.addTender.add();
           this.$refs.addTender.title = "新增";

@@ -88,7 +88,7 @@
 
       <add-work-order-info ref="addWorkOrderInfo" @ok="modalFormOk"></add-work-order-info>
 
-      <invoic-info-file-detail ref="invoicInfoFileDetail" @ok="modalFormOk"></invoic-info-file-detail>
+      <work-order-file-detail ref="workOrderFileDetail" @ok="modalFormOk"></work-order-file-detail>
 
 
     </a-card>
@@ -99,7 +99,7 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import addWorkOrderInfo from './modules/addWorkOrderInfo';
     import {filterObj} from '@/utils/util';
-    import invoicInfoFileDetail from "./modules/invoicInfoFileDetail";
+    import workOrderFileDetail from "./modules/workOrderFileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
@@ -110,7 +110,7 @@
       components: {
         ARow,
         addWorkOrderInfo,
-        invoicInfoFileDetail,
+        workOrderFileDetail,
       },
       data() {
         return{
@@ -317,8 +317,8 @@
         },
         fileDeteil:function(record){
           console.log(record);
-          this.$refs.invoicInfoFileDetail.fileLoad(record);
-          this.$refs.invoicInfoFileDetail.title = "附件";
+          this.$refs.workOrderFileDetail.fileLoad(record);
+          this.$refs.workOrderFileDetail.title = "附件";
         },
         handleAdd: function () {
           this.$refs.addWorkOrderInfo.add();
