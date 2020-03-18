@@ -95,9 +95,10 @@
           @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
+            <a @click="fileDeteil(record)">附件</a>
+              <a-divider type="vertical"/>
             <a @click="handleEdit(record)">编辑</a>
-
-            <a-divider type="vertical"/>
+              <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
@@ -116,6 +117,7 @@
       <!-- 表单区域 -->
       <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
 
+      <contract-file-detail ref="contractFileDetail" @ok="modalFormOk"></contract-file-detail>
     </a-card>
 
 </template>
@@ -126,12 +128,14 @@
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import ARow from "ant-design-vue/es/grid/Row";
+    import ContractFileDetail from "./modules/ContractFileDetail";
 
     export default {
       name: "contractInfoList",
       components: {
         ARow,
         ContractInfoModal,
+        ContractFileDetail,
       },
       data() {
         return{
@@ -197,6 +201,11 @@
               }
             },
             {
+              title: '附件',
+              align: "center",
+              dataIndex: 'fileCount'
+            },
+            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
@@ -228,6 +237,7 @@
             list: "/renche/contractInfo/list",
             delete: "/renche/contractInfo/delete",
             deleteBatch: "/renche/contractInfo/deleteBatch",
+            filelist: "/renche/purchase/fileList",
           },
         }
       },
@@ -345,9 +355,18 @@
             }
           });
         },
-        handleEdit: function (record) {
+        async handleEdit(record) {
+          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+            record.filelist = result.list;
+          }
           this.$refs.contractInfoModal.edit(record);
           this.$refs.contractInfoModal.title = "编辑";
+        },
+        fileDeteil:function(record){
+          console.log(record);
+          this.$refs.contractFileDetail.fileLoad(record);
+          this.$refs.contractFileDetail.title = "附件";
         },
         handleAdd: function () {
           this.$refs.contractInfoModal.add();

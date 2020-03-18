@@ -41,6 +41,32 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="附件"
+              hasFeedback>
+              <!--  -->
+              <a-upload
+                name="file"
+                :multiple="true"
+                :action="uploadAction"
+                :headers="headers"
+                @change="handleChange"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
 
     </a-spin>
@@ -51,6 +77,9 @@
   import {getAction, httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import { doMian} from '@/api/api'
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
 
   export default {
     name: "invoiceInfoModel",
@@ -59,6 +88,7 @@
         title:"操作",
         visible: false,
         model: {},
+        initialFile: [],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -68,6 +98,9 @@
           sm: { span: 16 },
         },
 
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -75,11 +108,18 @@
         url: {
           add: "/renche/invoiceInfo/add",
           edit: "/renche/invoiceInfo/edit",
-
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token};
+    },
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
 
@@ -88,6 +128,7 @@
 
       },
       edit (record) {
+        this.avatar = record.fileRelId;
 
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -99,6 +140,7 @@
           this.form.setFieldsValue({returnTime:this.model.returnTime?moment(this.model.returnTime):null});
         });
 
+        this.model.filelist = [];
       },
       close () {
         this.$emit('close');
@@ -119,6 +161,9 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+
+            this.model.fileRelId = this.avatar;
+
             let formData = Object.assign(this.model, values);
 
             httpAction(httpurl,formData,method).then((res)=>{
@@ -140,7 +185,23 @@
       handleCancel () {
         this.close()
       },
-
+      handleChange(info) {
+        if (info.file.status === 'uploading') {
+          this.uploadLoading = true;
+          return;
+        }
+        if (info.file.status === 'done') {
+          var response = info.file.response;
+          this.uploadLoading = false;
+          console.log(response);
+          if (response.success) {
+            this.avatar = response.message + "," + this.avatar;
+            console.log(this.avatar);
+          } else {
+            this.$message.warning(response.message);
+          }
+        }
+      },
 
     }
   }
