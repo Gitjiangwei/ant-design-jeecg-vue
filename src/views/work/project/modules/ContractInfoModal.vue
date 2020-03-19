@@ -78,15 +78,6 @@
               <a-date-picker placeholder="请输入签收时间" v-decorator="['signInTime', {}]" />
             </a-form-item>
           </a-col>
-<!--          <a-col :span="12" style="padding-left: 0px;">-->
-<!--            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
-<!--              <a-select v-decorator="['remindPeriod', {}]" placeholder="请选择提醒周期">-->
-<!--                <a-select-option value="">请选择</a-select-option>-->
-<!--                <a-select-option value="0">未签订</a-select-option>-->
-<!--                <a-select-option value="1">已签订</a-select-option>-->
-<!--              </a-select>-->
-<!--            </a-form-item>-->
-<!--          </a-col>-->
         </a-row>
         <a-row v-show="isEdit">
           <a-col :span="12" style="padding-left: 40px;">
@@ -100,22 +91,8 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="关联招标" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入招标信息" v-decorator="['prjName', {}]" @click="showTender"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -139,9 +116,7 @@
               </div>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
+          <a-col :span="12" style="padding-left: 0px;">
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
@@ -167,7 +142,31 @@
             </a-form-item>
           </a-col>
         </a-row>
-
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-select v-decorator="['remindPeriodType', {rules: [{ required: true, message: '请选择提醒周期类型', }]}]" placeholder="请选择提醒周期类型">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="item in remindTypeOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+              </a-select>
+              <a-input placeholder="请输入周期长度" v-decorator="['remindPeriod', {rules: [{ pattern: /^\d{0,2}$/, message: '请选择提醒周期长度', }]}]"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="关联招标" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input placeholder="请输入招标信息" v-decorator="['prjName', {}]" @click="showTender"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
 
@@ -263,6 +262,7 @@
         model: {},
         //字典数组缓存
         typeDictOptions: [],
+        remindTypeOptions: [],
         typePrjDictOptions: [],
         isOk:true,
         companyIdA:"",
@@ -464,6 +464,12 @@
         initDictOptions('CONTRACTTYPE').then((res) => {
           if (res.success) {
             this.typeDictOptions = res.result;
+          }
+        });
+        //初始化字典 - 合同提醒周期类型
+        initDictOptions('REMINDPERIODTYPE').then((res) => {
+          if (res.success) {
+            this.remindTypeOptions = res.result;
           }
         });
         //初始化字典 - 工程类型
