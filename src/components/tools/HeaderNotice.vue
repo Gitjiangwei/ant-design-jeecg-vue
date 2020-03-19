@@ -37,11 +37,11 @@
           <a-tab-pane tab="通知" key="1">
             <a-list>
               <a-list-item>
-                <a-list-item-meta title="暂无消息" description="一年前">
+                <a-list-item-meta title="暂无消息" description="">
                   <a-avatar style="background-color: white" slot="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png"/>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item>
+            <!--  <a-list-item>
                 <a-list-item-meta title="暂无消息 description="一年前">
                   <a-avatar style="background-color: white" slot="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/OKJXDXrmkNshAMvwtvhu.png"/>
                 </a-list-item-meta>
@@ -50,20 +50,20 @@
                 <a-list-item-meta title="暂无消息" description="一年前">
                   <a-avatar style="background-color: white" slot="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/kISTdvpyTAhtGxpovNWd.png"/>
                 </a-list-item-meta>
-              </a-list-item>
+              </a-list-item>-->
             </a-list>
           </a-tab-pane>
           <a-tab-pane tab="消息" key="2">
-
+            暂无消息
           </a-tab-pane>
           <a-tab-pane tab="待办" key="3">
-          
+          暂无待办
           </a-tab-pane>
         </a-tabs>
       </a-spin>
     </template>
     <span @click="fetchNotice" class="header-notice">
-      <a-badge count="12">
+      <a-badge count="">  <!--<a-badge count="12">-->
         <a-icon style="font-size: 16px; padding: 4px" type="bell" />
       </a-badge>
     </span>

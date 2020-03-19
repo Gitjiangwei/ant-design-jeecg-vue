@@ -4,7 +4,7 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
+            <img src="~@/assets/Logo.png" class="logo" alt="logo">
             <span class="title">和络综合管理平台-人员车辆4G视频子系统</span>
           </a>
         </div>
