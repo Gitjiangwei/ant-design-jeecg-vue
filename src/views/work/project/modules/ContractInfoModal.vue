@@ -515,8 +515,8 @@
         this.edit({});
       },
       edit (record) {
-        this.avatar = record.fileRelId;
-        this.avatarElec = record.elecFileRel;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        this.avatarElec = record.elecFileRel == undefined?'':record.elecFileRel;
 
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -637,6 +637,7 @@
 
             } else {
               this.isOk = false;
+              this.thisMessage = res.message;
               if (res.code = '200') {
                 this.$message.warning(res.message);
               }
