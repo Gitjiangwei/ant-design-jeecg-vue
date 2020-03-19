@@ -71,8 +71,9 @@
             :action="uploadAction"
             :headers="headers"
             @change="handleChange"
+            :showUploadList="isEdit"
           >
-            <a-button>
+            <a-button v-on:click="load">
               <a-icon type="upload"/>
               上传
             </a-button>
@@ -117,6 +118,7 @@
         uploadLoading: false,
         headers: {},
         avatar: "",
+        isEdit:true,
         isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
@@ -143,6 +145,10 @@
       }
     },
     methods: {
+
+      load: function(){
+        this.isEdit = true;
+      },
       beforeUpload: function (file) {
         var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
@@ -189,6 +195,7 @@
 
       },
       edit (record) {
+        this.isEdit=false;
         this.avatar = record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
