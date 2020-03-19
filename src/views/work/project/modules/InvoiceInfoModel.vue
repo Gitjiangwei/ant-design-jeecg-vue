@@ -128,7 +128,7 @@
 
       },
       edit (record) {
-        this.avatar = record.fileRelId;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
 
         this.form.resetFields();
         this.model = Object.assign({}, record);
