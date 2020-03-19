@@ -114,6 +114,7 @@
             :headers="headers"
             @change="handleChange"
             :showUploadList="isEdit"
+
           >
             <a-button v-on:click="load">
               <a-icon type="upload"/>
@@ -210,6 +211,7 @@
         });
       },
       load: function(){
+
         this.isEdit = true;
       },
       beforeUpload: function (file) {
@@ -231,6 +233,9 @@
           this.uploadLoading = false;
           console.log(response);
           if (response.success) {
+            if(this.avatar == undefined || this.avatar == null){
+              this.avatar = "";
+            }
             this.avatar = response.message + "," + this.avatar;
             console.log(this.avatar);
           } else {
@@ -242,7 +247,6 @@
         this.edit({});
       },
       edit(record) {
-        debugger;
         this.isEdit= false;
         this.avatar = record.fileRelId;
         this.isArris = true;
