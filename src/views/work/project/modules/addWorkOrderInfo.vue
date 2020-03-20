@@ -182,6 +182,9 @@
           this.uploadLoading = false;
           console.log(response);
           if (response.success) {
+            if(this.avatar == undefined || this.avatar == null){
+              this.avatar = "";
+            }
             this.avatar = response.message + "," + this.avatar;
             console.log(this.avatar);
           } else {
