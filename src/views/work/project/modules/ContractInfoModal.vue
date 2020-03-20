@@ -82,12 +82,12 @@
         <a-row v-show="isEdit">
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="回款金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input v-decorator="['allReturnMoney', {}]"/>
+              <a-input v-decorator="['allReturnMoney', {}]" disabled />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="回款占比" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input v-decorator="['returnMoneyPercent', {}]"/>
+              <a-input v-decorator="['returnMoneyPercent', {}]"  disabled />
             </a-form-item>
           </a-col>
         </a-row>
@@ -524,7 +524,7 @@
         this.isEdit = false;
         this.dataSource = [];
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'contractName','companyNameA','contractNoA','companyNameB','contractNoB','contractType','contractMoney','contractStatus','remindPeriod','prjName','remark'))
+          this.form.setFieldsValue(pick(this.model,'contractName','companyNameA','contractNoA','companyNameB','contractNoB','contractType','contractMoney','contractStatus','remindPeriodType','remindPeriod','prjName','remark'))
         });
 
         this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});
