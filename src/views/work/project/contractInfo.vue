@@ -29,8 +29,9 @@
               <a-form-item label="合同签订状态">
                 <a-select placeholder="请选择合同签订状态" v-model="queryParam.contractStatus">
                   <a-select-option value="">请选择</a-select-option>
+                  <a-select-option value="2">未签订</a-select-option>
                   <a-select-option value="1">已签订</a-select-option>
-                  <a-select-option value="0">未签订</a-select-option>
+                  <a-select-option value="0">已结束</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -188,15 +189,17 @@
               dataIndex: 'contractMoney'
             },
             {
-              title: '合同签订状态',
+              title: '合同状态',
               align: "center",
               dataIndex: 'contractStatus',
               customRender: (text, record, index) => {
                 //字典值替换通用方法
-                if(text = '0'){
+                if(text = '2'){
                   return "未签订";
                 }else if (text = '1'){
                   return "已签订";
+                }else if (text = '0'){
+                  return "已结束";
                 }
               }
             },

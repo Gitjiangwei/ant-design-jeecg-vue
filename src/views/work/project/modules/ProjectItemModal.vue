@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+    :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -10,87 +10,85 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程名称"
-          hasFeedback >
-          <a-input placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程编号"
-          hasFeedback >
-          <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程类型"
-          hasFeedback >
-          <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
-            <a-select-option value="">请选择</a-select-option>
-            <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="项目名称"
-          hasFeedback >
-          <a-input placeholder="请输入项目名称" v-decorator="['prjName', {}]" />
-        </a-form-item>
-        <a-form-item id="company"
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="所属公司"
-          >
-          <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @blur="checkThisCompanyIsExsit"/>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="负责人"
-          hasFeedback >
-          <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="联系电话"
-          hasFeedback >
-          <a-input placeholder="请输入联系电话" v-decorator="['personTel', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="进场时间"
-          hasFeedback >
-          <a-date-picker v-decorator="[ 'entryTime', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程进度"
-          hasFeedback >
-          <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="完成时间"
-          hasFeedback >
-          <a-date-picker v-decorator="[ 'finishTime', {}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程地址"
-          hasFeedback >
-          <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   />
-        </a-form-item>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程名称" >
+              <a-input placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目名称" >
+              <a-input placeholder="请输入项目名称" v-decorator="['prjName', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程编号" >
+              <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
+              <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+              <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @blur="checkThisCompanyIsExsit"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
+              <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话" >
+              <a-input placeholder="请输入联系电话" v-decorator="['personTel', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
+              <a-date-picker placeholder="请输入进场时间" v-decorator="[ 'entryTime', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="完成时间" >
+              <a-date-picker placeholder="请输入完成时间"  v-decorator="[ 'finishTime', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
+              <a-date-picker placeholder="请输入要求部署时间" v-decorator="['requireDeployTime', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程进度" >
+              <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程地址" >
+              <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
       </a-form>
     </a-spin>
@@ -288,6 +286,7 @@
           this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
           this.form.setFieldsValue({entryTime:this.model.entryTime?moment(this.model.entryTime):null});
           this.form.setFieldsValue({finishTime:this.model.finishTime?moment(this.model.finishTime):null});
+          this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});
         });
 
       },

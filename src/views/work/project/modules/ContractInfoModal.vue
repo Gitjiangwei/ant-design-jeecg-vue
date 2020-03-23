@@ -58,24 +58,28 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="要求部署时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-date-picker placeholder="请输入要求部署时间" v-decorator="['requireDeployTime', {}]" />
+            <a-form-item label="合同状态" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-select v-decorator="['contractStatus', {rules: [{ required: true, message: '请选择合同签订状态', }]}]" placeholder="请选择合同签订状态">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option value="2">未签订</a-select-option>
+                <a-select-option value="1">已签订</a-select-option>
+                <a-select-option value="0">已结束</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item label="签订状态" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-select v-decorator="['contractStatus', {rules: [{ required: true, message: '请选择合同签订状态', }]}]" placeholder="请选择合同签订状态">
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option value="0">未签订</a-select-option>
-                <a-select-option value="1">已签订</a-select-option>
-              </a-select>
+            <a-form-item label="签收时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-date-picker placeholder="请输入签收时间" v-decorator="['signInTime', {}]" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="签收时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-date-picker placeholder="请输入签收时间" v-decorator="['signInTime', {}]" />
+            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-select v-decorator="['remindPeriodType', {rules: [{ required: true, message: '请选择提醒周期类型', }]}]" placeholder="请选择提醒周期类型">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option v-for="item in remindTypeOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -139,17 +143,6 @@
               <div>
                 <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
               </div>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row :gutter="24">
-          <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-select v-decorator="['remindPeriodType', {rules: [{ required: true, message: '请选择提醒周期类型', }]}]" placeholder="请选择提醒周期类型">
-                <a-select-option value="">请选择</a-select-option>
-                <a-select-option v-for="item in remindTypeOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
-              </a-select>
-              <a-input placeholder="请输入周期长度" v-decorator="['remindPeriod', {rules: [{ pattern: /^\d{0,2}$/, message: '请选择提醒周期长度', }]}]"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -525,10 +518,8 @@
         this.dataSource = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'contractName','companyNameA','contractNoA','companyNameB','contractNoB','contractType','contractMoney','contractStatus','remindPeriodType','remindPeriod','prjName','remark'))
+          this.form.setFieldsValue({signInTime:this.model.signInTime?moment(this.model.signInTime):null});
         });
-
-        this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});
-        this.form.setFieldsValue({signInTime:this.model.signInTime?moment(this.model.signInTime):null});
 
         if(this.model.contractId != null && this.model.contractId != undefined){
           this.isEdit = true;

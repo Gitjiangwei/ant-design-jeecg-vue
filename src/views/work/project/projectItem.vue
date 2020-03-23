@@ -50,6 +50,11 @@
                 <a-date-picker placeholder="请输入完成时间" v-model="queryParam.finishTime"></a-date-picker>
               </a-form-item>
             </a-col>
+            <a-col :span="6">
+              <a-form-item label="要求部署时间">
+                <a-date-picker placeholder="请输入要求部署时间" v-model="queryParam.requireDeployTime"></a-date-picker>
+              </a-form-item>
+            </a-col>
           </a-row>
           <a-row  :gutter="24">
             <a-col :span="6"  >
