@@ -25,7 +25,7 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="甲方合同编号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入甲方合同编号" v-decorator="['contractNoA', {rules: [{ required: true, message: '请输入甲方合同编号', }]}]" />
+              <a-input placeholder="请输入甲方合同编号" v-decorator="['contractNoA', {rules: [{ required: false, message: '请输入甲方合同编号', }]}]" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -37,7 +37,7 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="乙方合同编号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入乙方合同编号" v-decorator="['contractNoB', {rules: [{ required: true, message: '请输入乙方合同编号', }]}]" />
+              <a-input placeholder="请输入乙方合同编号" v-decorator="['contractNoB', {rules: [{ required: false, message: '请输入乙方合同编号', }]}]" />
             </a-form-item>
           </a-col>
         </a-row>
