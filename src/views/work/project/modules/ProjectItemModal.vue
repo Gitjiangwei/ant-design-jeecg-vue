@@ -33,7 +33,6 @@
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
               <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
-                <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
               </a-select>
             </a-form-item>
@@ -58,18 +57,29 @@
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
-              <a-date-picker placeholder="请输入进场时间" v-decorator="[ 'entryTime', {}]" />
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程状态" >
+              <a-select v-decorator="['prjItemStatus', {rules: [{ required: true, message: '请选择工程状态', }]}]" placeholder="请选择工程状态">
+                <a-select-option value="0">未开始</a-select-option>
+                <a-select-option value="1">进行中</a-select-option>
+                <a-select-option value="2">已结束</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
+              <a-date-picker placeholder="请输入进场时间" v-decorator="[ 'entryTime', {}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="完成时间" >
               <a-date-picker placeholder="请输入完成时间"  v-decorator="[ 'finishTime', {}]" />
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;">
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
               <a-date-picker placeholder="请输入要求部署时间" v-decorator="['requireDeployTime', {}]" />
             </a-form-item>

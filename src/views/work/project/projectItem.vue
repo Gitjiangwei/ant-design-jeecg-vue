@@ -31,6 +31,16 @@
               </a-form-item>
             </a-col>
             <a-col :span="6">
+              <a-form-item label="工程状态">
+                <a-select placeholder="请选择工程状态" v-model="queryParam.prjItemStatus">
+                  <a-select-option value="">请选择</a-select-option>
+                  <a-select-option value="0">未开始</a-select-option>
+                  <a-select-option value="1">进行中</a-select-option>
+                  <a-select-option value="2">已结束</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
               <a-form-item label="负责人">
                 <a-input placeholder="请输入负责人" v-model="queryParam.personInCharge"></a-input>
               </a-form-item>
@@ -199,6 +209,20 @@
               title: '负责人',
               align: "center",
               dataIndex: 'personInCharge'
+            },
+            {
+              title: '工程状态',
+              align: "center",
+              dataIndex: 'prjItemStatus',
+              customRender: (text, record, index) => {
+                if(text == '0'){
+                  return "未开始";
+                }else if(text == '1'){
+                  return "进行中";
+                }else if(text == '2'){
+                  return "已结束";
+                }
+              }
             },
             {
               title: '操作',
