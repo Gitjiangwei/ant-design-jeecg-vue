@@ -76,7 +76,7 @@
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-select v-decorator="['remindPeriodType', {rules: [{ required: true, message: '请选择提醒周期类型', }]}]" placeholder="请选择提醒周期类型">
+              <a-select v-decorator="['remindPeriodType', {}]" placeholder="请选择提醒周期类型">
                 <a-select-option value="">请选择</a-select-option>
                 <a-select-option v-for="item in remindTypeOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
               </a-select>
@@ -116,7 +116,7 @@
                 </a-button>
               </a-upload>
               <div>
-                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+                <div v-for="(item,index) in model.elefilelist" :key="index">{{item.fileName}}</div>
               </div>
             </a-form-item>
           </a-col>
@@ -588,6 +588,9 @@
         })
       },
       handleCancel () {
+        if(this.model.mark == "message"){
+          this.$emit('ok');
+        }
         this.close()
       },
       handleTableChange(pagination, filters, sorter) {

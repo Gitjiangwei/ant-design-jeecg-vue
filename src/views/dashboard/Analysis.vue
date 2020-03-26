@@ -68,30 +68,25 @@
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
           <div class="extra-wrapper" slot="tabBarExtraContent">
             <div class="extra-item">
-              <a>今日</a>
-              <a>本周</a>
-              <a>本月</a>
-              <a>本年</a>
+              <a @click="showAllMessage">查看全部</a>
             </div>
-            <a-range-picker :style="{width: '256px'}" />
           </div>
-          <a-tab-pane loading="true" tab="销售额" key="1">
+          <a-tab-pane loading="true" tab="消息提醒" key="1" style="padding-left: 16px;">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额排行" />
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
-              </a-col>
-            </a-row>
-          </a-tab-pane>
-          <a-tab-pane tab="访问量" key="2">
-            <a-row>
-              <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额趋势" />
-              </a-col>
-              <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
+                <a-list>
+
+                  <a-list-item :key="index" v-for="(item, index) in dataSource">
+
+                    <a-list-item-meta>
+                      <a slot="title" @click="showDetail(item)">
+                        <span style="padding-right: 8px">{{index+1}}.</span>{{ item.messageContent }}
+                      </a>
+                      <div slot="description" >{{ item.createTime }}</div>
+                      <a-avatar slot="avatar" style="background-color: #78b1f8;"><a-icon type="sound" /></a-avatar>
+                    </a-list-item-meta>
+                  </a-list-item>
+                </a-list>
               </a-col>
             </a-row>
           </a-tab-pane>
@@ -99,67 +94,10 @@
       </div>
     </a-card>
 
-    <a-row :gutter="12">
-      <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-        <a-card :loading="loading" :bordered="false" title="实时访问统计" :style="{ marginTop: '24px' }">
-          <a-dropdown :trigger="['click']" placement="bottomLeft" slot="extra">
-            <a class="ant-dropdown-link" href="#">
-              <a-icon type="ellipsis" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;">操作一</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;">操作二</a>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-          <div style="height: 105px">
-            <a-row>
-              <a-col :span="8">
-                <div class="head-info" :class="center && 'center'">
-                  <span>今日IP</span>
-                  <p><a>{{ loginfo.todayIp }}</a></p>
-                </div>
-              </a-col>
-              <a-col :span="8">
-                <div class="head-info" :class="center && 'center'">
-                  <span>今日访问</span>
-                  <p><a>{{ loginfo.todayVisitCount }}</a></p>
-                </div>
-              </a-col>
-              <a-col :span="8">
-                <div class="head-info" :class="center && 'center'">
-                  <span>访问总览</span>
-                  <p><a>{{ loginfo.totalVisitCount }}</a></p>
-                </div>
-              </a-col>
-            </a-row>
-          </div>
-        </a-card>
-      </a-col>
-      <a-col :xl="12" :lg="24" :md="24" :sm="24" :xs="24">
-        <a-card :loading="loading" :bordered="false" title="销售额类别占比" :style="{ marginTop: '24px' }">
-          <a-dropdown :trigger="['click']" placement="bottomLeft" slot="extra">
-            <a class="ant-dropdown-link" href="#">
-              <a-icon type="ellipsis" />
-            </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;">操作一</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;">操作二</a>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-          <p>card content</p>
-          <p>card content</p>
-          <p>card content</p>
-        </a-card>
-      </a-col>
-    </a-row>
+    <!-- 表单区域 -->
+    <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
+
+    <message-show ref="messageShow" @close="modalShowOk"></message-show>
   </div>
 </template>
 
@@ -174,6 +112,9 @@
   import Bar from '@/components/chart/Bar'
   import Trend from '@/components/Trend'
   import {getLoginfo} from '@/api/api.js'
+  import { getAction, httpAction} from '@/api/manage'
+  import ContractInfoModal from '../work/project/modules/ContractInfoModal'
+  import MessageShow from '../work/message/MessageShow'
 
   const rankList = []
   for (let i = 0; i < 7; i++) {
@@ -194,13 +135,29 @@
       MiniProgress,
       RankList,
       Bar,
-      Trend
+      Trend,
+      ContractInfoModal,
+      MessageShow
     },
     data() {
       return {
         loading: true,
         rankList,
         loginfo:{},
+        user: {},
+        dataSource: [],
+        record:{},
+        url: {
+          list: "/renche/messageInfo/notReadlist",
+          edit: "/renche/messageInfo/edit",
+          contractList: "/renche/contractInfo/list",
+          filelist: "/renche/purchase/fileList",
+        },
+      }
+    },
+    computed: {
+      userInfo() {
+        return this.$store.getters.userInfo;
       }
     },
     created() {
@@ -208,6 +165,7 @@
         this.loading = !this.loading
       }, 1000)
       this.initLogInfo();
+      this.loadData();
     },
     methods: {
       initLogInfo () {
@@ -217,6 +175,45 @@
           }
         })
       },
+      loadData(arg){
+        this.user = this.userInfo;
+        getAction(this.url.list, {sysId: this.user.id, pageSize: 5 }).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.list;
+          }
+        })
+      },
+      async showDetail(item){
+        this.record = item;
+        var record = {};
+        let {result} = await getAction(this.url.contractList, {contractId: item.relId});
+        record = result.list[0];
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+        if(record.elecFileRel != null || record.elecFileRel != "" || record.elecFileRel != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
+          record.elefilelist = result.list;
+        }
+        record.mark = "message";
+        this.$refs.contractInfoModal.edit(record);
+        this.$refs.contractInfoModal.title = "编辑";
+      },
+      modalFormOk(){
+        httpAction(this.url.edit,this.record,"put").then((res)=>{
+          if(res.success){
+            this.loadData();
+          }
+        })
+      },
+      showAllMessage(){
+        this.$refs.messageShow.show(this.user.id);
+        this.$refs.messageShow.title = "全部消息";
+      },
+      modalShowOk(){
+        this.loadData();
+      }
     }
   }
 </script>
