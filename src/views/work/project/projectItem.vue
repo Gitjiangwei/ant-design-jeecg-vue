@@ -275,6 +275,14 @@
             var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
             params.entryTime = entryTime;
           }
+          if(params.finishTime != undefined){
+            var finishTime = moment(params.finishTime).format('YYYY-MM-DD');
+            params.finishTime = finishTime;
+          }
+          if(params.requireDeployTime != undefined){
+            var requireDeployTime = moment(params.requireDeployTime).format('YYYY-MM-DD');
+            params.requireDeployTime = requireDeployTime;
+          }
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;

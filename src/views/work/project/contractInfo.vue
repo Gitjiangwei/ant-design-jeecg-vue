@@ -194,11 +194,11 @@
               dataIndex: 'contractStatus',
               customRender: (text, record, index) => {
                 //字典值替换通用方法
-                if(text = '2'){
+                if(text == '2'){
                   return "未签订";
-                }else if (text = '1'){
+                }else if (text == '1'){
                   return "已签订";
-                }else if (text = '0'){
+                }else if (text == '0'){
                   return "已结束";
                 }
               }
@@ -362,6 +362,10 @@
           if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
+          }
+          if(record.elecFileRel != null || record.elecFileRel != "" || record.elecFileRel != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
+            record.elefilelist = result.list;
           }
           this.$refs.contractInfoModal.edit(record);
           this.$refs.contractInfoModal.title = "编辑";
