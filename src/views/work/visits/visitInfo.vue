@@ -18,6 +18,7 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                 <a type="primary"  :href="'http://localhost:8080/jeecg-boot/renche/visit/exportVisit1'" target="_blank" style="margin-left: 8px">导出</a>
               </span>
             </a-col>
           </a-row>
@@ -40,6 +41,9 @@
           </a-button>
         </a-dropdown>
       </div>
+
+
+
 
       <!-- table区域-begin -->
       <div>
@@ -192,6 +196,7 @@
             list: "/renche/visit/qryVisit",
             delete: "/renche/visit/delete",
             deleteBatch:"/renche/visit/deleteBatch",
+            export:"/renche/visit/exportVisit1",
 
           },
         }
@@ -296,6 +301,16 @@
               that.$message.warning(res.message);
             }
           });
+        },
+
+
+        exportfile: function () {
+          getAction(this.url.export).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }
+          })
         },
          handleEdit: function (record) {
           this.$refs.addVisit.edit(record);
