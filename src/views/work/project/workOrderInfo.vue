@@ -27,7 +27,9 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-
+        <a-button type="primary" >
+          <a :href="'http://localhost:8080/jeecg-boot/renche/workOrder/exportVisit'" target="_blank" style="margin-left: 10px">导出</a>
+        </a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel">
