@@ -26,9 +26,13 @@
         </a-row>
       </a-form>
     </div>
-
+    <div class="table-operator">
+      <a-button type="primary" >
+        <a :href="'http://localhost:8080/jeecg-boot/renche/equip/exportEquip'" target="_blank" style="margin-left: 10px">导出</a>
+      </a-button>
+    </div>
     <!-- table区域-begin -->
-    <div>
+    <div style="margin-top: 10px">
 
       <a-table
         ref="table"
@@ -43,7 +47,8 @@
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情</a>
+          <a @click="handleDetail(record)">详情 </a>
+
           <!--          <a-divider type="vertical"/>
                     <a-dropdown>
                       <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>

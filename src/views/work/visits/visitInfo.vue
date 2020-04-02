@@ -18,8 +18,9 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                 <a type="primary"  :href="'http://localhost:8080/jeecg-boot/renche/visit/exportVisit1'" target="_blank" style="margin-left: 8px">导出</a>
               </span>
+
+
             </a-col>
           </a-row>
         </a-form>
@@ -28,6 +29,9 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button type="primary" >
+          <a :href="'http://localhost:8080/jeecg-boot/renche/visit/exportVisit1'" target="_blank" style="margin-left: 10px">导出</a>
+        </a-button>
 
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -41,6 +45,7 @@
           </a-button>
         </a-dropdown>
       </div>
+
 
 
 
