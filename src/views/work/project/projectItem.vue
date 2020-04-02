@@ -93,6 +93,12 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
+
+        <a-button @click="handleExport" type="primary" icon="download">下载导入模板</a-button>
+        <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" :beforeUpload="beforeUpload" accept=".xls">
+          <a-button type="primary" icon="import">导入</a-button>
+        </a-upload>
+        <a-button @click="exportPrjItemDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->
@@ -148,6 +154,8 @@
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import ARow from "ant-design-vue/es/grid/Row";
     import moment from "moment"
+    import { doMian} from '@/api/api'
+    import axios from 'axios';
 
     export default {
       name: "projectItenList",
@@ -249,6 +257,7 @@
             column: 'createTime',
             order: 'desc',
           },
+          fileList: [],
           loading: false,
           selectedRowKeys: [],
           selectedRows: [],
@@ -256,7 +265,33 @@
             list: "/renche/projectItem/list",
             delete: "/renche/projectItem/delete",
             deleteBatch: "/renche/projectItem/deleteBatch",
+            importExcelUrl: doMian + "/renche/projectItem/importPrjItem"
           },
+        }
+      },
+      computed: {
+        importExcelUrl: function(){
+          const { fileList } = this;
+          const formData = new FormData();
+          if(fileList.length > 0){
+            fileList.forEach((file) => {
+              formData.append('file', file);
+            });
+            axios({/*192.168.133.15:8086*/
+              url: this.url.importExcelUrl,
+              method: 'post',
+              processData: false,
+              data: formData
+            }).then((res) => {
+              if(res.data.message == ""){
+                this.$message.warning("导入成功");
+              }else{
+                this.$message.warning(res.data.message);
+              }
+              this.fileList = [];
+              this.loadData();
+            })
+          }
         }
       },
       created() {
@@ -412,7 +447,40 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
-        }
+        },
+        handleExport(){
+         var href= 'http://localhost:3000/jeecg-boot/renche/projectItem/exportPrjItemModel';
+         window.location = href;
+        },
+        beforeUpload(file) {
+          this.fileList = [...this.fileList, file];
+          return false;
+        },
+        exportPrjItemDate(){
+          //加载数据 若传入参数1则加载第一页的内容
+          if (arg === 1) {
+            this.ipagination.current = 1;
+          }
+          var params = this.getQueryParams();//查询条件
+          if(params.entryTime != undefined){
+            var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
+            params.entryTime = entryTime;
+          }
+          if(params.finishTime != undefined){
+            var finishTime = moment(params.finishTime).format('YYYY-MM-DD');
+            params.finishTime = finishTime;
+          }
+          if(params.requireDeployTime != undefined){
+            var requireDeployTime = moment(params.requireDeployTime).format('YYYY-MM-DD');
+            params.requireDeployTime = requireDeployTime;
+          }
+          getAction(this.url.list, params).then((res) => {
+            if (res.success) {
+              this.dataSource = res.result.list;
+              this.ipagination.total = res.result.total;
+            }
+          })
+        },
       }
     }
 
