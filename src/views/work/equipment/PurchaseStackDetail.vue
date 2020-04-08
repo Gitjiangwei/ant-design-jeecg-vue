@@ -77,7 +77,7 @@
                   <a>删除</a>
                 </a-popconfirm>
                 <a-popconfirm title="确定将设备投入使用吗?" @confirm="() => handleStatus(record)">
-                  <a>投入使用</a>
+                  <a>维修完成</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
@@ -192,7 +192,7 @@
           list: "/renche/equip/equipKeyDetail",
           // delete: "/renche/purchase/delete",
           equipStatus: "/renche/equip/updateStatus",
-          repair: "/renche/equip/equipKeyDetail"
+          repair: "/renche/equip/updateStatusweix"
         },
       }
     },
@@ -236,9 +236,12 @@
       handleRepair: function(record){
         var that = this;
         debugger;
+        if(record.equipStatus != "FREE"){
+          that.$message.warning("只能维修空闲中的设备！")
+          return;
+        }
         let httpurl = this.url.repair;
-        let method = 'post';
-        httpAction(httpurl,record,method).then((res)=>{
+        deleteAction(httpurl,{equipId: record.equipId}).then((res)=>{
             if(res.success){
               that.$message.success(res.message);
               that.loadData();
