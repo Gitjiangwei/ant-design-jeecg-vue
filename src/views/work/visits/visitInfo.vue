@@ -9,8 +9,8 @@
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="拜访人">
-                <a-input placeholder="请输入拜访人" v-model="queryParam.visitor"></a-input>
+              <a-form-item label="工单名称">
+                <a-input placeholder="请输入工单名称" v-model="queryParam.workName"></a-input>
               </a-form-item>
             </a-col>
 
@@ -28,7 +28,7 @@
 
       <!-- 操作按钮区域 -->
       <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+       <!-- <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
         <a-button type="primary" >
           <a :href="'http://localhost:8080/jeecg-boot/renche/visit/exportVisit1'" target="_blank" style="margin-left: 10px">导出</a>
         </a-button>
@@ -135,15 +135,20 @@
               }
             },
             {
+              title: '工单名称',
+              align: "center",
+              dataIndex: 'workName',
+            },
+            {
               title: '客户名称',
               align: "center",
               dataIndex: 'companyName',
             },
-            {
+           /* {
               title: '拜访人',
               align: "center",
               dataIndex: 'visitor',
-            },
+            },*/
             {
               title: '拜访时间',
               align: "center",
