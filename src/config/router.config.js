@@ -148,6 +148,12 @@ export const asyncRouterMap = [
             ]
           },
           {
+            path: '/work/dict/dictList',
+              name: 'dictList',
+            component: () => import('@/views/work/dict/dictList'),
+            meta: { title: '数据字典', permission: [ 'dashboard' ] }
+          },
+          {
             path: '/work/customer/companyInfo',
             name: 'companyList',
             component: () => import('@/views/work/customer/companyInfo'),
