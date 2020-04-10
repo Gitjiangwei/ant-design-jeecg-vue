@@ -293,7 +293,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
+          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','prjItemStatus','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
           this.form.setFieldsValue({entryTime:this.model.entryTime?moment(this.model.entryTime):null});
           this.form.setFieldsValue({finishTime:this.model.finishTime?moment(this.model.finishTime):null});
           this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});

@@ -43,6 +43,8 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
+
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->
@@ -188,6 +190,7 @@
             list: "/renche/companyInfo/list",
             delete: "/renche/companyInfo/delete",
             deleteBatch: "/renche/companyInfo/deleteBatch",
+            exportCompanyInfo:  "/renche/companyInfo/exportCompanyInfo",
           },
         }
       },
@@ -317,7 +320,27 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
-        }
+        },
+        exportDate(){
+          var params = Object.assign({}, this.queryParam, this.isorter);
+          // var params = this.getQueryParams();//查询条件
+          if(params.entryTime != undefined){
+            var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
+            params.entryTime = entryTime;
+          }
+          if(params.finishTime != undefined){
+            var finishTime = moment(params.finishTime).format('YYYY-MM-DD');
+            params.finishTime = finishTime;
+          }
+          if(params.requireDeployTime != undefined){
+            var requireDeployTime = moment(params.requireDeployTime).format('YYYY-MM-DD');
+            params.requireDeployTime = requireDeployTime;
+          }
+          var param = JSON.stringify(params);
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.exportCompanyInfo + "?param="+param;
+        },
       }
     }
 

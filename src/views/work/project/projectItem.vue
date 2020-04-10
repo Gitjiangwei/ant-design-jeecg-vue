@@ -265,7 +265,9 @@
             list: "/renche/projectItem/list",
             delete: "/renche/projectItem/delete",
             deleteBatch: "/renche/projectItem/deleteBatch",
-            importExcelUrl: doMian + "/renche/projectItem/importPrjItem"
+            importExcelUrl: doMian + "/renche/projectItem/importPrjItem",
+            exportModel: "/renche/projectItem/exportPrjItemModel",
+            exportPrjItem:  "/renche/projectItem/exportPrjItem",
           },
         }
       },
@@ -449,7 +451,7 @@
           this.loadData();
         },
         handleExport(){
-         var href= 'http://localhost:3000/jeecg-boot/renche/projectItem/exportPrjItemModel';
+         var href= window._CONFIG['domainURL'] + this.url.exportModel;
          window.location = href;
         },
         beforeUpload(file) {
@@ -457,11 +459,8 @@
           return false;
         },
         exportPrjItemDate(){
-          //加载数据 若传入参数1则加载第一页的内容
-          if (arg === 1) {
-            this.ipagination.current = 1;
-          }
-          var params = this.getQueryParams();//查询条件
+          var params = Object.assign({}, this.queryParam, this.isorter);
+          // var params = this.getQueryParams();//查询条件
           if(params.entryTime != undefined){
             var entryTime = moment(params.entryTime).format('YYYY-MM-DD');
             params.entryTime = entryTime;
@@ -474,12 +473,10 @@
             var requireDeployTime = moment(params.requireDeployTime).format('YYYY-MM-DD');
             params.requireDeployTime = requireDeployTime;
           }
-          getAction(this.url.list, params).then((res) => {
-            if (res.success) {
-              this.dataSource = res.result.list;
-              this.ipagination.total = res.result.total;
-            }
-          })
+          var param = JSON.stringify(params);
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.exportPrjItem + "?param="+param;
         },
       }
     }

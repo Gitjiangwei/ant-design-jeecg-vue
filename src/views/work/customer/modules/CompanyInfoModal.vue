@@ -14,14 +14,14 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="客户名称"
+          label="公司名称"
           hasFeedback >
           <a-input placeholder="请输入客户名称" v-decorator="['companyName', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="客户类型"
+          label="公司类型"
           hasFeedback >
           <a-select v-decorator="['type', {}]" placeholder="请选择客户类型">
             <a-select-option value="">请选择客户类型</a-select-option>
@@ -79,9 +79,9 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="个人爱好"
+          label="公司简介"
           hasFeedback >
-          <a-textarea  placeholder="请输入个人爱好" v-decorator="['hobby', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
+          <a-textarea  placeholder="请输入公司简介" v-decorator="['hobby', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
