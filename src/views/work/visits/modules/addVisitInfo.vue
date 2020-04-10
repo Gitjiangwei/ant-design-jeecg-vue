@@ -21,21 +21,21 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item
+      <!--  <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="拜访人"
           hasFeedback >
           <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {rules: [{ required: true,message: '请输入拜访人' }]}]" />
 
-        </a-form-item>
+        </a-form-item>-->
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="拜访时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
         </a-form-item>
 
         <a-form-item
@@ -206,7 +206,7 @@
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'companyName','visitor','visitTime','way','content','result'))
           //时间格式化
-          this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
 
         });
 
@@ -233,10 +233,12 @@
               method = 'put';
             }
 
-            let a = this.avatar.charAt(this.avatar.length - 1);
-            debugger;
-            if(a == ",") {
-              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            if(this.avatar!=null && this.avatar != "" && this.avatar !=undefined) {
+              let a = this.avatar.charAt(this.avatar.length - 1);
+              debugger;
+              if (a == ",") {
+                this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+              }
             }
 
             this.model.fileRelId = this.avatar;
@@ -247,7 +249,7 @@
 
             //时间格式化
 
-            formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD'):null;
+            formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD HH:mm:ss'):null;
 
 
             httpAction(httpurl,formData,method).then((res)=>{

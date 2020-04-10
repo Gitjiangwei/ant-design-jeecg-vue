@@ -155,6 +155,12 @@
 
             },
             {
+              title: '应退保证金（万元）',
+              align: "center",
+              dataIndex: 'recedeDeposit',
+
+            },
+            {
               title: '保证金是否退回',
               align: "center",
               dataIndex: 'isBack',
@@ -163,6 +169,36 @@
               title: '创建时间',
               align: "center",
               dataIndex: 'createTime',
+            },
+            {
+              title: '招标代理机构',
+              align: "center",
+              dataIndex: 'agency',
+            },
+            {
+              title: '采购人',
+              align: "center",
+              dataIndex: 'purchasePerson',
+            },
+            {
+              title: '服务费',
+              align: "center",
+              dataIndex: 'serviceMoney',
+            },
+            {
+              title: '交保证金时间',
+              align: "center",
+              dataIndex: 'payTime',
+            },
+            {
+              title: '退保证金时间',
+              align: "center",
+              dataIndex: 'recedeTime',
+            },
+            {
+              title: '服务费缴纳方式',
+              align: "center",
+              dataIndex: 'payWay',
             },
 
             {
