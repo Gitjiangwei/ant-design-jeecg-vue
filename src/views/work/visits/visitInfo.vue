@@ -77,7 +77,7 @@
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
             <a-dropdown>
-              <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+              <!--<a class="ant-dropdown-link">更多 <a-icon type="down"/></a>-->
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.visitId )">
@@ -106,7 +106,7 @@
     import {filterObj} from '@/utils/util';
     import fileDetail from "./modules/FileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
-    import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
+    import {initDictOptions} from '@/components/dict/RencheDictSelectUtil';
 
 
     export default {
@@ -118,7 +118,7 @@
       },
       data() {
         return{
-          description: '客户拜访页面',
+          description: '我的工单',
           fileRelId:"",
           // 查询条件
           queryParam: {},
@@ -144,33 +144,72 @@
               align: "center",
               dataIndex: 'companyName',
             },
+            {
+              title: '客户电话',
+              align: "center",
+              dataIndex: 'phone',
+            },
            /* {
               title: '拜访人',
               align: "center",
               dataIndex: 'visitor',
             },*/
-            {
+          /*  {
               title: '拜访时间',
               align: "center",
               dataIndex: 'visitTime',
-            },
+            },*/
+
             {
-              title: '拜访方式',
+              title: '计划执行时间',
               align: "center",
-              dataIndex: 'way',
+              dataIndex: 'planExecuTime',
+
+            },
+
+
+            {
+              title: '实际执行时间',
+              align: "center",
+              dataIndex: 'realityExecuTime',
 
             },
             {
-              title: '拜访内容',
+              title: '计划参与人数',
+              align: "center",
+              dataIndex: 'planPersonNum',
+
+            },
+            {
+              title: '实际参与人数',
+              align: "center",
+              dataIndex: 'realityPersonNum',
+
+            },
+            {
+              title: '任务内容',
               align: "center",
               dataIndex: 'content',
             },
             {
-              title: '拜访结果',
+              title: '执行情况',
               align: "center",
               dataIndex: 'result',
 
             },
+            {
+              title: '用户评价',
+              align: "center",
+              dataIndex: 'evaluate',
+
+            },
+            {
+              title: '备注',
+              align: "center",
+              dataIndex: 'remark',
+
+            },
+
 
             {
               title: '操作',
@@ -203,7 +242,7 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/visit/qryVisit",
+            list: "/renche/WorkSerivice/qryWorkSerivice",
             delete: "/renche/visit/delete",
             deleteBatch:"/renche/visit/deleteBatch",
             export:"/renche/visit/exportVisit1",
