@@ -226,10 +226,13 @@
       },
       show (recode) {
         this.visible = true;
+        this.queryParam = {};
         this.reciveUser = recode;
         this.loadData();
       },
       close () {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
         this.$emit('close');
         this.visible = false;
       },

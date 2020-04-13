@@ -84,7 +84,7 @@
 
 
   export default {
-    name: "invoicInfoFileDetail",
+    name: "invociInfoFileDetail",
     components: {
       ARow,
     },
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/file/updateInvoicFileIds",
+          listFileUpdate: "/renche/invoci/updateFileIds",
         },
       }
     },
@@ -160,7 +160,6 @@
     },
     methods: {
       loadData(arg) {
-        debugger;
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -228,11 +227,8 @@
             ids = ids.substring(0, ids.length - 1);
           }
         }
-        debugger;
         deleteAction(that.url.listFileUpdate, {invociId:this.invociId,ids: ids}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-          } else {
+          if (!res.success) {
             that.$message.warning(res.message);
           }
         });
