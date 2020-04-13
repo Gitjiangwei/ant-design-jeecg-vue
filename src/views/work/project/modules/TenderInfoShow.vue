@@ -11,24 +11,27 @@
     <a-spin :spinning="confirmLoading">
       <a-form  layout="inline">
         <a-row :gutter="24">
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-          <a-form-item label="项目名称" >
-            <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
-          </a-form-item>
-        </a-col>
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="招标编号">
+          <a-col :span="8">
+            <a-form-item label="项目名称" :wrapperCol="wrapperCol" :labelCol="labelCol"  style="width: 100%;">
+              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8" style="padding-left: 8px;padding-right: 0px;">
+            <a-form-item label="招标编号" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="投标单位">
+          <a-col :span="8" style="padding-left: 8px;padding-right: 0px;">
+            <a-form-item label="投标单位" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6" style="width: 18%;padding-left: 8px;padding-right: 0px;">
+        </a-row>
+        <a-row>
+          <a-col  :span="10" style="padding: 12px;">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
           </a-col>
         </a-row>
@@ -77,6 +80,14 @@
         // 查询条件
         queryParam: {},
         confirmLoading: false,
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         // 表头
         columns: [
           {
@@ -172,9 +183,12 @@
       },
       show () {
         this.visible = true;
+        this.queryParam = {};
         this.loadData();
       },
       close () {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
         this.$emit('close');
         this.visible = false;
       },
