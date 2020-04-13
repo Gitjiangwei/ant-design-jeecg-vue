@@ -18,13 +18,13 @@
           <a-input placeholder="请输入工单名称"  v-decorator="['workName', {rules: [{ required: true,message: '请输入工单名称' }]}]" />
 
         </a-form-item>
-        <a-form-item
+     <!--   <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="创建人"
           hasFeedback >
           <a-input placeholder="请输入创建人"  v-decorator="['createPerson', {rules: [{ required: true,message: '请输入创建人' }]}]" />
-        </a-form-item>
+        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -34,9 +34,9 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="完成时间"
+          label="计划完成时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'completeTime', {}]" />
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'completeTime', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -73,9 +73,10 @@
           label="状态"
           hasFeedback >
           <a-select v-decorator="['status', {rules: [{ required: true,message: '请输入工单状态' }]}]" placeholder="请选择状态">
-            <a-select-option :key="1">未提交</a-select-option>
-            <a-select-option :key="2">审批中</a-select-option>
-            <a-select-option :key="3">已完成</a-select-option>
+            <a-select-option :key="1">实施</a-select-option>
+            <a-select-option :key="2">维修</a-select-option>
+            <a-select-option :key="3">拜访</a-select-option>
+            <a-select-option :key="4">销售</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -220,7 +221,7 @@
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'workName','createPerson','chargePerson','content','prjItemName','completeTime','status'));
           //时间格式化
-          this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD HH:mm:ss'):null});
 
         });
 
@@ -249,13 +250,14 @@
               method = 'put';
             }
 
-
-            let a = this.avatar.charAt(this.avatar.length - 1);
-
-            debugger;
-            if(a == ",") {
-              this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+            if(this.avatar!=null && this.avatar != "" && this.avatar !=undefined) {
+              let a = this.avatar.charAt(this.avatar.length - 1);
+              debugger;
+              if (a == ",") {
+                this.avatar = this.avatar.substring(0, this.avatar.length - 1);
+              }
             }
+
             this.model.fileRelId = this.avatar;
 
 
@@ -264,7 +266,7 @@
 
             //时间格式化
 
-            formData.completeTime = formData.completeTime?formData.completeTime.format('YYYY-MM-DD'):null;
+            formData.completeTime = formData.completeTime?formData.completeTime.format('YYYY-MM-DD HH:mm:ss'):null;
             httpAction(httpurl,formData,method).then((res)=>{
               var meth = method;
               if(res.success){

@@ -54,7 +54,55 @@
             <a-select-option :key="2">否</a-select-option>
           </a-select>
         </a-form-item>
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="招标代理机构"
+        hasFeedback >
+        <a-input placeholder="请输入招标代理机构" v-decorator="['agency', {rules: [{ required: true,message: '请输入招标代理机构' }]}]" />
+      </a-form-item>
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="采购人"
+        hasFeedback >
+        <a-input placeholder="请输入采购人" v-decorator="['purchasePerson', {rules: [{ required: true,message: '请输入采购人' }]}]" />
+      </a-form-item>
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="服务费"
+        hasFeedback >
+        <a-input placeholder="请输入服务费" v-decorator="['serviceMoney', {rules: [{ required: true,message: '请输入服务费' }]}]" />
+      </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="服务费缴费方式"
+          hasFeedback >
+          <a-select v-decorator="['payWay', {rules: [{ required: true,message: '请输入客户名称' }]}]" placeholder="请选择服务费缴费方式">
+            <a-select-option :key="1">自缴</a-select-option>
+            <a-select-option :key="2">保证金扣除</a-select-option>
+          </a-select>
+        </a-form-item>
+
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="交保证金时间"
+        hasFeedback >
+        <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'payTime', {}]" />
+      </a-form-item>
+      <a-form-item
+        :labelCol="labelCol"
+        :wrapperCol="wrapperCol"
+        label="退保证金时间"
+        hasFeedback >
+        <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'recedeTime', {}]" />
+      </a-form-item>
       </a-form>
+
+
 
     </a-spin>
   </a-modal>
@@ -106,10 +154,10 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','tenderOffer','deposit','isBack'))
-          /*   //时间格式化
-             this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD'):null});
-   */
+          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payTime','recedeTime'))
+             //时间格式化
+             this.form.setFieldsValue({payTime:this.model.payTime?moment(this.model.payTime,'YYYY-MM-DD HH:mm:ss"'):null});
+              this.form.setFieldsValue({recedeTime:this.model.recedeTime?moment(this.model.recedeTime,'YYYY-MM-DD HH:mm:ss'):null});
         });
 
       },
@@ -133,6 +181,8 @@
               method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            formData.payTime = formData.payTime?formData.payTime.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.recedeTime = formData.recedeTime?formData.recedeTime.format('YYYY-MM-DD HH:mm:ss'):null;
 
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
