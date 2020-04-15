@@ -29,9 +29,10 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
        <!-- <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
-        <a-button type="primary" >
+       <!-- <a-button type="primary" >
           <a :href="'http://localhost:8080/jeecg-boot/renche/visit/exportVisit1'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>
+        </a-button>-->
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
 
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -225,8 +226,8 @@
           // 分页参数
           ipagination: {
             current: 1,
-            pageSize: 10,
-            pageSizeOptions: ['10', '20', '30'],
+            pageSize: 30,
+            pageSizeOptions: ['20', '30', '40'],
             showTotal: (total, range) => {
               return range[0] + "-" + range[1] + " 共" + total + "条"
             },
@@ -245,7 +246,7 @@
             list: "/renche/WorkSerivice/qryWorkSerivice",
             delete: "/renche/visit/delete",
             deleteBatch:"/renche/visit/deleteBatch",
-            export:"/renche/visit/exportVisit1",
+            export:"/renche/WorkSerivice/exportWorkService",
 
           },
         }
@@ -395,6 +396,14 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
+        },
+        exportDate(){
+         var params = Object.assign({}, this.queryParam, this.isorter);
+          var param = JSON.stringify(params);
+          //alert("param="+param);
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
         }
       }
     }

@@ -80,7 +80,7 @@
           :wrapperCol="wrapperCol"
           label="服务费缴费方式"
           hasFeedback >
-          <a-select v-decorator="['payWay', {rules: [{ required: true,message: '请输入客户名称' }]}]" placeholder="请选择服务费缴费方式">
+          <a-select v-decorator="['payWay', {rules: [{ required: true,message: '请输入服务费缴费方式' }]}]" placeholder="请选择服务费缴费方式">
             <a-select-option :key="1">自缴</a-select-option>
             <a-select-option :key="2">保证金扣除</a-select-option>
           </a-select>
@@ -189,7 +189,8 @@
                 that.$message.success(res.message);
                 that.$emit('ok');
               }else{
-                that.$message.warning(res.message);
+               /* that.$message.warning(res.message);*/
+                alert(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
