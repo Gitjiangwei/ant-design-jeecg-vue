@@ -36,7 +36,7 @@
           :wrapperCol="wrapperCol"
           label="计划完成时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'completeTime', {}]" />
+          <a-date-picker showTime format="YYYY-MM-DD "  v-decorator="[ 'completeTime', {}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -214,14 +214,14 @@
 
       },
       edit (record) {
-        this.avatar = record.fileRelId;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'workName','createPerson','chargePerson','content','prjItemName','completeTime','status'));
           //时间格式化
-          this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD'):null});
 
         });
 
@@ -266,7 +266,7 @@
 
             //时间格式化
 
-            formData.completeTime = formData.completeTime?formData.completeTime.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.completeTime = formData.completeTime?formData.completeTime.format('YYYY-MM-DD'):null;
             httpAction(httpurl,formData,method).then((res)=>{
               var meth = method;
               if(res.success){

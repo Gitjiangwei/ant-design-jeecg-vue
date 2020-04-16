@@ -85,6 +85,20 @@
             <a-select-option :key="2">保证金扣除</a-select-option>
           </a-select>
         </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="计划完成时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {rules: [{ required: true,message: '请选择计划完成时间' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="实际完成时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {rules: [{ required: true,message: '请选择实际完成时间' }]}]" />
+        </a-form-item>
 
       <a-form-item
         :labelCol="labelCol"
@@ -149,15 +163,17 @@
 
       },
       edit (record) {
-
+        //this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payTime','recedeTime'))
+          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','planOutTime','realityOutTime','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payTime','recedeTime'))
              //时间格式化
-             this.form.setFieldsValue({payTime:this.model.payTime?moment(this.model.payTime,'YYYY-MM-DD HH:mm:ss"'):null});
-              this.form.setFieldsValue({recedeTime:this.model.recedeTime?moment(this.model.recedeTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({payTime:this.model.payTime?moment(this.model.payTime,'YYYY-MM-DD HH:mm:ss"'):null});
+          this.form.setFieldsValue({recedeTime:this.model.recedeTime?moment(this.model.recedeTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({planOutTime:this.model.planOutTime?moment(this.model.planOutTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({realityOutTime:this.model.realityOutTime?moment(this.model.realityOutTime,'YYYY-MM-DD'):null});
         });
 
       },
@@ -183,6 +199,8 @@
             let formData = Object.assign(this.model, values);
             formData.payTime = formData.payTime?formData.payTime.format('YYYY-MM-DD HH:mm:ss'):null;
             formData.recedeTime = formData.recedeTime?formData.recedeTime.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.planOutTime = formData.planOutTime?formData.planOutTime.format('YYYY-MM-DD'):null;
+            formData.realityOutTime = formData.realityOutTime?formData.realityOutTime.format('YYYY-MM-DD'):null;
 
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
