@@ -20,43 +20,67 @@
             <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
           </a-select>
         </a-form-item>
-
-      <!--  <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="拜访人"
-          hasFeedback >
-          <a-input placeholder="请输入拜访人"  v-decorator="['visitor', {rules: [{ required: true,message: '请输入拜访人' }]}]" />
-
-        </a-form-item>-->
-
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访时间"
+          label="计划执行时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'visitTime', {rules: [{ required: true,message: '请选择拜访时间' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'planExecuTime', {rules: [{ required: true,message: '请选择计划执行时间' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="实际执行时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'realityExecuTime', {rules: [{ required: true,message: '请选择实际执行时间' }]}]" />
         </a-form-item>
 
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访方式">
-          <a-input placeholder="请输入拜访方式" v-decorator="['way', {rules: [{ required: true,message: '请输入拜访方式' }]}]" />
+          label="计划参与人数">
+          <a-input placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {rules: [{ required: true,message: '请输入计划参与人数' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访内容"
-          hasFeedback >
-          <a-textarea placeholder="请输入拜访内容" v-decorator="['content', {rules: [{ required: true,message: '请输入拜访内容' }]}]" :row="2" />
+          label="实际参与人数">
+          <a-input placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', {rules: [{ required: true,message: '请输入实际参与人数' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="拜访结果"
+          label="任务内容"
           hasFeedback >
-          <a-textarea placeholder="请输入拜访结果" v-decorator="['result', {rules: [{ required: true,message: '请输入拜访结果' }]}]" :row="2" />
+          <a-textarea placeholder="请输入任务内容" v-decorator="['content', {rules: [{ required: true,message: '请输入任务内容' }]}]" :row="2" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="执行情况"
+          hasFeedback >
+          <a-textarea placeholder="请输入执行情况" v-decorator="['result', {rules: [{ required: true,message: '请输入执行情况' }]}]" :row="2" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="客户评价"
+          hasFeedback >
+          <a-select v-decorator="['evaluate', {rules: [{ required: true,message: '请输入客户评价' }]}]" placeholder="请选择客户评价">
+            <a-select-option :key="1">很满意</a-select-option>
+            <a-select-option :key="2">满意</a-select-option>
+            <a-select-option :key="3">一般</a-select-option>
+            <a-select-option :key="4">较差</a-select-option>
+            <a-select-option :key="4">很差</a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="备注"
+          hasFeedback >
+          <a-textarea placeholder="请输入备注" v-decorator="['remark', {rules: [{ required: true,message: '请输入备注' }]}]" :row="2" />
         </a-form-item>
 
         <a-form-item
@@ -95,7 +119,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import {queryDepartCGTreeList, doMian} from '@/api/api'
+  import { doMian} from '@/api/api'
 
 
   export default {
@@ -125,8 +149,8 @@
         validatorRules:{
         },
         url: {
-          add: "/renche/visit/add",
-          edit: "/renche/visit/up",
+          add: "/renche/WorkSerivice/upWorkSerivice",
+          edit: "renche/WorkSerivice/upWorkSerivice",
           getn:"/renche/visit/getn",
           fileUpload: doMian + "/sys/common/upload",
         },
@@ -180,7 +204,7 @@
 
       //初始化公司名稱列表
       initcompanyNames(){
-
+        var that=this;
         getAction(this.url.getn).then((res)=> {
 
           if (res.success) {
@@ -204,9 +228,11 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'companyName','visitor','visitTime','way','content','result'))
+          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','realityExecuTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
-          this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
+        //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({realityExecuTime:this.model.realityExecuTime?moment(this.model.realityExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
 
         });
 
@@ -223,7 +249,7 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.visitId){
+            if(!this.model.workServiceId){
 
               httpurl+=this.url.add;
               method = 'post';
@@ -235,7 +261,6 @@
 
             if(this.avatar!=null && this.avatar != "" && this.avatar !=undefined) {
               let a = this.avatar.charAt(this.avatar.length - 1);
-              debugger;
               if (a == ",") {
                 this.avatar = this.avatar.substring(0, this.avatar.length - 1);
               }
@@ -249,18 +274,15 @@
 
             //时间格式化
 
-            formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD HH:mm:ss'):null;
+           // formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.planExecuTime = formData.planExecuTime?formData.planExecuTime.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.setFieldsValue = formData.setFieldsValue?formData.setFieldsValue.format('YYYY-MM-DD HH:mm:ss'):null;
 
 
             httpAction(httpurl,formData,method).then((res)=>{
               var meth = method;
               if(res.success){
                that.$message.success(res.message);
-                /*if(meth== "put"){
-                  alert("修改成功");
-                }else if(meth == "post"){
-                  alert("添加成功");
-                }*/
 
                 that.$emit('ok');
               }else{
