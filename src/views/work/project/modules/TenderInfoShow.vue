@@ -13,17 +13,17 @@
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="项目名称" :wrapperCol="wrapperCol" :labelCol="labelCol"  style="width: 100%;">
-              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="8" style="padding-left: 8px;padding-right: 0px;">
             <a-form-item label="招标编号" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
-              <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
+              <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"  maxLength="30"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="8" style="padding-left: 8px;padding-right: 0px;">
             <a-form-item label="投标单位" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
-              <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
+              <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"  maxLength="30"></a-input>
             </a-form-item>
           </a-col>
         </a-row>

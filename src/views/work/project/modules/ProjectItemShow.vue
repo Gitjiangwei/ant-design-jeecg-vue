@@ -13,12 +13,12 @@
         <a-row :gutter="24">
           <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
             <a-form-item label="工程名称">
-              <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"></a-input>
+              <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
             <a-form-item label="项目名称">
-              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+              <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6" style="width: 18%;padding-left: 8px;padding-right: 0px;">

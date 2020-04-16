@@ -4,30 +4,13 @@
         <a-form layout="inline">
           <a-row :gutter="24">
             <a-col :span="6">
-              <a-form-item label="发票内容" >
-                <a-input placeholder="请输入发票内容" v-model="queryParam.content" maxLength="100"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item label="税号">
-                <a-input placeholder="请输入税号" v-model="queryParam.shuihao" maxLength="20"></a-input>
+              <a-form-item label="回款时间">
+                <a-date-picker  v-model="queryParam.invociTime" />
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="合同名称">
                 <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxLength="50"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item label="公司名称">
-                <a-input placeholder="请输入公司名称" v-model="queryParam.companyName" maxLength="50"></a-input>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row  :gutter="24" v-show="isShow">
-            <a-col :span="6">
-              <a-form-item label="开票时间">
-                <a-date-picker  v-model="queryParam.invociTime" />
               </a-form-item>
             </a-col>
           </a-row>
@@ -76,7 +59,7 @@
           ref="table"
           size="middle"
           bordered
-          rowKey="invociId"
+          rowKey="backId"
           :columns="columns"
           :dataSource="dataSource"
           :pagination="ipagination"
@@ -98,8 +81,8 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-        <add-invoci-info ref="addInvociInfo" @ok="modalFormOk"></add-invoci-info>
-      <invoci-info-file-detail ref="invociInfoFileDetail" @ok="modalFormOk"></invoci-info-file-detail>
+        <MoneyBackModel ref="moneyBackModel" @ok="modalFormOk"></MoneyBackModel>
+      <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
 
 
     </a-card>
@@ -108,22 +91,22 @@
 
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
-    import AddInvociInfo from './modules/AddInvociInfo';
+    import MoneyBackModel from './modules/MoneyBackModel';
     import {filterObj} from '@/utils/util';
-    import InvociInfoFileDetail from "./modules/InvociInfoFileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
+    import FileDetail from "./modules/FileDetail";
 
     export default {
       name: "invoicInfo",
       components: {
+        FileDetail,
         ARow,
-        AddInvociInfo,
-        InvociInfoFileDetail,
+        MoneyBackModel,
 
       },
       data() {
         return{
-          description: '发票管理页面',
+          description: '回款管理页面',
           isShow:false,
           // 查询条件
           queryParam: {},
@@ -145,29 +128,19 @@
               dataIndex: 'contractName',
             },
             {
-              title: '开票日期',
+              title: '回款时间',
               align: "center",
-              dataIndex: 'invociTime',
+              dataIndex: 'backTime',
             },
             {
-              title: '发票内容',
+              title: '回款金额',
               align: "center",
-              dataIndex: 'content',
+              dataIndex: 'backMoney',
             },
             {
-              title: '开票金额',
+              title: '备注',
               align: "center",
-              dataIndex: 'totalMoney',
-            },
-            {
-              title: '公司名称',
-              align: "center",
-              dataIndex: 'companyName',
-            },
-            {
-              title: '税号',
-              align: "center",
-              dataIndex: 'shuihao',
+              dataIndex: 'remark',
             },
            {
               title: '附件',
@@ -181,7 +154,6 @@
               scopedSlots: {customRender: 'action'},
             }
           ],
-
 
           //数据集
           dataSource: [],
@@ -205,7 +177,7 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/invoci/qryInvociList",
+            list: "/renche/moneyBack/list",
             delete: "/renche/invoci/delete",
             deleteBatch: "/renche/invoci/deleteBat",
             filelist: "/renche/purchase/fileList",
@@ -320,19 +292,19 @@
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
           }
-          this.$refs.addInvociInfo.edit(record);
-          this.$refs.addInvociInfo.title = "编辑";
+          this.$refs.moneyBackModel.edit(record);
+          this.$refs.moneyBackModel.title = "编辑";
         },
 
         fileDeteil:function(record){
           console.log(record);
-          this.$refs.invociInfoFileDetail.fileLoad(record);
-          this.$refs.invociInfoFileDetail.title = "附件";
+          this.$refs.fileDetail.fileLoad(record);
+          this.$refs.fileDetail.title = "附件";
         },
 
         handleAdd: function () {
-          this.$refs.addInvociInfo.add();
-          this.$refs.addInvociInfo.title = "新增";
+          this.$refs.moneyBackModel.add();
+          this.$refs.moneyBackModel.title = "新增";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
