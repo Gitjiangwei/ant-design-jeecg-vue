@@ -68,6 +68,7 @@ const editDictItem = (params)=>putAction("/sys/dictItem/edit",params);
 const delDictItem = (params)=>deleteAction("/sys/dictItem/delete",params);
 const delDictItemList = (params)=>deleteAction("/sys/dictItem/deleteBatch",params);
 const checkOnlyDict = (params)=>getAction("/renche/dictitem/checkOnlyDict",params);
+const checkOnlyDictDetail = (params)=>getAction("/renche/dict/checkOnlyDictDetail",params);
 
 //字典标签专用（通过code获取字典数组）
 export const ajaxGetDictItems = (code, params)=>getAction(`/sys/dict/getDictItems/${code}`,params);
@@ -83,6 +84,7 @@ const getLoginfo = (params)=>getAction("/sys/loginfo",params);
 export {
   imgView,
   checkOnlyDict,
+  checkOnlyDictDetail,
   doMian,
   addRole,
   editRole,

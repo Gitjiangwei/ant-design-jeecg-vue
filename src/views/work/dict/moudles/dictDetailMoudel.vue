@@ -14,29 +14,30 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="字典类型编码"
+          label="数据字典编码"
           hasFeedback
         >
-          <a-input placeholder="请输入字典类型编码"  maxlength="30" :disabled="isEdit"
-                   v-decorator="['dictItemCode', {rules: [{ required: true, message: '请输入字典类型编码', },{ validator: this.validateDictCode}]}]"/>
+          <a-input placeholder="请输入数据字典编码"  maxlength="30" :disabled="isEdit"
+                   v-decorator="['dictCodeId', {rules: [{ required: true, message: '请输入数据字典编码', },{ validator: this.validateDictCode}]}]"/>
 
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="字典类型名称"
+          label="数据字典名称"
           hasFeedback
         >
-          <a-input placeholder="请输入字典类型名称" maxlength="30"
-                   v-decorator="['dictItemName', {rules: [{ required: true, message: '请输入字典类型名称', }]}]"/>
+          <a-input placeholder="请输入数据字典名称" maxlength="30"
+                   v-decorator="['dictCodeName', {rules: [{ required: true, message: '请输入数据字典名称', }]}]"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="备注"
+          label="顺序"
           hasFeedback
         >
-          <a-textarea  placeholder="请输入备注" maxlength="2000" v-decorator="['remarks', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
+          <a-input placeholder="请输入顺序编号" maxlength="3"
+                   v-decorator="['orderNo', {rules: [{ validator: this.validateDictOrderNo}]}]"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -49,10 +50,10 @@
   import moment from "moment"
   import Vue from 'vue'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import {doMian,checkOnlyDict} from '@/api/api'
+  import {doMian,checkOnlyDictDetail} from '@/api/api'
 
   export default {
-    name:"dectCodeMoulde",
+    name:"dictDetailMoudel",
     components:{},
     data(){
       return{
@@ -60,6 +61,7 @@
         isEdit:false,
         title: "操作",
         visible: false,
+        dictItemId:"",
         model: {},
         disableSubmit: false,
         labelCol: {
@@ -76,30 +78,32 @@
         form: this.$form.createForm(this),
         validatorRules: {},
         url: {
-          add:"/renche/dictitem/saveDictItem",
-          edit:"/renche/dictitem/updateDictItem",
+            add:"renche/dict/saveDict",
+            edit:"renche/dict/updateDict",
         },
       }
     },
     created() {
       this.isEdit = true;
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token":token}
     },
     methods:{
-      add() {
+      add(dictItemId) {
+        this.dictItemId = dictItemId;
         this.isEdit = false;
         this.edit({});
       },
-      edit(record) {
-        if(record.dictItemId != null && record.dictItemId != "" && record.dictItemId != undefined){
+      edit(record,dictItemId) {
+        if(record.dictId != null && record.dictId != "" && record.dictId != undefined){
           this.isEdit = true;
+        }
+        if(this.dictItemId ==""){
+            this.dictItemId = dictItemId;
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'dictItemCode', 'dictItemName','remarks'))
+          this.form.setFieldsValue(pick(this.model, 'dictCodeId', 'dictCodeName','orderNo'))
         });
 
       },
@@ -115,7 +119,7 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if (!this.model.dictItemId) {
+            if (!this.model.dictId) {
               httpurl += this.url.add;
               method = 'post';
             } else {
@@ -123,10 +127,11 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
-            if(!this.model.dictItemId) {
+            formData.dictItemId = this.dictItemId;
+            if(!this.model.dictId) {
               this.$confirm({
                 title: "确认新增",
-                content: "确认后数据字典类型编码将无法修改！",
+                content: "确认后数据字典编码将无法修改！",
                 onOk: function () {
                   httpAction(httpurl, formData, method).then((res) => {
                     if (res.success) {
@@ -165,15 +170,16 @@
 
       validateDictCode(rule, value, callback){
         var params = {
-          dictItemCode:value
+          dictCodeId:value,
+          dictItemId:this.dictItemId
         };
         if(this.isEdit==true){
           callback();
         }
         if(/[\u4E00-\u95FA5]/g.test(value)){
-          callback("数据字典类型编码不能输入中文，请重新输入");
+          callback("数据字典编码不能输入中文，请重新输入");
         }else{
-          checkOnlyDict(params).then((res)=>{
+          checkOnlyDictDetail(params).then((res)=>{
             if(res.success){
               callback("该数据字典类型编码已存在，请重新输入");
             }else{
@@ -181,9 +187,15 @@
             }
           });
         }
-
-
       },
+      validateDictOrderNo(rule,value,callback){
+        var reg = /^[0-9]*$/;
+        if(!reg.test(value)){
+          callback("顺序只能输入数字");
+        }else {
+          callback();
+        }
+      }
     }
   }
 </script>
