@@ -154,13 +154,13 @@
               dataIndex: 'describe',
 
             },
-            {
+           /* {
               title: '创建时间',
               align: "center",
               dataIndex: 'createTime',
-            },
+            },*/
             {
-              title: '计划完成时间',
+              title: '预计完成时间',
               align: "center",
               dataIndex: 'completeTime',
             },

@@ -31,24 +31,32 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="开票金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入开票金额" id="price" v-decorator="['price', {rules: [{ required: true,pattern: /^[1-9]?\d*\d(\.\d{1,2})?$/,message: '请输入正确开票金额' }]}]" maxLength="15" @blur="makeTotalMoney" />
+            <a-form-item label="金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input-number id="price" :defaultValue="0" v-decorator="['price', {rules: [{ required: true,message: '请输入正确金额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="税额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入税额" id="shuiMoney" v-decorator="['shuiMoney', {rules: [{ required: false,pattern: /^[1-9]?\d(\.\d{1,2})?$/,message: '请输入正确税额' }]}]"  maxLength="15" @blur="makeTotalMoney"/>
+              <a-input-number id="shuiMoney" v-decorator="['shuiMoney', {rules: [{ required: true,message: '请输入正确税额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="税率" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入税率(%)" v-decorator="['shuiPercent', {rules: [{ required: false,pattern: /^[1-9]?\d(\.\d{1,3})?$|^0$|^100$/,message: '请输入正确税率' }]}]"  maxLength="6" />
+              <a-input-number
+                :min="0"
+                :max="100"
+                :step="0.01"
+                style="width: 60%;"
+                :formatter="value => `${value}%`"
+                :parser="value => value.replace('%', '')"
+                v-decorator="['shuiPercent', {rules: [{ required: false,message: '请输入正确税率' }],initialValue: '0'}]"
+              />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item label="总额" :wrapperCol="wrapperCol" :labelCol="labelCol">
+            <a-form-item label="开票金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-input placeholder="0" id="totalMoney" v-decorator="['totalMoney', {}]" disabled />
             </a-form-item>
           </a-col>
@@ -148,7 +156,7 @@
     </a-spin>
 
     <ContractInfoShow ref="contractInfoShow" @func="modalFormOk"></ContractInfoShow>
-    
+
   </a-modal>
 </template>
 
@@ -178,7 +186,6 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-
         uploadLoading: false,
         headers: {},
         avatar: "",
@@ -224,9 +231,6 @@
           this.uploadLoading = false;
           console.log(response);
           if (response.success) {
-            if(this.avatar == undefined || this.avatar == null){
-              this.avatar = "";
-            }
             this.avatar = response.message + "," + this.avatar;
             console.log(this.avatar);
           } else {
@@ -237,9 +241,7 @@
 
 
       add () {
-
         this.edit({});
-
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
@@ -274,8 +276,9 @@
               method = 'put';
             }
 
-            this.model.fileRelId = this.avatar;
-            let formData = Object.assign(this.model, values);
+            that.model.fileRelId = that.avatar;
+            values.totalMoney = that.model.totalMoney;
+            let formData = Object.assign(that.model, values);
 
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
@@ -297,31 +300,25 @@
         this.close()
       },
       makeTotalMoney(e){
-        let value = e.target.value;
-        if(!value || new RegExp(/^[1-9]?\d*\d(\.\d{1,2})?$/).test(value)){
-          if(value != "" && value.indexOf(".") > -1){
-            let xs = value.substring(value.indexOf(".")+1,value.length);
-            if(xs == "00" || xs == "0"){
-              e.target.value = value.substring(0,value.indexOf("."));
-            }
-          }
-          let price = document.getElementById("price").value.toString();
-          let shuiMoney = document.getElementById("shuiMoney").value.toString();
-          if(price == ""){
-            price = "0";
-          }
-          if(shuiMoney == ""){
-            shuiMoney = "0";
-          }
-          var totalPrice = parseFloat(price) + parseFloat(shuiMoney);
-          if (price != "" || shuiMoney != "") {
-            document.getElementById("totalMoney").value = totalPrice;
-          }
+        let price = document.getElementById("price").value.toString();
+        let shuiMoney = document.getElementById("shuiMoney").value.toString();
+        if(price == ""){
+          price = "0";
         }
-      },showContract:function (){
+        if(shuiMoney == ""){
+          shuiMoney = "0";
+        }
+        var totalPrice = parseFloat(price) + parseFloat(shuiMoney);
+        if (price != "" || shuiMoney != "") {
+          document.getElementById("totalMoney").value = totalPrice;
+          this.model.totalMoney = totalPrice;
+        }
+      },
+      showContract:function (){
         this.$refs.contractInfoShow.show();
         this.$refs.contractInfoShow.title = "选择关联合同信息";
-      },modalFormOk(data) {
+      },
+      modalFormOk(data) {
         this.model.contractId = data[0].contractId;
         this.form.setFieldsValue({contractName:data[0].contractName});
       },

@@ -27,9 +27,10 @@
       </a-form>
     </div>
     <div class="table-operator">
-      <a-button type="primary" >
+      <!--<a-button type="primary" >
         <a :href="'http://localhost:8080/jeecg-boot/renche/equip/exportEquip'" target="_blank" style="margin-left: 10px">导出</a>
-      </a-button>
+      </a-button>-->
+      <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div style="margin-top: 10px">
@@ -155,8 +156,8 @@
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSize: 30,
+          pageSizeOptions: ['20', '30', '40'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -176,6 +177,7 @@
           // delete: "/renche/purchase/delete",
           // deleteBatch: "/renche/purchase/deleteBatch",
           // updateIsArrival: "/renche/purchase/updateIsArrival"
+          export: "/renche/equip/exportEquip",
         },
       }
     },
@@ -270,6 +272,14 @@
         this.ipagination = pagination;
         this.loadData();
       },
+      exportDate(){
+        var params = Object.assign({}, this.queryParam, this.isorter);
+        var param = JSON.stringify(params);
+        //alert("param="+param);
+        param = param.replace("{","");
+        param = param.replace("}","");
+        window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
+      }
     }
   }
 

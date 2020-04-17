@@ -25,14 +25,28 @@
           :wrapperCol="wrapperCol"
           label="计划执行时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'planExecuTime', {rules: [{ required: true,message: '请选择计划执行时间' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planExecuTime', {rules: [{ required: true,message: '请选择计划执行时间' }]}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="实际执行时间"
           hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'realityExecuTime', {rules: [{ required: true,message: '请选择实际执行时间' }]}]" />
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityExecuTime', {rules: [{ required: true,message: '请选择实际执行时间' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="计划完成时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {rules: [{ required: true,message: '请选择计划完成时间' }]}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="实际完成时间"
+          hasFeedback >
+          <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {rules: [{ required: true,message: '请选择实际完成时间' }]}]" />
         </a-form-item>
 
         <a-form-item
@@ -223,16 +237,18 @@
       },
       edit (record) {
         this.isEdit=false;
-        this.avatar = record.fileRelId;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','realityExecuTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
+          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
         //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
-          this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
-          this.form.setFieldsValue({realityExecuTime:this.model.realityExecuTime?moment(this.model.realityExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({realityExecuTime:this.model.realityExecuTime?moment(this.model.realityExecuTime,'YYYY-MM-DD '):null});
+          this.form.setFieldsValue({planOutTime:this.model.planOutTime?moment(this.model.planOutTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({realityOutTime:this.model.realityOutTime?moment(this.model.realityOutTime,'YYYY-MM-DD'):null});
 
         });
 
@@ -275,8 +291,10 @@
             //时间格式化
 
            // formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.planExecuTime = formData.planExecuTime?formData.planExecuTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.setFieldsValue = formData.setFieldsValue?formData.setFieldsValue.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.planExecuTime = formData.planExecuTime?formData.planExecuTime.format('YYYY-MM-DD '):null;
+            formData.setFieldsValue = formData.setFieldsValue?formData.setFieldsValue.format('YYYY-MM-DD '):null;
+            formData.planOutTime = formData.planOutTime?formData.planOutTime.format('YYYY-MM-DD '):null;
+            formData.realityOutTime = formData.realityOutTime?formData.realityOutTime.format('YYYY-MM-DD '):null;
 
 
             httpAction(httpurl,formData,method).then((res)=>{

@@ -10,6 +10,15 @@ const api = {
 
 export default api
 
+export function exportAction(url,parameter) {
+  return axios({
+    responseType: 'blob',
+    url: url,
+    method:'get' ,
+    params: parameter
+  })
+}
+
 //post
 export function postAction(url,parameter) {
   return axios({

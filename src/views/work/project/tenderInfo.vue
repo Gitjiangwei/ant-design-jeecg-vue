@@ -167,9 +167,16 @@
               dataIndex: 'isBack',
             },
             {
-              title: '创建时间',
+              title: '计划完成时间',
               align: "center",
-              dataIndex: 'createTime',
+              dataIndex: 'planOutTime',
+
+            },
+            {
+              title: '实际完成时间',
+              align: "center",
+              dataIndex: 'realityOutTime',
+
             },
             {
               title: '招标代理机构',

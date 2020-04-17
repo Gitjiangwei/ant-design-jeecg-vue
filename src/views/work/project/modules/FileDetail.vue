@@ -14,7 +14,7 @@
 
           <a-col :span="12">
             <a-form-item label="附件名称" >
-              <a-input placeholder="请输入附件名称" v-model="queryParam.fileName"></a-input>
+              <a-input placeholder="请输入附件名称" v-model="queryParam.fileName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12"  >
@@ -93,7 +93,7 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        invoiceId:"",
+        backId:"",
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -149,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/invoiceInfo/updateFileIds",
+          listFileUpdate: "/renche/moneyBack/updateFileIds",
         },
       }
     },
@@ -178,7 +178,7 @@
       fileLoad:function(record){
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.invoiceId = record.invoiceId;
+        this.backId = record.backId;
         this.loadData(1);
       },
       batchDel: function () {
@@ -225,7 +225,7 @@
         if(a == ",") {
           ids = ids.substring(0, ids.length - 1);
         }
-        deleteAction(that.url.listFileUpdate, {invoiceId:this.invoiceId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {backId:this.backId,ids: ids}).then((res) => {
           if (!res.success) {
             that.$message.warning(res.message);
           }
@@ -234,11 +234,11 @@
       handleCancel() {
         this.selectedRowKeys = [];
         this.selectionRows = [];
-        this.$emit('func');
+        this.$emit('ok');
         this.close();
       },
       close() {
-        this.$emit('func');
+        this.$emit('ok');
         this.visible = false;
       },
       modalFormOk() {
