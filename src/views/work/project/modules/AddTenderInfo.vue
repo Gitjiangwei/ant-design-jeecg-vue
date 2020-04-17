@@ -21,7 +21,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="招标编号">
-          <a-input placeholder="请输入招标编号" v-decorator="['tenderNo', {rules: [{ required: true,message: '请输入招标编号' }]}]" />
+          <a-input placeholder="请输入招标编号" v-decorator="['tenderNo', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确的招标编号' }]}]" maxLength="20"/>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -35,14 +35,14 @@
           :wrapperCol="wrapperCol"
           label="报价"
           hasFeedback >
-          <a-input placeholder="请输入报价(单位：万元)" v-decorator="['tenderOffer', {rules: [{ required: true,message: '请输入报价' }]}]" />
+          <a-input-number :defaultValue="0" placeholder="请输入报价(单位：万元)" v-decorator="['tenderOffer', {rules: [{ required: true,message: '请输入报价' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="保证金"
           hasFeedback >
-          <a-input placeholder="请输入保证金(单位：万元)" v-decorator="['deposit', {rules: [{ required: true,message: '请输入保证金' }]}]" />
+          <a-input-number :defaultValue="0" placeholder="请输入保证金(单位：万元)" v-decorator="['deposit', {rules: [{ required: true,message: '请输入保证金' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -73,7 +73,7 @@
         :wrapperCol="wrapperCol"
         label="服务费"
         hasFeedback >
-        <a-input placeholder="请输入服务费" v-decorator="['serviceMoney', {rules: [{ required: true,message: '请输入服务费' }]}]" />
+        <a-input-number :defaultValue="0" placeholder="请输入服务费" v-decorator="['serviceMoney', {rules: [{ required: true,message: '请输入服务费' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
       </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -105,7 +105,7 @@
         :wrapperCol="wrapperCol"
         label="交保证金时间"
         hasFeedback >
-        <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'payTime', {}]" />
+        <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'payTime', {rules: [{ required: true,message: '请选择交保证金时间' }]}]" />
       </a-form-item>
       <a-form-item
         :labelCol="labelCol"
@@ -168,7 +168,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','planOutTime','realityOutTime','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payTime','recedeTime'))
+          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','planOutTime','realityOutTime','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payWay','payTime','recedeTime'))
              //时间格式化
           this.form.setFieldsValue({payTime:this.model.payTime?moment(this.model.payTime,'YYYY-MM-DD HH:mm:ss"'):null});
           this.form.setFieldsValue({recedeTime:this.model.recedeTime?moment(this.model.recedeTime,'YYYY-MM-DD HH:mm:ss'):null});
@@ -183,6 +183,16 @@
       },
       handleOk () {
         const that = this;
+        var isBack1=this.model.isBack;
+        var recedeTime1=this.model.recedeTime;
+        alert("isBack1="+isBack1);
+        alert("recedeTime1="+recedeTime1);
+        if(isBack1==2||isBack1=="否"){
+          if(recedeTime1!=undefined||recedeTime1!=''){
+            alert("保证金未退回，请勿选择退回保证金时间！");
+            return;
+          }
+        }
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
