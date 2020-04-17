@@ -1,12 +1,20 @@
 <template>
-  <a-card :bordered="false" >
+  <a-modal
+    :title="title"
+    :width="800"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭"
+  >
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
 
           <a-col :span="12">
-            <a-form-item label="字典类型名称" >
-              <a-input placeholder="请输入字典类型名称" maxlength="30" v-model="queryParam.dictItemName"></a-input>
+            <a-form-item label="数据字典名称" >
+              <a-input placeholder="请输入字典类型名称" maxlength="30" v-model="queryParam.dictCodeName"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -21,7 +29,6 @@
         </a-row>
       </a-form>
     </div>
-
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增 </a-button>
@@ -44,7 +51,6 @@
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -56,54 +62,43 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical"/>
-          <a @click="handleDetail(record)">详情</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.dictItemId )">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.dictId )">
+            <a>删除</a>
+          </a-popconfirm>
         </span>
-
       </a-table>
+      <dict-detail-moudel ref="dictDetailMoudel" @ok="modalFormOk"></dict-detail-moudel>
     </div>
-    <!-- table区域-end -->
-    <dict-code-moudle ref="dictCodeMoudle" @ok="modalFormOk"></dict-code-moudle>
-    <dicr-code-detail ref="dicrCodeDetail"></dicr-code-detail>
-  </a-card>
+  </a-modal>
+
 </template>
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import dictCodeMoudle from "./moudles/dictCodeMoulde"
-  import dicrCodeDetail from "./dictCodeDetail"
   import {deleteAction, getAction, postAction} from '@/api/manage';
-  import {filterObj,timeFix} from '@/utils/util';
+  import {filterObj} from '@/utils/util';
+  import dictDetailMoudel from "./moudles/dictDetailMoudel"
+
 
 
   export default {
-    name: "dictList",
+    name: "dictCodeDetail",
     components: {
       ARow,
-      dictCodeMoudle,
-      dicrCodeDetail
+      dictDetailMoudel
     },
     data() {
-      return {
-        description: '采购管理页面',
-        timer: "",
-        purchaseId: "",
-        fileRelId: "",
-        value: 0,
+      return{
+        description: '数据字典值页',
+        timer:"",
+        dictItemId:"",
+        purchaseId:"",
+        title: "操作",
+        visible: false,
+        confirmLoading: false,
+
         // 查询条件
         queryParam: {},
         // 表头
@@ -119,32 +114,21 @@
             }
           },
           {
-            title: '字典类型编码',
+            title: '数据字典编码',
             align: "center",
-            dataIndex: 'dictItemCode',
+            dataIndex: 'dictCodeId',
           },
           {
-            title: '字典类型名称',
+            title: '数据字典名称',
             align: "center",
-            dataIndex: 'dictItemName'
+            dataIndex: 'dictCodeName',
           },
           {
-            title: '创建时间',
+            title: '顺序',
             align: "center",
-            dataIndex: 'createTime'
+            dataIndex: 'orderNo',
           },
-          {
-            title: '更新时间',
-            align: "center",
-            dataIndex: 'updateTime',
 
-          },
-          {
-            title: '备注',
-            align: "center",
-            dataIndex: 'remarks',
-
-          },
           {
             title: '操作',
             dataIndex: 'action',
@@ -174,16 +158,16 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/dictitem/qryDictItem",
-          deletes:"/renche/dictitem/delDictItems",
-          delete:"/renche/dictitem/delDictItem",
+          list: "/renche/dict/dictDateil",
+          del:"renche/dict/delDict",
+          dels:"renche/dict/delDicts"
         },
       }
     },
     created() {
-      this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
+      // this.loadData();
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token":token}
     },
     methods: {
       loadData(arg) {
@@ -199,18 +183,34 @@
           }
         })
       },
+      modalFormOk() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
+      },
+      detail:function(record){
+        this.visible = true;
+        this.dictItemId = record.dictItemId;
+        this.loadData(1);
+      },
       handleAdd: function () {
-        this.$refs.dictCodeMoudle.add();
-        this.$refs.dictCodeMoudle.title = "新增";
+        this.$refs.dictDetailMoudel.add(this.dictItemId);
+        this.$refs.dictDetailMoudel.title = "新增";
       },
       handleEdit: function(record) {
         //let results = this.handleKey(record);
-        this.$refs.dictCodeMoudle.edit(record);
-        this.$refs.dictCodeMoudle.title = "编辑";
+        this.$refs.dictDetailMoudel.edit(record,this.dictItemId);
+        this.$refs.dictDetailMoudel.title = "编辑";
       },
-      handleDetail: function(record){
-        this.$refs.dicrCodeDetail.detail(record);
-        this.$refs.dicrCodeDetail.title = "详情";
+      handleDelete: function (id) {
+        var that = this;
+        deleteAction(that.url.del, {id:id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
       },
       batchDel: function () {
         if (this.selectedRowKeys.length <= 0) {
@@ -219,15 +219,12 @@
         }else {
           var ids = "";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            ids += this.selectionRows[a].dictItemId + ",";
+            ids += this.selectionRows[a].dictId + ",";
           }
           var that = this;
-          var title = "";
-          var content = "";
-          var url = "";
-          title = "确认删除";
-          content = "是否删除选中数据";
-          url = that.url.deletes;
+          var title =  "确认删除";
+          var content = "是否删除选中数据";
+          var url = that.url.dels;
           this.$confirm({
             title: title,
             content: content,
@@ -245,31 +242,19 @@
           });
         }
       },
-      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
+      handleCancel() {
+        this.close();
       },
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      },
-      searchReset() {
-        var that = this;
-        that.queryParam = {}
-        that.loadData(1);
+      close() {
+        this.$emit('ok');
+        this.visible = false;
       },
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.dictItemId = this.dictItemId;
         return filterObj(param);
       },
       getQueryField() {
@@ -302,6 +287,6 @@
         this.ipagination = pagination;
         this.loadData();
       },
-    },
-  }
+    }
+    }
 </script>
