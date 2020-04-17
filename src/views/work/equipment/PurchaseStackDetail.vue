@@ -10,7 +10,11 @@
           </a-col>
           <a-col :span="6">
             <a-form-item label="设备状态">
-              <RencheDictSelectTag v-model="queryParam.equipStatus" placeholder="请选择设备状态" dictCode="ELECTSTATUS"/>
+             <!-- <RencheDictSelectTag v-model="queryParam.equipStatus" placeholder="请选择设备状态" dictCode="ELECTSTATUS"/>-->
+                <a-select v-model="queryParam.equipStatus">
+                  <a-select-option :key="1">空闲</a-select-option>
+                  <a-select-option :key="2">维修中</a-select-option>
+                </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -99,7 +103,7 @@
   import {deleteAction, getAction, httpAction} from '@/api/manage';
   import {filterObj} from '@/utils/util';
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
-  import purchaseInfoStockEdit  from ".//modules/PurchaseInfoStockEdit.vue";
+  import purchaseInfoStockEdit  from "./modules/PurchaseInfoStockEdit.vue";
 
   export default {
     name: "PurchaseStackDetail",
@@ -192,7 +196,7 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/equip/equipKeyDetail",
+          list: "/renche/equip/equipKey",
           // delete: "/renche/purchase/delete",
           equipStatus: "/renche/equip/updateStatus",
           repair: "/renche/equip/updateStatusweix",
