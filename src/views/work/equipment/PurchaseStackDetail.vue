@@ -76,6 +76,9 @@
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
+                <a-popconfirm title="确定将设备报废吗?" @confirm="() => handleBaoF(record)">
+                  <a>报废</a>
+                </a-popconfirm>
                 <a-popconfirm title="确定将设备投入使用吗?" @confirm="() => handleStatus(record)">
                   <a>维修完成</a>
                 </a-popconfirm>
@@ -192,7 +195,8 @@
           list: "/renche/equip/equipKeyDetail",
           // delete: "/renche/purchase/delete",
           equipStatus: "/renche/equip/updateStatus",
-          repair: "/renche/equip/updateStatusweix"
+          repair: "/renche/equip/updateStatusweix",
+          baof:"/renche/equip/updateEquipbaof"
         },
       }
     },
@@ -235,7 +239,6 @@
       },
       handleRepair: function(record){
         var that = this;
-        debugger;
         if(record.equipStatus != "FREE"){
           that.$message.warning("只能维修空闲中的设备！")
           return;
@@ -253,6 +256,44 @@
             that.confirmLoading = false;
             that.close();
         })
+      },
+      handleBaoF: function(record){
+        var that = this;
+        let httpurl = this.url.baof;
+        if (parseInt(record.useTimes)< 3) {
+          this.$confirm({
+            title: "确认报废",
+            content: "该设备还没有达到最大使用次数，确定要报废吗？",
+            onOk: function () {
+              deleteAction(httpurl,{equipId: record.equipId}).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.loadData();
+                }else{
+                  that.$message.warning(res.message);
+                  that.loadData();
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }
+          });
+        }else {
+          deleteAction(httpurl,{equipId: record.equipId}).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              that.loadData();
+            }else{
+              that.$message.warning(res.message);
+              that.loadData();
+            }
+          }).finally(() => {
+            that.confirmLoading = false;
+            that.close();
+          })
+        }
+
       },
       batchDel: function (flag) {
         if (this.selectedRowKeys.length <= 0) {
