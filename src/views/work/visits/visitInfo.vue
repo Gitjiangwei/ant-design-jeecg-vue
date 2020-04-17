@@ -248,6 +248,7 @@
         isorter: {
           column: 'createTime',
           order: 'desc',
+          visitor:'',
         },
         loading: false,
         selectedRowKeys: [],
@@ -279,7 +280,10 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
+            this.isorter.visitor = res.result.list[0].visitor;
+           // alert("this.isorter.visitor ="+this.isorter.visitor )
             this.ipagination.total = res.result.total;
+
           }
         })
       },
@@ -292,7 +296,7 @@
         });
       },
       getQueryParams() {
-        var param = Object.assign({}, this.queryParam, this.isorter);
+        var param = Object.assign({}, this.queryParam, this.isorter );
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
@@ -407,12 +411,13 @@
         this.loadData();
       },
       exportDate: function () {
-        var params = Object.assign({}, this.queryParam, this.isorter);
+        var params = Object.assign({}, this.queryParam, this.isorter );
 
         var param = JSON.stringify(params);
         //alert("param="+param);
         param = param.replace("{", "");
         param = param.replace("}", "");
+        alert("param="+param)
         window.location.href = window._CONFIG['domainURL'] +this.url.export + "?param="+param;
 
 

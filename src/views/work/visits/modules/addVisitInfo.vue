@@ -10,7 +10,14 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item
+        <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
+          <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
+            <template slot="dataSource">
+              <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
+            </template>
+          </a-auto-complete>
+        </a-form-item>
+       <!-- <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="客户名称"
@@ -19,7 +26,7 @@
             <a-select-option value="">请选择客户名称</a-select-option>
             <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
           </a-select>
-        </a-form-item>
+        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -48,18 +55,17 @@
           hasFeedback >
           <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {rules: [{ required: true,message: '请选择实际完成时间' }]}]" />
         </a-form-item>
-
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="计划参与人数">
-          <a-input placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {rules: [{ required: true,message: '请输入计划参与人数' }]}]" />
+          <a-input-number :defaultValue="0" placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {rules: [{ required: true,message: '请输入计划参与人数' }],initialValue: '0'}]" :min="0" :max="100000"   />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="实际参与人数">
-          <a-input placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', {rules: [{ required: true,message: '请输入实际参与人数' }]}]" />
+          <a-input-number :defaultValue="0" placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', {rules: [{ required: true,message: '请输入实际参与人数' }],initialValue: '0'}]" :min="0" :max="100000"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -156,6 +162,8 @@
         uploadLoading: false,
         headers: {},
         avatar: "",
+        companyNameListA: [],
+        companyIdA:"",
         isEdit:true,
         isArris: false,
         confirmLoading: false,
@@ -167,6 +175,7 @@
           edit: "renche/WorkSerivice/upWorkSerivice",
           getn:"/renche/visit/getn",
           fileUpload: doMian + "/sys/common/upload",
+          searchCompany: "/renche/companyInfo/searchCompany",
         },
       }
     },
@@ -230,6 +239,16 @@
         })
 
       },
+      getCompanyListA: function(val){
+        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "5",name: val}).then((res) => {
+          if (res.success) {
+            this.companyNameListA = res.result.list;
+          }
+        })
+      },
+      chooseThisA: function(val){
+        this.companyIdA = val;
+      },
       add () {
 
         this.edit({});
@@ -242,7 +261,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
+          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','companyNameA','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
         //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
           this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD'):null});
