@@ -73,6 +73,7 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->
@@ -241,6 +242,7 @@
             delete: "/renche/contractInfo/delete",
             deleteBatch: "/renche/contractInfo/deleteBatch",
             filelist: "/renche/purchase/fileList",
+            exportList: "/renche/contractInfo/exportContractInfo"
           },
         }
       },
@@ -398,7 +400,14 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData();
-        }
+        },
+        exportDate(){
+          var params = Object.assign({}, this.queryParam, this.isorter);
+          var param = JSON.stringify(params);
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?param="+param;
+        },
       }
     }
 
