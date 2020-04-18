@@ -24,13 +24,13 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="开户银行" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入开户银行" v-decorator="['bank', {rules: [{ required: true,message: '请输入开户银行' }]}]"  maxLength="20"/>
+            <a-form-item label="回款开户银行" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input placeholder="请输入回款开户银行" v-decorator="['bank', {rules: [{ required: true,message: '请输入回款开户银行' }]}]"  maxLength="20"/>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item label="银行账户" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入银行账户" v-decorator="['bankNo', {rules: [{ required: true,pattern: /^\d{16,19}$/,message: '请输入正确银行账户' }]}]"  maxLength="20" />
+            <a-form-item label="回款银行账户" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input placeholder="请输入回款银行账户" v-decorator="['bankNo', {rules: [{ required: true,pattern: /^\d{16,19}$/,message: '请输入回款银行账户' }]}]"  maxLength="20" />
             </a-form-item>
           </a-col>
         </a-row>

@@ -148,7 +148,7 @@
 </template>
 
 <script>
-    import ProjectItemModal from './modules/ProjectItemModal'
+    import ProjectItemModal from './modules/ProjectItemModel'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'

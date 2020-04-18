@@ -107,6 +107,7 @@
     },
     data() {
       return{
+        title: "操作",
         visible:false,
         confirmLoading: false,
         description: '采购管理页面',

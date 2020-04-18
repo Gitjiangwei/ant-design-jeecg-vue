@@ -5,7 +5,7 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="回款时间">
-                <a-date-picker  v-model="queryParam.invociTime" />
+                <a-date-picker  v-model="queryParam.backTime" />
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -29,9 +29,6 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <a-button type="primary" >
-          <a :href="'http://localhost:8080/jeecg-boot/renche/invoci/exportInvoci'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>
 
 
         <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -45,6 +42,7 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->
@@ -95,6 +93,7 @@
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import FileDetail from "./modules/FileDetail";
+    import moment from "moment"
 
     export default {
       name: "invoicInfo",
@@ -178,9 +177,10 @@
           selectedRows: [],
           url: {
             list: "/renche/moneyBack/list",
-            delete: "/renche/invoci/delete",
-            deleteBatch: "/renche/invoci/deleteBat",
+            delete: "/renche/moneyBack/delete",
+            deleteBatch: "/renche/moneyBack/deleteBat",
             filelist: "/renche/purchase/fileList",
+            exportList: "/renche/moneyBack/exportBackInfo",
           },
         }
       },
@@ -195,6 +195,11 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          if(params.backTime != undefined){
+            var backTime = moment(params.backTime).format('YYYY-MM-DD');
+            params.backTime = backTime;
+          }
+
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
@@ -325,8 +330,19 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData(1);
-        }
-      },
+        },
+        exportDate(){
+          var params = Object.assign({}, this.queryParam, this.isorter);
+          var param = JSON.stringify(params);
+          if(params.backTime != undefined){
+            var backTime = moment(params.backTime).format('YYYY-MM-DD');
+            params.backTime = backTime;
+          }
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?param="+param;
+        },
+      }
     }
 
 </script>
