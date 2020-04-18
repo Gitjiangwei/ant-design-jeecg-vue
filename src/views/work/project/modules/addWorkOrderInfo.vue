@@ -16,8 +16,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="工单名称"
-          hasFeedback >
+          label="工单名称">
           <a-input placeholder="请输入工单名称"  v-decorator="['workName', {rules: [{ required: true,message: '请输入工单名称' }]}]" />
         </a-form-item>
           </a-col>
@@ -36,8 +35,7 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="预计完成时间"
-              hasFeedback >
+              label="预计完成时间">
               <a-date-picker showTime format="YYYY-MM-DD "  v-decorator="[ 'completeTime', {}]" />
             </a-form-item>
           </a-col>
@@ -48,8 +46,7 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="工程点"
-              hasFeedback >
+              label="工程点">
               <a-select v-decorator="['prjItemName', {rules: [{ required: true,message: '请输入工程点' }]}]" placeholder="请选择工程点">
                 <a-select-option value="">请选择工程点</a-select-option>
                 <a-select-option v-for="item in prjItemNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
@@ -60,8 +57,7 @@
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="状态"
-              hasFeedback >
+              label="状态">
               <a-select v-decorator="['status', {rules: [{ required: true,message: '请输入工单状态' }]}]" placeholder="请选择状态">
                 <a-select-option :key="1">实施</a-select-option>
                 <a-select-option :key="2">维修</a-select-option>
@@ -78,8 +74,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="任务描述"
-          hasFeedback >
+          label="任务描述">
           <a-textarea placeholder="请输入任务描述" v-decorator="['describe', {rules: [{ required: true,message: '请输入任务描述' }]}]" :row="3" />
         </a-form-item>
         </a-col>
@@ -89,8 +84,7 @@
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
-        label="附件"
-        hasFeedback>
+        label="附件">
         <!--  -->
         <a-upload
           name="file"

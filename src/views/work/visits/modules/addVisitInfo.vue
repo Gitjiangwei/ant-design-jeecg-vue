@@ -116,8 +116,7 @@
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
-          label="附件"
-          hasFeedback>
+          label="附件">
           <!--  -->
           <a-upload
             name="file"
