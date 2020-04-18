@@ -173,6 +173,17 @@
               title: '状态',
               align: "center",
               dataIndex: 'status',
+              customRender: (text, record, index) => {
+                if(text == '1'){
+                  return "实施";
+                }else if(text == '2'){
+                  return "维修";
+                }else if(text == '3'){
+                  return "拜访";
+                }else if(text == '4'){
+                  return "销售";
+                }
+              }
             },
 
             {

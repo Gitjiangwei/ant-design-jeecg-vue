@@ -1,66 +1,15 @@
 <template>
   <div class="page-header-index-wide">
+
     <a-row :gutter="24">
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="总销售额" total="￥126,560">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <trend flag="up" style="margin-right: 16px;">
-              <span slot="term">周同比</span>
-              12%
-            </trend>
-            <trend flag="down">
-              <span slot="term">日同比</span>
-              11%
-            </trend>
-          </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
-        </chart-card>
+      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '200px' }">
+        <div id="main1" style="float:left;width:60%;height: 400px"></div>
       </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="访问量" :total="8846 | NumberFormat">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-area />
-          </div>
-          <template slot="footer">日访问量<span> {{ '1234' | NumberFormat }}</span></template>
-        </chart-card>
+      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '200px' }">
+        <div id="main2" style="float:right;width:60%;height: 400px"></div>
+
       </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-bar />
-          </div>
-          <template slot="footer">转化率 <span>60%</span></template>
-        </chart-card>
-      </a-col>
-      <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="运营活动效果" total="78%">
-          <a-tooltip title="指标说明" slot="action">
-            <a-icon type="info-circle-o" />
-          </a-tooltip>
-          <div>
-            <mini-progress color="rgb(19, 194, 194)" :target="80" :percentage="78" height="8px" />
-          </div>
-          <template slot="footer">
-            <trend flag="down" style="margin-right: 16px;">
-              <span slot="term">同周比</span>
-              12%
-            </trend>
-            <trend flag="up">
-              <span slot="term">日环比</span>
-              80%
-            </trend>
-          </template>
-        </chart-card>
-      </a-col>
+
     </a-row>
 
     <a-card :loading="loading" :bordered="false" :body-style="{padding: '0'}">
@@ -102,40 +51,36 @@
 </template>
 
 <script>
-  import ChartCard from '@/components/ChartCard'
+
   import ACol from "ant-design-vue/es/grid/Col"
   import ATooltip from "ant-design-vue/es/tooltip/Tooltip"
-  import MiniArea from '@/components/chart/MiniArea'
-  import MiniBar from '@/components/chart/MiniBar'
-  import MiniProgress from '@/components/chart/MiniProgress'
-  import RankList from '@/components/chart/RankList'
-  import Bar from '@/components/chart/Bar'
-  import Trend from '@/components/Trend'
+
   import {getLoginfo} from '@/api/api.js'
   import { getAction, httpAction} from '@/api/manage'
   import ContractInfoModal from '../work/project/modules/ContractInfoModal'
   import MessageShow from '../work/message/MessageShow'
 
+  let echarts = require('echarts/lib/echarts');
+  import {postAction} from '@/api/manage';
+  // 引入饼状图组件
+  require('echarts/lib/chart/pie')
+  // 引入提示框和title组件
+  require('echarts/lib/component/tooltip')
+  require('echarts/lib/component/title')
+  require('echarts/lib/component/legend')
+
+
+
   const rankList = []
-  for (let i = 0; i < 7; i++) {
-    rankList.push({
-      name: '白鹭岛 ' + (i+1) + ' 号店',
-      total: 1234.56 - i * 100
-    })
-  }
+
+
 
   export default {
     name: "Analysis",
     components: {
       ATooltip,
       ACol,
-      ChartCard,
-      MiniArea,
-      MiniBar,
-      MiniProgress,
-      RankList,
-      Bar,
-      Trend,
+
       ContractInfoModal,
       MessageShow
     },
@@ -152,6 +97,8 @@
           edit: "/renche/messageInfo/edit",
           contractList: "/renche/contractInfo/list",
           filelist: "/renche/purchase/fileList",
+          list2: "/renche/projectItem/qryStatus",
+          list1: "/renche/projectItem/qryStatus1",
         },
       }
     },
@@ -167,7 +114,13 @@
       this.initLogInfo();
       this.loadData();
     },
+    mounted(){
+      this.getQueryStatus();
+      this.getQueryStatus1();
+
+    },
     methods: {
+
       initLogInfo () {
         getLoginfo(null).then((res)=>{
           if(res.success){
@@ -213,7 +166,99 @@
       },
       modalShowOk(){
         this.loadData();
-      }
+      },
+      getQueryStatus(){
+        let that = this;
+        getAction(this.url.list2).then((res) => {
+          if (res.success) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main1'));
+            // 绘制图表
+            myChart.setOption({
+              title : {
+                text: '人员车辆工程点统计',//主标题
+                subtext: '进度统计',//副标题
+                x:'center',//x轴方向对齐方式
+              },
+              tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+              },
+              legend: {
+                orient: 'vertical',
+                bottom: 'bottom',
+                data: ['未开始','进行中','已完成']
+              },
+              series : [
+                {
+                  name: '工程点数量',
+                  type: 'pie',
+                  radius : '55%',
+                  center: ['50%', '60%'],
+                  data:res.result,
+                  /*[
+                    {value:335, name:'未开始'},
+                    {value:310, name:'进行中'},
+                    {value:234, name:'已完成'}
+
+                  ],*/
+                  itemStyle: {
+                    emphasis: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                  }
+                }
+              ]
+            },true);
+
+          }
+        });
+      },
+      getQueryStatus1(){
+        let that = this;
+        getAction(this.url.list1).then((res) => {
+          if (res.success) {
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('main2'));
+            // 绘制图表
+            myChart.setOption({
+              title : {
+                text: '4G视频工程点统计',//主标题
+                subtext: '进度统计',//副标题
+                x:'center',//x轴方向对齐方式
+              },
+              tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+              },
+              legend: {
+                orient: 'vertical',
+                bottom: 'bottom',
+                data: ['未开始','进行中','已完成']
+              },
+              series : [
+                {
+                  name: '工程点数量',
+                  type: 'pie',
+                  radius : '55%',
+                  center: ['50%', '60%'],
+                  data:res.result,
+                  itemStyle: {
+                    emphasis: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                  }
+                }
+              ]
+            },true);
+
+          }
+        });
+      },
     }
   }
 </script>
@@ -233,32 +278,6 @@
     }
   }
 
-  /* 首页访问量统计 */
-  .head-info {
-    position: relative;
-    text-align: left;
-    padding: 0 32px 0 0;
-    min-width: 125px;
 
-    &.center {
-      text-align: center;
-      padding: 0 32px;
-    }
 
-    span {
-      color: rgba(0, 0, 0, .45);
-      display: inline-block;
-      font-size: .95rem;
-      line-height: 42px;
-      margin-bottom: 4px;
-    }
-    p {
-      line-height: 42px;
-      margin: 0;
-      a {
-        font-weight: 600;
-        font-size: 1rem;
-      }
-    }
-  }
 </style>

@@ -53,9 +53,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-
         <a-row>
-
           <a-col :span="12" style="padding-left: 40px;" >
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="服务费" >
               <a-input-number id="serviceMoney" placeholder="请输入服务费" v-decorator="['serviceMoney', {initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" @blur="getReturnMoney" style="width: 60%;"/>
@@ -156,10 +154,8 @@
     created() {
     },
     methods: {
-
       add() {
         this.edit({});
-
       },
       edit(record) {
         //this.avatar = record.fileRelId == undefined?'':record.fileRelId;
