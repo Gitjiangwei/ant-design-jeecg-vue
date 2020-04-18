@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+    :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -10,6 +10,9 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
+
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -17,19 +20,61 @@
           hasFeedback >
           <a-input placeholder="请输入工单名称"  v-decorator="['workName', {rules: [{ required: true,message: '请输入工单名称' }]}]" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="负责人">
-          <a-input placeholder="请输入负责人" v-decorator="['chargePerson', {rules: [{ required: true,message: '请输入负责人' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="计划完成时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD "  v-decorator="[ 'completeTime', {}]" />
-        </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row >
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="负责人">
+              <a-input placeholder="请输入负责人" v-decorator="['chargePerson', {rules: [{ required: true,message: '请输入负责人' }]}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" float:left>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="预计完成时间"
+              hasFeedback >
+              <a-date-picker showTime format="YYYY-MM-DD "  v-decorator="[ 'completeTime', {}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row >
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="工程点"
+              hasFeedback >
+              <a-select v-decorator="['prjItemName', {rules: [{ required: true,message: '请输入工程点' }]}]" placeholder="请选择工程点">
+                <a-select-option value="">请选择工程点</a-select-option>
+                <a-select-option v-for="item in prjItemNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" float:left>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="状态"
+              hasFeedback >
+              <a-select v-decorator="['status', {rules: [{ required: true,message: '请输入工单状态' }]}]" placeholder="请选择状态">
+                <a-select-option :key="1">实施</a-select-option>
+                <a-select-option :key="2">维修</a-select-option>
+                <a-select-option :key="3">拜访</a-select-option>
+                <a-select-option :key="4">销售</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+
+    <a-row :gutter="24">
+      <a-col :span="16" style="padding-left: 8px;">
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -37,29 +82,10 @@
           hasFeedback >
           <a-textarea placeholder="请输入任务描述" v-decorator="['describe', {rules: [{ required: true,message: '请输入任务描述' }]}]" :row="3" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="工程点"
-          hasFeedback >
-          <a-select v-decorator="['prjItemName', {rules: [{ required: true,message: '请输入工程点' }]}]" placeholder="请选择工程点">
-            <a-select-option value="">请选择工程点</a-select-option>
-            <a-select-option v-for="item in prjItemNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="状态"
-          hasFeedback >
-          <a-select v-decorator="['status', {rules: [{ required: true,message: '请输入工单状态' }]}]" placeholder="请选择状态">
-            <a-select-option :key="1">实施</a-select-option>
-            <a-select-option :key="2">维修</a-select-option>
-            <a-select-option :key="3">拜访</a-select-option>
-            <a-select-option :key="4">销售</a-select-option>
-          </a-select>
-        </a-form-item>
-      </a-form>
+        </a-col>
+      </a-row>
+    <a-row :gutter="24">
+      <a-col :span="16" style="padding-left: 8px;">
       <a-form-item
         :labelCol="labelCol"
         :wrapperCol="wrapperCol"
@@ -72,8 +98,10 @@
           :action="uploadAction"
           :headers="headers"
           @change="handleChange"
+          :showUploadList="isEdit"
+
         >
-          <a-button>
+          <a-button v-on:click="load">
             <a-icon type="upload"/>
             上传
           </a-button>
@@ -82,7 +110,9 @@
           <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
         </div>
       </a-form-item>
-
+      </a-col>
+    </a-row>
+      </a-form>
     </a-spin>
   </a-modal>
 </template>
@@ -105,6 +135,7 @@
         title:"操作",
         visible: false,
         model: {},
+        isEdit: true,
         prjItemNames:[],
         labelCol: {
           xs: { span: 24 },
@@ -145,6 +176,9 @@
       }
     },
     methods: {
+      load: function(){
+        this.isEdit = true;
+      },
       beforeUpload: function (file) {
         var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
@@ -194,17 +228,19 @@
 
       },
       edit (record) {
+        this.isEdit=false;
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        this.isArris = true;
         this.form.resetFields();
         this.model = Object.assign({}, record);
+        this.fileList = this.model.filelist;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'workName','createPerson','describe','chargePerson','content','prjItemName','completeTime','status','fileName'));
+          this.form.setFieldsValue(pick(this.model,'workName','createPerson','describe','chargePerson','content','prjItemName','completeTime','status'));
           //时间格式化
           this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD'):null});
 
         });
-
       },
       close () {
         this.$emit('close');
@@ -232,30 +268,22 @@
 
             if(this.avatar!=null && this.avatar != "" && this.avatar !=undefined) {
               let a = this.avatar.charAt(this.avatar.length - 1);
-              debugger;
               if (a == ",") {
                 this.avatar = this.avatar.substring(0, this.avatar.length - 1);
               }
             }
-
             this.model.fileRelId = this.avatar;
-
-
-
             let formData = Object.assign(this.model, values);
-
             //时间格式化
-
             formData.completeTime = formData.completeTime?formData.completeTime.format('YYYY-MM-DD'):null;
             httpAction(httpurl,formData,method).then((res)=>{
               var meth = method;
               if(res.success){
                that.$message.success(res.message);
-
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
-                alert(" "+res.message);
+                alert(""+res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
