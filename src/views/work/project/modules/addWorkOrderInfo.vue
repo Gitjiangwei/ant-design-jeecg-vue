@@ -277,7 +277,7 @@
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
-                alert(""+res.message);
+
               }
             }).finally(() => {
               that.confirmLoading = false;

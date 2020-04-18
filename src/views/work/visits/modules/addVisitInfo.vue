@@ -14,7 +14,7 @@
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyId', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
                 </template>
@@ -168,8 +168,6 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        //数据集
-        dataSource: [],
         uploadLoading: false,
         headers: {},
         avatar: "",
@@ -266,7 +264,7 @@
       },
       chooseThisA: function(val){
         this.companyIdA = val;
-        alert("val="+val);
+
       },
       add () {
         this.edit({});
@@ -279,7 +277,7 @@
         this.companyIdA = record.partyA;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'planExecuTime','companyNameA','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
+          this.form.setFieldsValue(pick(this.model,'planExecuTime','companyName','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
         //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
           this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD'):null});
@@ -348,7 +346,7 @@
                 that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
-                alert(" "+res.message);
+
               }
             }).finally(() => {
               that.confirmLoading = false;
