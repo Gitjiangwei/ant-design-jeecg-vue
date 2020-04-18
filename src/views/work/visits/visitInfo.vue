@@ -211,6 +211,19 @@
             title: '用户评价',
             align: "center",
             dataIndex: 'evaluate',
+            customRender: (text, record, index) => {
+              if(text == '1'){
+                return "很满意";
+              }else if(text == '2'){
+                return "满意";
+              }else if(text == '3'){
+                return "一般";
+              }else if(text == '4'){
+                return "较差";
+              }else if(text == '5'){
+                return "很差";
+              }
+            }
 
           },
           {
