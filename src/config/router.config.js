@@ -145,6 +145,12 @@ export const asyncRouterMap = [
                    component: () => import('@/views/work/equipment/PurchaseInfoStock'),
                    meta: { title: '设备入库', permission: [ 'dashboard' ] }
                },
+              {
+                path: '/work/equipment/EquipInfo',
+                  name: 'EquipInfo',
+                component: () => import('@/views/work/equipment/EquipInfo'),
+                meta: { title: '设备入库', permission: [ 'dashboard' ] }
+              },
             ]
           },
           {
