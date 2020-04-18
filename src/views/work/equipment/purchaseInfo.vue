@@ -11,7 +11,7 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="采购人">
-                <a-input placeholder="请输入采购人" maxlength="6" v-model="queryParam.purchaser"></a-input>
+                <a-input placeholder="请输入采购人" maxlength="20" v-model="queryParam.purchaser"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">

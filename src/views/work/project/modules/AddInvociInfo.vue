@@ -95,7 +95,7 @@
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="联系电话" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入联系电话" v-decorator="['tel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" />
+              <a-input placeholder="请输入联系电话" v-decorator="['tel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" maxlength="20" />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
