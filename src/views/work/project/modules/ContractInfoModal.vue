@@ -97,12 +97,12 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="甲方经办人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入甲方经办人" v-decorator="['operatorA', {}]"  maxLength="20" />
+                  <a-input placeholder="请输入甲方经办人" v-decorator="['operatorA', {}]"  maxLength="30" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="乙方经办人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入乙方经办人" v-decorator="['operatorB', {}]"  maxLength="20" />
+                  <a-input placeholder="请输入乙方经办人" v-decorator="['operatorB', {}]"  maxLength="30" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -600,7 +600,7 @@
           fileUpload: doMian + "/sys/common/upload",
           invociList: "renche/invoci/qryInvociList",
           filelist: "/renche/purchase/fileList",
-          backList: "renche/moneyBack/list",
+          backList: "/renche/moneyBack/list",
         },
       }
     },

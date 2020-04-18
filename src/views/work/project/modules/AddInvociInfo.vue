@@ -13,7 +13,7 @@
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="发票名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入发票名称"  v-decorator="['invociName', {rules: [{ required: true,message: '请输入发票名称' }]}]" maxLength="100" />
+              <a-input placeholder="请输入发票名称"  v-decorator="['invociName', {rules: [{ required: true,message: '请输入发票名称' }]}]" maxLength="150" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -32,7 +32,7 @@
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input-number id="price" :defaultValue="0" v-decorator="['price', {rules: [{ required: true,message: '请输入正确金额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
+              <a-input-number id="price" v-decorator="['price', {rules: [{ required: true,message: '请输入正确金额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
@@ -57,14 +57,14 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="开票金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="0" id="totalMoney" v-decorator="['totalMoney', {}]" disabled />
+              <a-input placeholder="0"  v-decorator="['totalMoney', {}]" disabled />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="公司名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入公司名称" v-decorator="['companyName', {}]" maxLength="50" />
+              <a-input placeholder="请输入公司名称" v-decorator="['companyName', {}]" maxLength="30" />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
@@ -88,7 +88,7 @@
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="公司地址" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-textarea placeholder="请输入公司地址" v-decorator="['address', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="255"/>
+              <a-textarea placeholder="请输入公司地址" v-decorator="['address', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -310,7 +310,7 @@
         }
         var totalPrice = parseFloat(price) + parseFloat(shuiMoney);
         if (price != "" || shuiMoney != "") {
-          document.getElementById("totalMoney").value = totalPrice;
+          this.form.setFieldsValue({totalMoney: totalPrice})
           this.model.totalMoney = totalPrice;
         }
       },

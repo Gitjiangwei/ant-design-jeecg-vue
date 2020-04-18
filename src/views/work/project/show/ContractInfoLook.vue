@@ -159,7 +159,7 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="关联招标" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a>{{model.prjName}}</a>
+                  <a @click="tenderInfoShow">{{model.prjName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -247,6 +247,8 @@
     <MoneyBackShow ref="moneyBackShow" ></MoneyBackShow>
     <FileDetail ref="fileDetail" @ok="backInfoShowList"></FileDetail>
 
+    <TenderInfoLook ref="tenderInfoLook"></TenderInfoLook>
+
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -255,7 +257,7 @@
 </template>
 
 <script>
-  import { httpAction, getAction, deleteAction} from '@/api/manage'
+  import { getAction} from '@/api/manage'
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -263,19 +265,17 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
-  import { doMian} from '@/api/api'
-  import Vue from 'vue'
-  import {ACCESS_TOKEN} from "@/store/mutation-types"
   import InvociInfoFileDetail from "../modules/InvociInfoFileDetail";
   import InvociInfoShow from "./InvociInfoShow";
   import MoneyBackShow from "./MoneyBackShow";
   import ProjectItemShow from "./ProjectItemShow";
   import FileDetail from "../modules/FileDetail";
+  import TenderInfoLook from "./TenderInfoLook";
 
   export default {
     name: "contractInfoLook",
     components: {
-      FileDetail, ACol, ATextarea, ARow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow},
+      FileDetail, ACol, ATextarea, ARow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow, TenderInfoLook},
     data () {
       return {
         title:"操作",
@@ -300,8 +300,6 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        uploadLoading: false,
-        headers: {},
         avatar: "",
         avatarElec: "",
         confirmLoading: false,
@@ -539,23 +537,16 @@
           edit: "/renche/contractInfo/edit",
           prjItemList: "/renche/contractInfo/contractPrjItemList",
           delprjItem: "/renche/contractInfo/delPrjItem",
-          fileUpload: doMian + "/sys/common/upload",
           invociList: "renche/invoci/qryInvociList",
           filelist: "/renche/purchase/fileList",
-          backList: "renche/moneyBack/list",
+          backList: "/renche/moneyBack/list",
+          searchTender: "/renche/tender/getTenderById",
         },
       }
     },
     created () {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token};
       //初始化字典配置
       this.initDictConfig();
-    },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      },
     },
     methods: {
       initDictConfig() {
@@ -621,9 +612,6 @@
         param.pageSize = this.ipagination.pageSize;
         param.contractId = this.model.contractId;
         return filterObj(param);
-      },
-      add () {
-        this.edit({});
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
@@ -721,40 +709,6 @@
       backInfoShowList() {
         this.loadbackData();
       },
-      handleChangeElec(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatarElec = response.message + "," + this.avatarElec;
-            console.log(this.avatarElec);
-          } else {
-            this.$message.warning(response.message);
-          }
-        }
-      },
-      handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
-          }
-        }
-      },
       fileDeteil:function(record){
         console.log(record);
         this.$refs.invociInfoFileDetail.fileLoad(record);
@@ -784,7 +738,19 @@
       prjItemShow: function(record){
         this.$refs.projectItemShow.edit(record);
         this.$refs.projectItemShow.title = "详情";
-      }
+      },
+      async tenderInfoShow(){
+        let {result} = await getAction(this.url.searchTender, {tenderId: this.model.tenderId});
+        let record = result;
+
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+
+        this.$refs.tenderInfoLook.edit(record);
+        this.$refs.tenderInfoLook.title = "招标详情";
+      },
     }
   }
 </script>

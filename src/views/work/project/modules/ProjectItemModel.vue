@@ -28,7 +28,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程编号" >
-                  <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" />
+                  <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
@@ -51,14 +51,14 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
-                  <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]" />
+                  <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话" >
-                  <a-input placeholder="请输入联系电话" v-decorator="['personTel', {}]" />
+                  <a-input placeholder="请输入联系电话" v-decorator="['personTel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
@@ -98,14 +98,21 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程进度" >
-                  <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" />
+                  <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程地址" >
-                  <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   />
+                  <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="16" style="padding-left: 8px;">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
+                  <a-textarea  placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -146,6 +153,8 @@
     <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
 
     <ContractInfoLook ref="contractInfoShow"></ContractInfoLook>
+
+
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>

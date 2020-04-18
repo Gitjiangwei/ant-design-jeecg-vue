@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="1210"
+    :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -12,201 +12,140 @@
       <a-form :form="form">
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="项目名称"
-          hasFeedback >
-          <a-input placeholder="请输入项目名称"  v-decorator="['prjName', {rules: [{ required: true,message: '请输入项目名称' }]}]" />
-        </a-form-item>
-        </a-col>
-        </a-row>
-
-
-        <a-row >
-          <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="招标编号">
-              <a-input placeholder="请输入招标编号" v-decorator="['tenderNo', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确的招标编号' }]}]" maxLength="20"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="投标单位"
-              hasFeedback >
-              <a-input placeholder="请输入投标单位" v-decorator="['tenderCompany', {rules: [{ required: true,message: '请输入投标单位' }]}]" />
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目名称" >
+              <a-textarea placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true,message: '请输入项目名称' }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxlength="150"/>
             </a-form-item>
           </a-col>
         </a-row>
-
-
-        <a-row >
+        <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="报价"
-              hasFeedback >
-              <a-input-number :defaultValue="0" placeholder="请输入报价(单位：万元)" v-decorator="['tenderOffer', {rules: [{ required: true,message: '请输入报价' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="招标编号">
+              <a-input placeholder="请输入招标编号" v-decorator="['tenderNo', {rules: [{ required: true,message: '请输入招标编号' }]}]" maxLength="30"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="保证金"
-              hasFeedback >
-              <a-input-number :defaultValue="0" placeholder="请输入保证金(单位：万元)" v-decorator="['deposit', {rules: [{ required: true,message: '请输入保证金' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
+          <a-col :span="12" style="padding-left: 0px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="投标单位" >
+              <a-input placeholder="请输入投标单位" v-decorator="['tenderCompany', {rules: [{ required: true,message: '请输入投标单位' }]}]" maxlength="30"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="招标代理机构">
+              <a-input placeholder="请输入招标代理机构" v-decorator="['agency', {}]" maxLength="30"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="采购人" >
+              <a-input placeholder="请输入采购人" v-decorator="['purchasePerson', {}]" maxLength="30"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="报价" >
+              <a-input-number placeholder="请输入报价"  v-decorator="['tenderOffer', {initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="保证金" >
+              <a-input-number id="deposit" placeholder="请输入保证金" v-decorator="['deposit', {initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" @blur="getReturnMoney" style="width: 60%;"/>
             </a-form-item>
           </a-col>
         </a-row>
 
-        <a-row >
-          <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="保证金是否退回"
-              hasFeedback >
-              <a-select v-decorator="['isBack', {rules: [{ required: true,message: '请输入客户名称' }]}]" placeholder="请选择保证金是否已退回">
-                <a-select-option :key="1">是</a-select-option>
-                <a-select-option :key="2">否</a-select-option>
+        <a-row>
+
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="服务费" >
+              <a-input-number id="serviceMoney" placeholder="请输入服务费" v-decorator="['serviceMoney', {initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" @blur="getReturnMoney" style="width: 60%;"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="保证金是否退回" >
+              <a-select id="isBack" v-decorator="['isBack', {}]" placeholder="请选择保证金是否已退回" @change="changeCheck">
+                <a-select-option value="1">是</a-select-option>
+                <a-select-option value="2">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="招标代理机构"
-              hasFeedback >
-              <a-input placeholder="请输入招标代理机构" v-decorator="['agency', {rules: [{ required: true,message: '请输入招标代理机构' }]}]" />
-            </a-form-item>
-          </a-col>
         </a-row>
-
-        <a-row >
+        <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="采购人"
-              hasFeedback >
-              <a-input placeholder="请输入采购人" v-decorator="['purchasePerson', {rules: [{ required: true,message: '请输入采购人' }]}]" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="服务费"
-              hasFeedback >
-              <a-input-number :defaultValue="0" placeholder="请输入服务费" v-decorator="['serviceMoney', {rules: [{ required: true,message: '请输入服务费' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;"  />
-            </a-form-item>
-          </a-col>
-        </a-row>
-
-
-        <a-row >
-          <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="服务费缴费方式"
-              hasFeedback >
-              <a-select v-decorator="['payWay', {rules: [{ required: true,message: '请输入服务费缴费方式' }]}]" placeholder="请选择服务费缴费方式">
-                <a-select-option :key="1">自缴</a-select-option>
-                <a-select-option :key="2">保证金扣除</a-select-option>
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="服务缴费方式" >
+              <a-select id="payWay" v-decorator="['payWay', {}]" placeholder="请选择服务费缴费方式" @change="payWayChange">
+                <a-select-option value="1">自缴</a-select-option>
+                <a-select-option value="2">保证金扣除</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="计划完成时间"
-              hasFeedback >
-              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {rules: [{ required: true,message: '请选择计划完成时间' }]}]" />
+          <a-col :span="12" style="padding-left: 0px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="应退保证金" >
+              <a-input placeholder="0" v-decorator="['recedeDeposit', {}]" disabled/>
             </a-form-item>
           </a-col>
         </a-row>
-
-
-        <a-row >
-          <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="实际完成时间"
-              hasFeedback >
-              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {rules: [{ required: true,message: '请选择实际完成时间' }]}]" />
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划完成时间" >
+              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'planOutTime', {}]"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;" float:left>
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="交保证金时间"
-              hasFeedback >
-              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'payTime', {rules: [{ required: true,message: '请选择交保证金时间' }]}]" />
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际完成时间" >
+              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'realityOutTime', {}]"/>
             </a-form-item>
           </a-col>
         </a-row>
-
-
-
-
-
-
-
-        <a-row >
-          <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="退保证金时间"
-              hasFeedback >
-              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'recedeTime', {}]" />
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="交保证金时间" >
+              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'payTime', {}]"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;"  v-show="isShow">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="退保证金时间" >
+              <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss" v-decorator="[ 'recedeTime', {}]"/>
             </a-form-item>
           </a-col>
         </a-row>
-
-
-
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
+              <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxlength="1500"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 
 <script>
-  import {getAction, httpAction } from '@/api/manage'
+  import {getAction, httpAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
 
   export default {
     name: "addTenderInfo",
-    data () {
+    data() {
       return {
-        title:"操作",
+        title: "操作",
         visible: false,
+        isShow: false,
         model: {},
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
+          xs: {span: 24},
+          sm: {span: 5},
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
+          xs: {span: 24},
+          sm: {span: 16},
         },
 
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-        },
+        validatorRules: {},
         url: {
           add: "/renche/tender/addTender",
           edit: "/renche/tender/upTender",
@@ -214,70 +153,67 @@
         },
       }
     },
-    created () {
+    created() {
     },
     methods: {
 
-      add () {
+      add() {
         this.edit({});
 
       },
-      edit (record) {
+      edit(record) {
         //this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjName','tenderNo','tenderCompany','planOutTime','realityOutTime','tenderOffer','deposit','isBack','agency','purchasePerson','serviceMoney','payWay','payTime','recedeTime'))
-             //时间格式化
-          this.form.setFieldsValue({payTime:this.model.payTime?moment(this.model.payTime,'YYYY-MM-DD HH:mm:ss"'):null});
-          this.form.setFieldsValue({recedeTime:this.model.recedeTime?moment(this.model.recedeTime,'YYYY-MM-DD HH:mm:ss'):null});
-          this.form.setFieldsValue({planOutTime:this.model.planOutTime?moment(this.model.planOutTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({realityOutTime:this.model.realityOutTime?moment(this.model.realityOutTime,'YYYY-MM-DD'):null});
-        });
+        this.isShow = false;
 
+        if(record.tenderId != undefined){
+          if(record.isBack == "1"){
+            this.isShow = true;
+          }
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(this.model, 'prjName', 'tenderNo', 'tenderCompany', 'planOutTime', 'realityOutTime', 'tenderOffer', 'deposit', 'isBack', 'agency', 'purchasePerson', 'serviceMoney', 'payWay','recedeDeposit', 'payTime', 'recedeTime'))
+            //时间格式化
+            this.form.setFieldsValue({payTime: this.model.payTime ? moment(this.model.payTime, 'YYYY-MM-DD HH:mm:ss"') : null});
+            this.form.setFieldsValue({recedeTime: this.model.recedeTime ? moment(this.model.recedeTime, 'YYYY-MM-DD HH:mm:ss') : null});
+            this.form.setFieldsValue({planOutTime: this.model.planOutTime ? moment(this.model.planOutTime, 'YYYY-MM-DD') : null});
+            this.form.setFieldsValue({realityOutTime: this.model.realityOutTime ? moment(this.model.realityOutTime, 'YYYY-MM-DD') : null});
+          });
+        }
       },
-      close () {
+      close() {
         this.$emit('close');
         this.visible = false;
       },
-      handleOk () {
+      handleOk() {
         const that = this;
-        var isBack1=this.model.isBack;
-        var recedeTime1=this.model.recedeTime;
-        alert("isBack1="+isBack1);
-        alert("recedeTime1="+recedeTime1);
-        if(isBack1==2||isBack1=="否"){
-          if(recedeTime1!=undefined||recedeTime1!=''){
-            alert("保证金未退回，请勿选择退回保证金时间！");
-            return;
-          }
-        }
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if(!this.model.tenderId){
-              httpurl+=this.url.add;
+            if (!this.model.tenderId) {
+              httpurl += this.url.add;
               method = 'post';
-            }else{
-              httpurl+=this.url.edit;
+            } else {
+              httpurl += this.url.edit;
               method = 'put';
             }
+            values.recedeDeposit = that.model.recedeDeposit;
             let formData = Object.assign(this.model, values);
-            formData.payTime = formData.payTime?formData.payTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.recedeTime = formData.recedeTime?formData.recedeTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.planOutTime = formData.planOutTime?formData.planOutTime.format('YYYY-MM-DD'):null;
-            formData.realityOutTime = formData.realityOutTime?formData.realityOutTime.format('YYYY-MM-DD'):null;
+            formData.payTime = formData.payTime ? formData.payTime.format('YYYY-MM-DD HH:mm:ss') : null;
+            formData.recedeTime = formData.recedeTime ? formData.recedeTime.format('YYYY-MM-DD HH:mm:ss') : null;
+            formData.planOutTime = formData.planOutTime ? formData.planOutTime.format('YYYY-MM-DD') : null;
+            formData.realityOutTime = formData.realityOutTime ? formData.realityOutTime.format('YYYY-MM-DD') : null;
 
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
                 that.$message.success(res.message);
                 that.$emit('ok');
-              }else{
-               /* that.$message.warning(res.message);*/
+              } else {
+                /* that.$message.warning(res.message);*/
                 alert(res.message);
               }
             }).finally(() => {
@@ -289,11 +225,34 @@
           }
         })
       },
-      handleCancel () {
+      handleCancel() {
         this.close()
       },
-
-
+      changeCheck: function (val){
+        if(val == "1"){
+          this.isShow = true;
+        }else{
+          this.isShow = false;
+        }
+      },
+      payWayChange: function(val){
+        let isBack = document.getElementById("isBack").value.toString();
+        this.getReturnMoney(isBack,val);
+      },
+      getReturnMoney: function (isBackVal,payWayVal){
+        let deposit = document.getElementById("deposit").value.toString();
+        let isBack = isBackVal;//是否退回保证金
+        let totalPrice = "";
+        let serviceMoney = document.getElementById("serviceMoney").value.toString();
+        let payWay = payWayVal;//缴费方式
+        if(payWay == "2"){//保证金扣除
+          totalPrice = parseFloat(deposit) - parseFloat(serviceMoney);
+        }else{
+          totalPrice = deposit;
+        }
+        this.form.setFieldsValue({recedeDeposit: totalPrice});
+        this.model.recedeDeposit = totalPrice;
+      },
     }
   }
 </script>
