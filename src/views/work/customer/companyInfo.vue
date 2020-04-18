@@ -5,12 +5,12 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="客户名称">
-                <a-input placeholder="请输入客户名称" v-model="queryParam.companyName"></a-input>
+                <a-input placeholder="请输入客户名称" v-model="queryParam.companyName" maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="税号">
-                <a-input placeholder="请输入税号" v-model="queryParam.shuihao"></a-input>
+                <a-input placeholder="请输入税号" v-model="queryParam.shuihao" maxlength="20"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">

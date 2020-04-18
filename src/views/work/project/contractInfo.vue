@@ -5,7 +5,7 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="合同名称">
-                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName"></a-input>
+                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxlength="150"</a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -15,12 +15,12 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="甲方公司">
-                <a-input placeholder="请输入甲方公司名称" v-model="queryParam.partyA"></a-input>
+                <a-input placeholder="请输入甲方公司名称" v-model="queryParam.partyA"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="乙方公司">
-                <a-input placeholder="请输入乙方公司名称" v-model="queryParam.partyB"></a-input>
+                <a-input placeholder="请输入乙方公司名称" v-model="queryParam.partyB"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
           </a-row>
@@ -37,12 +37,12 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="甲方合同编号">
-                <a-input placeholder="请输入甲方合同编号" v-model="queryParam.contractNoA"></a-input>
+                <a-input placeholder="请输入甲方合同编号" v-model="queryParam.contractNoA"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="乙方合同编号">
-                <a-input placeholder="请输入乙方合同编号" v-model="queryParam.contractNoB"></a-input>
+                <a-input placeholder="请输入乙方合同编号" v-model="queryParam.contractNoB"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
           </a-row>

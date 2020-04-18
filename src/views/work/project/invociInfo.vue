@@ -15,12 +15,12 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="合同名称">
-                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxLength="50"></a-input>
+                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxLength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="公司名称">
-                <a-input placeholder="请输入公司名称" v-model="queryParam.companyName" maxLength="50"></a-input>
+                <a-input placeholder="请输入公司名称" v-model="queryParam.companyName" maxLength="30"></a-input>
               </a-form-item>
             </a-col>
           </a-row>

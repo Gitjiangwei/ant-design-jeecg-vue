@@ -5,12 +5,12 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="工程名称">
-                <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"></a-input>
+                <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"  maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="项目名称">
-                <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+                <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"  maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -20,14 +20,14 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="所属公司">
-                <a-input placeholder="请输入所属公司名称" v-model="queryParam.belongCompany"></a-input>
+                <a-input placeholder="请输入所属公司名称" v-model="queryParam.belongCompany"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
           </a-row>
           <a-row  :gutter="24" v-show="isShow">
             <a-col :span="6">
               <a-form-item label="工程编号">
-                <a-input placeholder="请输入工程编号" v-model="queryParam.prjItemNum"></a-input>
+                <a-input placeholder="请输入工程编号" v-model="queryParam.prjItemNum"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
@@ -42,12 +42,12 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="负责人">
-                <a-input placeholder="请输入负责人" v-model="queryParam.personInCharge"></a-input>
+                <a-input placeholder="请输入负责人" v-model="queryParam.personInCharge" maxlength="20"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="工程进度">
-                <a-input placeholder="请输入工程进度" v-model="queryParam.progressOfItem"></a-input>
+                <a-input placeholder="请输入工程进度" v-model="queryParam.progressOfItem" maxlength="50"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
