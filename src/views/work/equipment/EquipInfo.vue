@@ -4,9 +4,14 @@
       <a-form layout="inline">
         <a-row :gutter="24">
 
-          <a-col :span="12">
-            <a-form-item label="字典类型名称" >
-              <a-input placeholder="请输入字典类型名称" maxlength="30" v-model="queryParam.dictItemName"></a-input>
+          <a-col :span="6">
+            <a-form-item label="设备名称" >
+              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item label="设备型号">
+              <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -21,29 +26,8 @@
         </a-row>
       </a-form>
     </div>
-
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增 </a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel()">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
-    </div>
     <!-- table区域-begin -->
-    <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-        selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+    <div style="margin-top: 10px">
 
       <a-table
         ref="table"
@@ -57,53 +41,36 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a @click="handleDetail(record)">详情</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.dictItemId )">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a @click="handleDetail(record)">详情 </a>
         </span>
 
       </a-table>
     </div>
     <!-- table区域-end -->
-    <dict-code-moudle ref="dictCodeMoudle" @ok="modalFormOk"></dict-code-moudle>
-    <dicr-code-detail ref="dicrCodeDetail"></dicr-code-detail>
+    <equip-info-detail ref="EquipInfoDetail"></equip-info-detail>
+
   </a-card>
+
 </template>
+
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import dictCodeMoudle from "./moudles/dictCodeMoulde"
-  import dicrCodeDetail from "./dictCodeDetail"
+  import EquipInfoDetail from "./modules/EquipInfoDetail.vue"
   import {deleteAction, getAction, postAction} from '@/api/manage';
-  import {filterObj,timeFix} from '@/utils/util';
+  import {filterObj} from '@/utils/util';
 
 
   export default {
-    name: "dictList",
+    name: "EquipInfo",
     components: {
       ARow,
-      dictCodeMoudle,
-      dicrCodeDetail
+      EquipInfoDetail,
     },
     data() {
-      return {
-        description: '采购管理页面',
-        timer: "",
-        purchaseId: "",
-        fileRelId: "",
-        value: 0,
+      return{
+        description: '设备查询页面',
+
         // 查询条件
         queryParam: {},
         // 表头
@@ -119,31 +86,45 @@
             }
           },
           {
-            title: '字典类型编码',
+            title: '设备名称',
             align: "center",
-            dataIndex: 'dictItemCode',
+            dataIndex: 'equipName',
           },
           {
-            title: '字典类型名称',
+            title: '设备型号',
             align: "center",
-            dataIndex: 'dictItemName'
+            dataIndex: 'equipModel'
           },
           {
-            title: '创建时间',
+            title: '数量',
             align: "center",
-            dataIndex: 'createTime'
+            dataIndex: 'count'
           },
           {
-            title: '更新时间',
+            title: '使用中',
             align: "center",
-            dataIndex: 'updateTime',
+            dataIndex: 'inuseCount',
 
           },
           {
-            title: '备注',
-            align: "center",
-            dataIndex: 'remarks',
-
+            title:"空闲",
+            align:"center",
+            dataIndex: "freeCount",
+          },
+          {
+            title:"报废",
+            align:"center",
+            dataIndex: "scripCount",
+          },
+          {
+            title:"维修中",
+            align:"center",
+            dataIndex: "maintenonceCount",
+          },
+          {
+            title:"入库时间",
+            align:"center",
+            dataIndex: "createTime",
           },
           {
             title: '操作',
@@ -157,8 +138,8 @@
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSize: 30,
+          pageSizeOptions: ['20', '30', '40'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -174,9 +155,7 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/dictitem/qryDictItem",
-          deletes:"/renche/dictitem/delDictItems",
-          delete:"/renche/dictitem/delDictItem",
+          list: "/renche/equip/equipList",
         },
       }
     },
@@ -192,6 +171,7 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
+        console.log(params);
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -199,63 +179,23 @@
           }
         })
       },
-      handleAdd: function () {
-        this.$refs.dictCodeMoudle.add();
-        this.$refs.dictCodeMoudle.title = "新增";
-      },
-      handleEdit: function(record) {
-        //let results = this.handleKey(record);
-        this.$refs.dictCodeMoudle.edit(record);
-        this.$refs.dictCodeMoudle.title = "编辑";
-      },
       handleDetail: function(record){
-        this.$refs.dicrCodeDetail.detail(record);
-        this.$refs.dicrCodeDetail.title = "详情";
+        this.$refs.EquipInfoDetail.detail(record);
+        this.$refs.EquipInfoDetail.title = "详情";
+        //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
       },
-      batchDel: function () {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        }else {
-          var ids = "";
-          for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            ids += this.selectionRows[a].dictItemId + ",";
-          }
-          var that = this;
-          var title = "";
-          var content = "";
-          var url = "";
-          title = "确认删除";
-          content = "是否删除选中数据";
-          url = that.url.deletes;
-          this.$confirm({
-            title: title,
-            content: content,
-            onOk: function () {
-              deleteAction(url, {ids: ids}).then((res) => {
+
+      /*      handleDelete: function (id) {
+              var that = this;
+              deleteAction(that.url.delete, {id: id}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
-                  that.onClearSelected();
                 } else {
                   that.$message.warning(res.message);
                 }
               });
-            }
-          });
-        }
-      },
-      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
+            },*/
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         this.loadData();
@@ -302,6 +242,19 @@
         this.ipagination = pagination;
         this.loadData();
       },
-    },
+      exportDate(){
+        var params = Object.assign({}, this.queryParam, this.isorter);
+        var param = JSON.stringify(params);
+        //alert("param="+param);
+        param = param.replace("{","");
+        param = param.replace("}","");
+        window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
+      }
+    }
   }
+
 </script>
+
+<style scoped>
+
+</style>

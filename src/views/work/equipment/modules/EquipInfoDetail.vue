@@ -1,17 +1,24 @@
 <template>
-  <a-card :bordered="false" >
+  <a-modal
+    :title="title"
+    :width="1000"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @cancel="handleCancel"
+    @ok="handleCancel"
+    cancelText="关闭"
+  >
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-
-          <a-col :span="6">
-            <a-form-item label="设备名称" >
-              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
+          <a-col :span="12">
+            <a-form-item label="设备编号">
+              <a-input placeholder="请输入设备编号" maxlength="15" v-model="queryParam.equipNo"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
-            <a-form-item label="设备型号">
-              <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
+          <a-col :span="12">
+            <a-form-item label="设备状态">
+              <RencheDictSelectTag v-model="queryParam.equipStatus" placeholder="请选择设备状态" dictCode="ELECTSTATUS"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -26,14 +33,10 @@
         </a-row>
       </a-form>
     </div>
-    <div class="table-operator">
-      <!--<a-button type="primary" >
-        <a :href="'http://localhost:8080/jeecg-boot/renche/equip/exportEquip'" target="_blank" style="margin-left: 10px">导出</a>
-      </a-button>-->
-      <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
-    </div>
+
+    <!-- 操作按钮区域 -->
     <!-- table区域-begin -->
-    <div style="margin-top: 10px">
+    <div>
 
       <a-table
         ref="table"
@@ -47,50 +50,39 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情 </a>
+        <!--          <span slot="purchaseItem" slot-scope="text,record">-->
+        <!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
+        <!--          </span>-->
 
-          <!--          <a-divider type="vertical"/>
-                    <a-dropdown>
-                      <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-                      <a-menu slot="overlay">
-                        <a-menu-item>
-                          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
-                            <a>删除</a>
-                          </a-popconfirm>
-                        </a-menu-item>
-                      </a-menu>
-                    </a-dropdown>-->
-        </span>
 
       </a-table>
     </div>
-    <!-- table区域-end -->
-    <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
-
-  </a-card>
-
+  </a-modal>
 </template>
-
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import prochaseInfoMode from "./modules/pruchaseInfoMode";
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, httpAction} from '@/api/manage';
   import {filterObj} from '@/utils/util';
+  import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
 
   export default {
-    name: "PurchaseInfoStock",
+    name: "EquipInfoDetail",
     components: {
       ARow,
-      prochaseInfoMode,
     },
     data() {
       return{
-        description: '设备库存页面',
-
+        description: '采购管理页面',
+        timer:"",
+        purchaseId:"",
+        title: "操作",
+        visible: false,
+        confirmLoading: false,
         // 查询条件
         queryParam: {},
+        //字典数组缓存
+        statDictOptions: [],
         // 表头
         columns: [
           {
@@ -104,60 +96,48 @@
             }
           },
           {
-            title: '设备名称',
+            title: '库存设备名称',
             align: "center",
-            dataIndex: 'equipName',
+            dataIndex: 'equipName'
           },
           {
-            title: '设备型号',
+            title: '库存设备编号',
             align: "center",
-            dataIndex: 'equipModel'
+            dataIndex: 'equipNo'
           },
           {
-            title: '数量',
+            title: '厂家设备编号',
             align: "center",
-            dataIndex: 'count'
+            dataIndex: 'manufacoryNo'
           },
           {
-            title: '使用中',
+            title: '设备情况',
             align: "center",
-            dataIndex: 'inuseCount',
-
+            dataIndex: 'condition'
           },
           {
-            title:"空闲",
+            title:"当前状态",
             align:"center",
-            dataIndex: "freeCount",
+            dataIndex: "equipStatus",
+            customRender: (text, record, index) => {
+              //字典值替换通用方法
+              return filterDictText(this.statDictOptions, text);
+            }
           },
           {
-            title:"报废",
+            title:"使用次数",
             align:"center",
-            dataIndex: "scripCount",
-          },
-          {
-            title:"维修中",
-            align:"center",
-            dataIndex: "maintenonceCount",
-          },
-          {
-            title:"入库时间",
-            align:"center",
-            dataIndex: "createTime",
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: "center",
-            scopedSlots: {customRender: 'action'},
+            dataIndex: "useTimes",
           }
         ],
+        purchaseId:"",
         //数据集
         dataSource: [],
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 30,
-          pageSizeOptions: ['20', '30', '40'],
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -173,17 +153,13 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-           list: "/renche/equip/equipList",
-          // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
-          // updateIsArrival: "/renche/purchase/updateIsArrival"
-          export: "/renche/equip/exportEquip",
+          list: "/renche/equip/equipKeyDetail",
         },
       }
     },
     created() {
-      this.loadData();
       //初始化字典配置
+
       this.initDictConfig();
     },
     methods: {
@@ -192,8 +168,9 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
+        debugger;
         var params = this.getQueryParams();//查询条件
-        console.log(params);
+        params.purchaseId = this.purchaseId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -201,31 +178,20 @@
           }
         })
       },
-
-
-      handleAdd: function () {
-        this.$refs.prochaseInfoMode.add();
-        this.$refs.prochaseInfoMode.title = "新增";
+      detail:function(record){
+        this.visible = true;
+        this.purchaseId = record.purchaseId;
+        this.loadData(1);
       },
-      handleEdit: function (record) {
-        this.$refs.prochaseInfoMode.edit(record);
-        this.$refs.prochaseInfoMode.title = "编辑";
-      },
-      handleDetail: function(record){
-        this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
-      },
-
-/*      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
+      initDictConfig: function() {
+        //初始化字典 - 设备状态
+        initDictOptions('ELECTSTATUS').then((res) => {
           if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
+            this.statDictOptions = res.result;
+            console.log(this.statDictOptions);
           }
         });
-      },*/
+      },
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         this.loadData();
@@ -272,19 +238,13 @@
         this.ipagination = pagination;
         this.loadData();
       },
-      exportDate(){
-        var params = Object.assign({}, this.queryParam, this.isorter);
-        var param = JSON.stringify(params);
-        //alert("param="+param);
-        param = param.replace("{","");
-        param = param.replace("}","");
-        window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
-      }
+      handleCancel() {
+        this.close();
+      },
+      close() {
+        this.$emit('ok');
+        this.visible = false;
+      },
     }
   }
-
 </script>
-
-<style scoped>
-
-</style>

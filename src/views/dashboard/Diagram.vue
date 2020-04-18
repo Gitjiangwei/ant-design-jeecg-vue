@@ -20,9 +20,11 @@ require('echarts/lib/chart/pie')
 // 引入提示框和title组件
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/title')
+require('echarts/lib/component/legend')
 
 
 export default {
+  name: "Diagram",
   data(){
     return {
       url: {
@@ -121,12 +123,6 @@ export default {
                 radius : '55%',
                 center: ['50%', '60%'],
                 data:res.result,
-                /*[
-                  {value:335, name:'未开始'},
-                  {value:310, name:'进行中'},
-                  {value:234, name:'已完成'}
-
-                ],*/
                 itemStyle: {
                   emphasis: {
                     shadowBlur: 10,

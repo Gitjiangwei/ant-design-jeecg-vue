@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+    :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -10,7 +10,21 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item
+
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
+                <template slot="dataSource">
+                  <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                </template>
+              </a-auto-complete>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+
+       <!-- <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="客户名称"
@@ -19,69 +33,85 @@
             <a-select-option value="">请选择客户名称</a-select-option>
             <a-select-option v-for="item in companyNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
           </a-select>
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="计划执行时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'planExecuTime', {rules: [{ required: true,message: '请选择计划执行时间' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="实际执行时间"
-          hasFeedback >
-          <a-date-picker showTime format="YYYY-MM-DD HH:mm:ss"  v-decorator="[ 'realityExecuTime', {rules: [{ required: true,message: '请选择实际执行时间' }]}]" />
-        </a-form-item>
+        </a-form-item>-->
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="计划参与人数">
-          <a-input placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {rules: [{ required: true,message: '请输入计划参与人数' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="实际参与人数">
-          <a-input placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', {rules: [{ required: true,message: '请输入实际参与人数' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="任务内容"
-          hasFeedback >
-          <a-textarea placeholder="请输入任务内容" v-decorator="['content', {rules: [{ required: true,message: '请输入任务内容' }]}]" :row="2" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="执行情况"
-          hasFeedback >
-          <a-textarea placeholder="请输入执行情况" v-decorator="['result', {rules: [{ required: true,message: '请输入执行情况' }]}]" :row="2" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="客户评价"
-          hasFeedback >
-          <a-select v-decorator="['evaluate', {rules: [{ required: true,message: '请输入客户评价' }]}]" placeholder="请选择客户评价">
-            <a-select-option :key="1">很满意</a-select-option>
-            <a-select-option :key="2">满意</a-select-option>
-            <a-select-option :key="3">一般</a-select-option>
-            <a-select-option :key="4">较差</a-select-option>
-            <a-select-option :key="4">很差</a-select-option>
-          </a-select>
-        </a-form-item>
+        <a-row >
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划执行时间">
+              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planExecuTime', {rules: [{ required: true,message: '请选择计划执行时间' }]}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" float:left>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="实际执行时间">
+              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityExecuTime', {rules: [{ required: true,message: '请选择实际执行时间' }]}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row >
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划完成时间">
+              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {rules: [{ required: true,message: '请选择计划完成时间' }]}]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际完成时间">
+              <a-date-picker showTime format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {rules: [{ required: true,message: '请选择实际完成时间' }]}]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row >
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划参与人数">
+              <a-input-number :defaultValue="0" placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {rules: [{ required: true,message: '请输入计划参与人数' }],initialValue: '0'}]" :min="0" :max="100000"   />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际参与人数">
+              <a-input-number :defaultValue="0" placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', {rules: [{ required: true,message: '请输入实际参与人数' }],initialValue: '0'}]" :min="0" :max="100000"  />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="备注"
-          hasFeedback >
-          <a-textarea placeholder="请输入备注" v-decorator="['remark', {rules: [{ required: true,message: '请输入备注' }]}]" :row="2" />
-        </a-form-item>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="任务内容" >
+              <a-textarea  placeholder="请输入任务内容" v-decorator="['content', {rules: [{ required: true,message: '请输入任务内容' }]}]"  :autosize="{ minRows: 2, maxRows: 6 }" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="执行情况" >
+              <a-textarea  placeholder="请输入执行情况" v-decorator="['result', {rules: [{ required: true,message: '请输入执行情况' }]}]"  :autosize="{ minRows: 2, maxRows: 6 }" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户评价" >
+              <a-select v-decorator="['evaluate', {rules: [{ required: true,message: '请输入客户评价' }]}]" placeholder="请选择客户评价">
+                <a-select-option :key="1">很满意</a-select-option>
+                <a-select-option :key="2">满意</a-select-option>
+                <a-select-option :key="3">一般</a-select-option>
+                <a-select-option :key="4">较差</a-select-option>
+                <a-select-option :key="4">很差</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
+              <a-textarea  placeholder="请输入备注"  v-decorator="['remark', {rules: [{ required: true,message: '请输入备注' }]}]" :autosize="{ minRows: 2, maxRows: 6 }" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
 
         <a-form-item
           :labelCol="labelCol"
@@ -142,6 +172,8 @@
         uploadLoading: false,
         headers: {},
         avatar: "",
+        companyNameListA: [],
+        companyIdA:"",
         isEdit:true,
         isArris: false,
         confirmLoading: false,
@@ -153,6 +185,7 @@
           edit: "renche/WorkSerivice/upWorkSerivice",
           getn:"/renche/visit/getn",
           fileUpload: doMian + "/sys/common/upload",
+          searchCompany: "/renche/companyInfo/searchCompany",
         },
       }
     },
@@ -216,23 +249,33 @@
         })
 
       },
+      getCompanyListA: function(val){
+        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "5",name: val}).then((res) => {
+          if (res.success) {
+            this.companyNameListA = res.result.list;
+          }
+        })
+      },
+      chooseThisA: function(val){
+        this.companyIdA = val;
+      },
       add () {
-
         this.edit({});
-
       },
       edit (record) {
         this.isEdit=false;
-        this.avatar = record.fileRelId;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','realityExecuTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
+          this.form.setFieldsValue(pick(this.model,'companyName','planExecuTime','companyNameA','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
         //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
-          this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
-          this.form.setFieldsValue({realityExecuTime:this.model.realityExecuTime?moment(this.model.realityExecuTime,'YYYY-MM-DD HH:mm:ss'):null});
+          this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({realityExecuTime:this.model.realityExecuTime?moment(this.model.realityExecuTime,'YYYY-MM-DD '):null});
+          this.form.setFieldsValue({planOutTime:this.model.planOutTime?moment(this.model.planOutTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue({realityOutTime:this.model.realityOutTime?moment(this.model.realityOutTime,'YYYY-MM-DD'):null});
 
         });
 
@@ -275,8 +318,10 @@
             //时间格式化
 
            // formData.visitTime = formData.visitTime?formData.visitTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.planExecuTime = formData.planExecuTime?formData.planExecuTime.format('YYYY-MM-DD HH:mm:ss'):null;
-            formData.setFieldsValue = formData.setFieldsValue?formData.setFieldsValue.format('YYYY-MM-DD HH:mm:ss'):null;
+            formData.planExecuTime = formData.planExecuTime?formData.planExecuTime.format('YYYY-MM-DD '):null;
+            formData.setFieldsValue = formData.setFieldsValue?formData.setFieldsValue.format('YYYY-MM-DD '):null;
+            formData.planOutTime = formData.planOutTime?formData.planOutTime.format('YYYY-MM-DD '):null;
+            formData.realityOutTime = formData.realityOutTime?formData.realityOutTime.format('YYYY-MM-DD '):null;
 
 
             httpAction(httpurl,formData,method).then((res)=>{

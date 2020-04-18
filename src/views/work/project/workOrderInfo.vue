@@ -154,13 +154,13 @@
               dataIndex: 'describe',
 
             },
-            {
+           /* {
               title: '创建时间',
               align: "center",
               dataIndex: 'createTime',
-            },
+            },*/
             {
-              title: '计划完成时间',
+              title: '预计完成时间',
               align: "center",
               dataIndex: 'completeTime',
             },
@@ -308,7 +308,6 @@
           postAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
-             /* alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);
@@ -346,12 +345,11 @@
         },
         modalFormOk() {
           // 新增/修改 成功时，重载列表
-          this.loadData();
+          this.loadData(1);
         },
         exportDate(){
           var params = Object.assign({}, this.queryParam, this.isorter);
           var param = JSON.stringify(params);
-          //alert("param="+param);
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
