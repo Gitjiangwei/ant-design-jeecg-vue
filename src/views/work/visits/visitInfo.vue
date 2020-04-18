@@ -412,12 +412,9 @@
       },
       exportDate: function () {
         var params = Object.assign({}, this.queryParam, this.isorter );
-
         var param = JSON.stringify(params);
-        //alert("param="+param);
         param = param.replace("{", "");
         param = param.replace("}", "");
-        alert("param="+param)
         window.location.href = window._CONFIG['domainURL'] +this.url.export + "?param="+param;
 
 

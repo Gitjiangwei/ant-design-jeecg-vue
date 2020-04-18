@@ -16,15 +16,7 @@
           label="工单名称"
           hasFeedback >
           <a-input placeholder="请输入工单名称"  v-decorator="['workName', {rules: [{ required: true,message: '请输入工单名称' }]}]" />
-
         </a-form-item>
-     <!--   <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="创建人"
-          hasFeedback >
-          <a-input placeholder="请输入创建人"  v-decorator="['createPerson', {rules: [{ required: true,message: '请输入创建人' }]}]" />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -45,8 +37,6 @@
           hasFeedback >
           <a-textarea placeholder="请输入任务描述" v-decorator="['describe', {rules: [{ required: true,message: '请输入任务描述' }]}]" :row="3" />
         </a-form-item>
-
-
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -57,16 +47,6 @@
             <a-select-option v-for="item in prjItemNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
           </a-select>
         </a-form-item>
-
-
-<!--
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="状态"
-          hasFeedback >
-          <a-input placeholder="请输入状态" v-decorator="['status', {rules: [{ required: true,message: '请输入状态' }]}]" />
-        </a-form-item>-->
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -219,7 +199,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'workName','createPerson','chargePerson','content','prjItemName','completeTime','status'));
+          this.form.setFieldsValue(pick(this.model,'workName','createPerson','describe','chargePerson','content','prjItemName','completeTime','status','fileName'));
           //时间格式化
           this.form.setFieldsValue({completeTime:this.model.completeTime?moment(this.model.completeTime,'YYYY-MM-DD'):null});
 
