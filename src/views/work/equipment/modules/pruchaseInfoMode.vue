@@ -102,22 +102,17 @@
                    v-decorator="['isarrival', {rules: [{ required: false,message: '请输入采购来源' }]}]"/>
         </a-form-item>
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="附件"
-          hasFeedback>
-          <!--  -->
+        <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
           <a-upload
             name="file"
             :multiple="true"
             :action="uploadAction"
             :headers="headers"
+            :before-upload="beforeUpload"
+            :file-list="fileList"
             @change="handleChange"
-            :showUploadList="isEdit"
-
           >
-            <a-button v-on:click="load">
+            <a-button>
               <a-icon type="upload"/>
               上传
             </a-button>
@@ -157,9 +152,10 @@
         isShowFile: false,
         title: "操作",
         visible: false,
+        fileList: [],
         model: {},
         isTimeShow: false,
-        isEdit:true,
+
         isarrivals: "",
         treeData: [],
         treeValue: '0-0-4',
@@ -190,7 +186,7 @@
     created() {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token};
-      this.isEdit = true;
+
     },
     computed: {
       uploadAction: function () {
@@ -214,42 +210,48 @@
       },
       load: function(){
 
-        this.isEdit = true;
+
       },
       beforeUpload: function (file) {
-        var fileType = file.type;
-        if (fileType.indexOf('image') < 0) {
-          this.$message.warning('请上传图片');
-          return false;
-        }
+        /*     var fileType = file.type;
+             if (fileType.indexOf('image') < 0) {
+               this.$message.warning('请上传图片');
+               return false;
+             }*/
+        return true;
         //TODO 验证文件大小
       },
       handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true
-          return
-        }
-        debugger;
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            if(this.avatar == undefined || this.avatar == null){
-              this.avatar = "";
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
             }
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
           }
         }
       },
+
       add() {
         this.edit({});
       },
       edit(record) {
-        this.isEdit= false;
         this.avatar = record.fileRelId;
         this.isArris = true;
         getAction(this.url.listKey, {purchaseId:record.purchaseId}).then((res) => {
@@ -262,8 +264,8 @@
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
-        this.fileList = this.model.filelist;
         this.visible = true;
+        this.fileList = [];
         this.loadTree();
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model, 'purchaseItem', 'itemModel', 'price', 'totalPrice', 'quantity', 'purchaser', 'purchaseTime', 'whichCompany', 'arrivalTime', 'remarks'))
