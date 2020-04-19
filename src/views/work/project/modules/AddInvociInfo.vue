@@ -69,7 +69,7 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="公司税号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入公司税号" v-decorator="['shuihao', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确税号' }]}]" maxLength="20" />
+              <a-input placeholder="请输入公司税号" v-decorator="['shuihao', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*[A-Z]*\d*[a-z]*[A-Z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确税号' }]}]" maxLength="20" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -167,7 +167,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import {queryDepartCGTreeList, doMian} from '@/api/api'
+  import { doMian} from '@/api/api'
   import ContractInfoShow from './ContractInfoShow'
 
   export default {
@@ -189,7 +189,6 @@
         uploadLoading: false,
         headers: {},
         avatar: "",
-        isArris: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{

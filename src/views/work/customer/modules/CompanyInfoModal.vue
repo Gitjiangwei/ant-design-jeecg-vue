@@ -28,7 +28,7 @@
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="税号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入税号" v-decorator="['shuihao', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确税号' }]}]" maxLength="20"/>
+              <a-input placeholder="请输入税号" v-decorator="['shuihao', {rules: [{ required: true,pattern: /^\d*[a-z]*\d*[A-Z]*[a-z]*\d*[a-z]*[A-Z]*\d*[a-z]*[A-Z]*\d*[A-Z]*[a-z]*\d*[a-z]*$/,message: '请输入正确税号' }]}]" maxLength="20"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -82,6 +82,29 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row>
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-upload
+                name="file"
+                :multiple="true"
+                :action="uploadAction"
+                :headers="headers"
+                :before-upload="beforeUpload"
+                :file-list="fileList"
+                @change="handleChange"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -91,7 +114,9 @@
   import { httpAction } from '@/api/manage'
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
-  import moment from "moment"
+  import { doMian} from '@/api/api'
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
 
   export default {
     name: "companyInfoModal",
@@ -102,6 +127,7 @@
         model: {},
         //字典数组缓存
         typeDictOptions: [],
+        fileList: [],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -113,17 +139,27 @@
 
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-        },
+        validatorRules:{},
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
         url: {
           add: "/renche/companyInfo/add",
           edit: "/renche/companyInfo/edit",
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
       //初始化字典配置
       this.initDictConfig();
+    },
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
       initDictConfig() {
@@ -138,9 +174,11 @@
         this.edit({});
       },
       edit (record) {
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'companyName','type','shuihao','bank','bankNo','contacts','idCard','phone','email','hobby','address'))
         });
@@ -165,6 +203,8 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+
+            that.model.fileRelId = that.avatar;
             let formData = Object.assign(this.model, values);
 
             httpAction(httpurl,formData,method).then((res)=>{
@@ -187,7 +227,57 @@
       handleCancel () {
         this.close()
       },
+      beforeUpload: function (file) {
+        // const timeStamp = new Date() - 0
+        // const nowDate = this.getDate();
+        // const copyFile = new File([file], `${nowDate}${file.name}`)
+        // this.uploadFile(copyFile)
+        return true;
+      },
+      // uploadFile(file) {
+      //   const formdata = new FormData()
+      //   formdata.append('lbf-file-upload', file)
+      //   formdata.append('name', 'lbf-file-upload')
+      //   formdata.append('_csrfToken', this.$ajax.getCsrfToken()._csrfToken)
+      //   this.postForm(formdata)
+      // },
 
+      handleChange(info) {
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
+          }
+        }
+      },
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      }
 
     }
   }

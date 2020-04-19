@@ -5,7 +5,7 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="合同名称">
-                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxlength="150"</a-input>
+                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">

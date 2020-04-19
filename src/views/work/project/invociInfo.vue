@@ -324,7 +324,6 @@
         },
 
         fileDeteil:function(record){
-          console.log(record);
           this.$refs.invociInfoFileDetail.fileLoad(record);
           this.$refs.invociInfoFileDetail.title = "附件";
         },

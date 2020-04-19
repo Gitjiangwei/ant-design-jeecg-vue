@@ -68,6 +68,8 @@
           @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
+            <a @click="fileDeteil(record)">附件</a>
+            <a-divider type="vertical"/>
             <a @click="handleEdit(record)">编辑</a>
 
             <a-divider type="vertical"/>
@@ -89,6 +91,8 @@
       <!-- 表单区域 -->
       <company-info-modal ref="companyInfoModal" @ok="modalFormOk"></company-info-modal>
 
+      <FileDetail ref="fileDetail" @ok="modalFormOk"></FileDetail>
+
     </a-card>
 
 </template>
@@ -98,10 +102,12 @@
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
+    import FileDetail from "./modules/FileDetail";
 
     export default {
       name: "companyList",
       components: {
+        FileDetail,
         CompanyInfoModal,
       },
       data() {
@@ -159,6 +165,11 @@
               dataIndex: 'phone'
             },
             {
+              title: '附件',
+              align: "center",
+              dataIndex: 'fileCount',
+            },
+            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
@@ -191,6 +202,7 @@
             delete: "/renche/companyInfo/delete",
             deleteBatch: "/renche/companyInfo/deleteBatch",
             exportCompanyInfo:  "/renche/companyInfo/exportCompanyInfo",
+            filelist: "/renche/purchase/fileList",
           },
         }
       },
@@ -293,7 +305,11 @@
             }
           });
         },
-        handleEdit: function (record) {
+        async handleEdit (record) {
+          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+            record.filelist = result.list;
+          }
           this.$refs.companyInfoModal.edit(record);
           this.$refs.companyInfoModal.title = "编辑";
         },
@@ -340,6 +356,10 @@
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.exportCompanyInfo + "?param="+param;
+        },
+        fileDeteil:function(record){
+          this.$refs.fileDetail.fileLoad(record);
+          this.$refs.fileDetail.title = "附件";
         },
       }
     }
