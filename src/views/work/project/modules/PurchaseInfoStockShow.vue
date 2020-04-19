@@ -82,6 +82,7 @@
       return{
         description: '设备库存页面',
         visible: false,
+        title: "操作",
         projectId:"",
         // 查询条件
         queryParam: {},
@@ -169,16 +170,11 @@
         selectedRows: [],
         url: {
            list: "/renche/equip/equipList",
-          // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
-          // updateIsArrival: "/renche/purchase/updateIsArrival"
         },
       }
     },
     created() {
       this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
     },
     methods: {
       loadData(arg) {

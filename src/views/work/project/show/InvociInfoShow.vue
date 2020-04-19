@@ -3,14 +3,15 @@
     :title="title"
     :width="1050"
     :visible="visible"
-    :confirmLoading="confirmLoading">
+    :confirmLoading="confirmLoading"
+    @cancel="handleCancel">
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="发票名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input  v-decorator="['invociName', {}]" disabled />
+              <a-textarea readonly v-decorator="['invociName', {}]" :autosize="{ minRows: 1, maxRows: 2 }" class="read_tex" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -96,7 +97,7 @@
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="发票内容" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-textarea disabled v-decorator="['content', {}]" :autosize="{ minRows: 2, maxRows: 6 }" />
+              <a-textarea readonly v-decorator="['content', {}]" :autosize="{ minRows: 2, maxRows: 6 }" class="read_tex"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -201,5 +202,8 @@
 </script>
 
 <style scoped>
-
+  .read_tex{
+    background-color: #e6e5e56b;
+    color: #8b89898a;
+  }
 </style>

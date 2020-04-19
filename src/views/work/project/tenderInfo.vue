@@ -5,17 +5,17 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="项目名称" >
-                <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"></a-input>
+                <a-input placeholder="请输入项目名称" v-model="queryParam.prjName" maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="招标编号">
-                <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo"></a-input>
+                <a-input placeholder="请输入招标编号" v-model="queryParam.tenderNo" maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="投标单位">
-                <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany"></a-input>
+                <a-input placeholder="请输入投标单位" v-model="queryParam.tenderCompany" maxlength="30"></a-input>
               </a-form-item>
             </a-col>
 
@@ -33,9 +33,6 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <!--<a-button type="primary" >
-          <a :href="'http://localhost:8080/jeecg-boot/renche/tender/exportTender'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>-->
         <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -145,38 +142,22 @@
               dataIndex: 'tenderCompany',
             },
             {
-              title: '报价（万元）',
+              title: '报价',
               align: "center",
               dataIndex: 'tenderOffer',
-            },
-            {
-              title: '保证金（万元）',
-              align: "center",
-              dataIndex: 'deposit',
-
-            },
-            {
-              title: '应退保证金（万元）',
-              align: "center",
-              dataIndex: 'recedeDeposit',
-
             },
             {
               title: '保证金是否退回',
               align: "center",
               dataIndex: 'isBack',
-            },
-            {
-              title: '计划完成时间',
-              align: "center",
-              dataIndex: 'planOutTime',
-
-            },
-            {
-              title: '实际完成时间',
-              align: "center",
-              dataIndex: 'realityOutTime',
-
+              customRender: (text) => {
+                //字典值替换通用方法
+                if(text == '2'){
+                  return "否";
+                }else if (text == '1'){
+                  return "是";
+                }
+              }
             },
             {
               title: '招标代理机构',
@@ -189,35 +170,12 @@
               dataIndex: 'purchasePerson',
             },
             {
-              title: '服务费',
-              align: "center",
-              dataIndex: 'serviceMoney',
-            },
-            {
-              title: '交保证金时间',
-              align: "center",
-              dataIndex: 'payTime',
-            },
-            {
-              title: '退保证金时间',
-              align: "center",
-              dataIndex: 'recedeTime',
-            },
-            {
-              title: '服务费缴纳方式',
-              align: "center",
-              dataIndex: 'payWay',
-            },
-
-            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
               scopedSlots: {customRender: 'action'},
             }
           ],
-
-
           //数据集
           dataSource: [],
           // 分页参数

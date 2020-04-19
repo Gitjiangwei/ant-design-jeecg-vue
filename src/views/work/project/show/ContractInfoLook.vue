@@ -14,46 +14,38 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="合同名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入合同名称" v-decorator="['contractName', {rules: [{ required: true, message: '请输入合同名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea readonly v-decorator="['contractName', {}]" :autosize="{ minRows: 1, maxRows: 2 }" class="read_tex"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="甲方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入甲方公司"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
-                    <template slot="dataSource">
-                      <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
-                    </template>
-                  </a-auto-complete>
+                  <a-input disabled v-decorator="['companyNameA', {}]"  />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="甲方合同编号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入甲方合同编号" v-decorator="['contractNoA', {rules: [{ required: false, message: '请输入甲方合同编号', }]}]"  maxLength="30"/>
+                  <a-input disabled v-decorator="['contractNoA', {}]"  />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="乙方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入乙方公司" @search="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
-                    <template slot="dataSource">
-                      <a-select-option v-for="item in companyNameListB" :key="item.companyId">{{ item.companyName }}</a-select-option>
-                    </template>
-                  </a-auto-complete>
+                  <a-input disabled v-decorator="['companyNameB', {}]"  />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="乙方合同编号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入乙方合同编号" v-decorator="['contractNoB', {rules: [{ required: false, message: '请输入乙方合同编号', }]}]"  maxLength="30"/>
+                  <a-input disabled v-decorator="['contractNoB', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="合同类型" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select v-decorator="['contractType', {rules: [{ required: true, message: '请选择合同类型', }]}]" placeholder="请选择合同类型">
+                  <a-select v-decorator="['contractType', {}]" disabled>
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
                   </a-select>
@@ -61,14 +53,14 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="合同金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input-number v-decorator="['contractMoney', {rules: [{ required: true,message: '请输入正确合同金额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" />
+                  <a-input disabled v-decorator="['contractMoney', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="合同状态" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select v-decorator="['contractStatus', {rules: [{ required: true, message: '请选择合同签订状态', }]}]" placeholder="请选择合同签订状态">
+                  <a-select v-decorator="['contractStatus', {}]" disabled>
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option value="2">未签订</a-select-option>
                     <a-select-option value="1">已签订</a-select-option>
@@ -78,31 +70,31 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="签订日期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="['signingTime', {}]" />
+                  <a-date-picker v-decorator="['signingTime', {}]" disabled />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="结束日期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker  v-decorator="['overTime', {}]" />
+                  <a-date-picker disabled v-decorator="['overTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="签收日期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="['signInTime', {}]" />
+                  <a-date-picker disabled v-decorator="['signInTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="甲方经办人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入甲方经办人" v-decorator="['operatorA', {}]"  maxLength="30" />
+                  <a-input disabled v-decorator="['operatorA', {}]"  />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="乙方经办人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入乙方经办人" v-decorator="['operatorB', {}]"  maxLength="30" />
+                  <a-input disabled v-decorator="['operatorB', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -137,19 +129,6 @@
                   :wrapperCol="wrapperCol"
                   label="电子版附件"
                   hasFeedback>
-                  <!--  -->
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :action="uploadAction"
-                    :headers="headers"
-                    @change="handleChangeElec"
-                  >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
                   <div>
                     <div v-for="(item,index) in model.elefilelist" :key="index">{{item.fileName}}</div>
                   </div>
@@ -161,19 +140,6 @@
                   :wrapperCol="wrapperCol"
                   label="扫描件附件"
                   hasFeedback>
-                  <!--  -->
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :action="uploadAction"
-                    :headers="headers"
-                    @change="handleChange"
-                  >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
                   <div>
                     <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
                   </div>
@@ -183,7 +149,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select v-decorator="['remindPeriodType', {}]" placeholder="请选择提醒周期类型">
+                  <a-select v-decorator="['remindPeriodType', {}]" disabled>
                     <a-select-option value="">请选择</a-select-option>
                     <a-select-option v-for="item in remindTypeOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
                   </a-select>
@@ -193,34 +159,23 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="关联招标" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入招标信息" v-decorator="['prjName', {}]" @click="showTender"/>
+                  <a @click="tenderInfoShow">{{model.prjName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="1500"/>
+                  <a-textarea readonly v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" class="read_tex" />
                 </a-form-item>
               </a-col>
             </a-row>
           </a-form>
-          <a-row style="text-align: center;">
-            <a-col>
-              <span style="overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleOk" icon="check">保存</a-button>
-              </span>
-            </a-col>
-          </a-row>
         </a-spin>
       </a-tab-pane>
 
       <a-tab-pane tab="关联工程点" key="2" style="padding-bottom: 14px">
-        <div style="float: right;">
-          <a-button @click="showProjectItem" type="primary" icon="plus">新增</a-button>
-        </div>
-
-        <div style="padding-top: 42px;">
+        <div>
           <a-table
             ref="table"
             size="middle"
@@ -234,8 +189,6 @@
 
             <span slot="action" slot-scope="text, record">
               <a @click="prjItemShow(record)">详情</a>
-              <a-divider type="vertical"/>
-              <a @click="handleDel(record.prjItemId)">删除</a>
             </span>
           </a-table>
         </div>
@@ -286,9 +239,6 @@
       </a-tab-pane>
     </a-tabs>
 
-    <TenderInfoShow ref="tenderInfoShow" @func="modalFormOk"></TenderInfoShow>
-
-    <AddProjectItemRel  ref="addProjectItemRel" @func="addProjectItem"></AddProjectItemRel>
     <ProjectItemShow ref="projectItemShow" ></ProjectItemShow>
 
     <invoci-info-file-detail ref="invociInfoFileDetail" @ok="invociInfoShowList"></invoci-info-file-detail>
@@ -296,6 +246,8 @@
 
     <MoneyBackShow ref="moneyBackShow" ></MoneyBackShow>
     <FileDetail ref="fileDetail" @ok="backInfoShowList"></FileDetail>
+
+    <TenderInfoLook ref="tenderInfoLook"></TenderInfoLook>
 
 
     <div slot="footer">
@@ -305,8 +257,7 @@
 </template>
 
 <script>
-  import TenderInfoShow from './TenderInfoShow'
-  import { httpAction, getAction, deleteAction} from '@/api/manage'
+  import { getAction} from '@/api/manage'
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
@@ -314,21 +265,17 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
-  import AddProjectItemRel from "./AddProjectItemRel";
-  import { doMian} from '@/api/api'
-  import Vue from 'vue'
-  import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import InvociInfoFileDetail from "./InvociInfoFileDetail";
-  import InvociInfoShow from "../show/InvociInfoShow";
-  import MoneyBackShow from "../show/MoneyBackShow";
-  import ProjectItemShow from "../show/ProjectItemShow";
-  import FileDetail from "./FileDetail";
+  import InvociInfoFileDetail from "../modules/InvociInfoFileDetail";
+  import InvociInfoShow from "./InvociInfoShow";
+  import MoneyBackShow from "./MoneyBackShow";
+  import ProjectItemShow from "./ProjectItemShow";
+  import FileDetail from "../modules/FileDetail";
+  import TenderInfoLook from "./TenderInfoLook";
 
   export default {
-    name: "contractInfoModel",
+    name: "contractInfoLook",
     components: {
-      FileDetail,
-      AddProjectItemRel, ACol, ATextarea, ARow,TenderInfoShow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow},
+      FileDetail, ACol, ATextarea, ARow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow, TenderInfoLook},
     data () {
       return {
         title:"操作",
@@ -339,14 +286,10 @@
         typeDictOptions: [],
         remindTypeOptions: [],
         typePrjDictOptions: [],
-        companyNameListA: [],
-        companyNameListB: [],
         isOk:true,
         isSearchA: false,
         isSearchB: false,
         isOnFocus: false,
-        companyIdA:"",
-        companyIdB:"",
         thisMessage:"",
         defaultActiveKey: '1',
         labelCol: {
@@ -357,8 +300,6 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
-        uploadLoading: false,
-        headers: {},
         avatar: "",
         avatarElec: "",
         confirmLoading: false,
@@ -594,26 +535,18 @@
         url: {
           add: "/renche/contractInfo/add",
           edit: "/renche/contractInfo/edit",
-          searchCompany: "/renche/companyInfo/searchCompany",
           prjItemList: "/renche/contractInfo/contractPrjItemList",
           delprjItem: "/renche/contractInfo/delPrjItem",
-          fileUpload: doMian + "/sys/common/upload",
           invociList: "renche/invoci/qryInvociList",
           filelist: "/renche/purchase/fileList",
           backList: "/renche/moneyBack/list",
+          searchTender: "/renche/tender/getTenderById",
         },
       }
     },
     created () {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token};
       //初始化字典配置
       this.initDictConfig();
-    },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      },
     },
     methods: {
       initDictConfig() {
@@ -680,14 +613,9 @@
         param.contractId = this.model.contractId;
         return filterObj(param);
       },
-      add () {
-        this.edit({});
-      },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.avatarElec = record.elecFileRel == undefined?'':record.elecFileRel;
-        this.companyIdA = record.partyA;
-        this.companyIdB = record.partyB;
 
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -725,59 +653,6 @@
       close () {
         this.$emit('close');
         this.visible = false;
-      },
-      handleOk () {
-        const that = this;
-        if(that.companyIdA == ""){
-          this.form.setFieldsValue({companyNameA:""});
-        }
-        if(that.companyIdB == ""){
-          this.form.setFieldsValue({companyNameB:""});
-        }
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            if(that.isOk){
-              that.confirmLoading = true;
-              let httpurl = '';
-              let method = '';
-              if(!that.model.contractId){
-                httpurl+=this.url.add;
-                method = 'post';
-              }else{
-                httpurl+=this.url.edit;
-                method = 'put';
-              }
-              if(that.companyIdA != ''){
-                this.model.partyA = that.companyIdA;
-              }
-              if(that.companyIdB != ''){
-                this.model.partyB = that.companyIdB;
-              }
-
-              this.model.fileRelId = that.avatar;
-              this.model.elecFileRel = that.avatarElec;
-
-              let formData = Object.assign(this.model, values);
-
-              httpAction(httpurl,formData,method).then((res)=>{
-                if(res.success){
-                  if(res.result != null){
-                    this.model.contractId = res.result.contractId;
-                  }
-                  that.$message.success(res.message);
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-              })
-            }else{
-              that.$message.warning(this.thisMessage);
-              that.thisMessage = "";
-            }
-          }
-        })
       },
       handleCancel () {
         this.$emit('ok');
@@ -817,14 +692,6 @@
         this.ipagination = pagination;
         this.loadbackData();
       },
-      showTender:function (){
-        this.$refs.tenderInfoShow.show();
-        this.$refs.tenderInfoShow.title = "选择关联招标信息";
-      },
-      modalFormOk(data) {
-        this.model.tenderId = data[0].tenderId;
-        this.form.setFieldsValue({prjName:data[0].prjName});
-      },
       callback: function(key){
         if(key != 1){
           if(this.model.contractId != undefined && this.model.contractId != ""){
@@ -836,70 +703,11 @@
           this.defaultActiveKey = key;
         }
       },
-      showProjectItem:function (){
-        this.$refs.addProjectItemRel.show(this.model.contractId);
-        this.$refs.addProjectItemRel.title = "选择添加关联工程点信息";
-      },
-      addProjectItem(data) {
-        this.loadData();
-      },
-      handleDel: function (id) {
-        var that = this;
-        var contractId = this.model.contractId;
-        this.$confirm({
-          title: "确认删除",
-          content: "是否删除选中数据?",
-          onOk: function () {
-            deleteAction(that.url.delprjItem, {prjItemId: id, contractId: contractId}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
-          }
-        })
-      },
       invociInfoShowList() {
         this.loadinvociData();
       },
       backInfoShowList() {
         this.loadbackData();
-      },
-      handleChangeElec(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatarElec = response.message + "," + this.avatarElec;
-            console.log(this.avatarElec);
-          } else {
-            this.$message.warning(response.message);
-          }
-        }
-      },
-      handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
-          }
-        }
       },
       fileDeteil:function(record){
         console.log(record);
@@ -927,47 +735,29 @@
         this.$refs.moneyBackShow.edit(record);
         this.$refs.moneyBackShow.title = "详情";
       },
-      getCompanyListA: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            this.companyNameListA = res.result.list;
-            if(this.companyNameListA.length == 1){
-              if(val == this.companyNameListA[0].companyName){
-                this.companyIdA = this.companyNameListA[0].companyId;
-              }
-            }else{
-              this.companyIdA = "";
-            }
-          }
-        })
-      },
-      getCompanyListB: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            this.companyNameListB = res.result.list;
-            if(this.companyNameListB.length == 1){
-              if(val == this.companyNameListB[0].companyName){
-                this.companyIdB = this.companyNameListB[0].companyId;
-              }
-            }else{
-              this.companyIdB = "";
-            }
-          }
-        })
-      },
-      chooseThisA: function(val){
-        this.companyIdA = val;
-      },
-      chooseThisB: function(val){
-        this.companyIdB = val;
-      },
       prjItemShow: function(record){
         this.$refs.projectItemShow.edit(record);
         this.$refs.projectItemShow.title = "详情";
-      }
+      },
+      async tenderInfoShow(){
+        let {result} = await getAction(this.url.searchTender, {tenderId: this.model.tenderId});
+        let record = result;
+
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+
+        this.$refs.tenderInfoLook.edit(record);
+        this.$refs.tenderInfoLook.title = "招标详情";
+      },
     }
   }
 </script>
 
 <style scoped>
+  .read_tex{
+    background-color: #e6e5e56b;
+    color: #8b89898a;
+  }
 </style>

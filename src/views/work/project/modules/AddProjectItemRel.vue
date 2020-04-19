@@ -65,7 +65,7 @@
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
 
   export default {
-    name: "projectItemShow",
+    name: "addProjectItemRel",
     components: {ACol, ARow},
     data () {
       return {

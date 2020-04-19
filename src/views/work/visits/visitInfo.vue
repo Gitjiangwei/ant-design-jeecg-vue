@@ -5,12 +5,12 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="客户名称">
-              <a-input placeholder="请输入客户名称" v-model="queryParam.companyName"></a-input>
+              <a-input placeholder="请输入客户名称" v-model="queryParam.companyName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
             <a-form-item label="工单名称">
-              <a-input placeholder="请输入工单名称" v-model="queryParam.workName"></a-input>
+              <a-input placeholder="请输入工单名称" v-model="queryParam.workName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
 
@@ -211,6 +211,19 @@
             title: '用户评价',
             align: "center",
             dataIndex: 'evaluate',
+            customRender: (text, record, index) => {
+              if(text == '1'){
+                return "很满意";
+              }else if(text == '2'){
+                return "满意";
+              }else if(text == '3'){
+                return "一般";
+              }else if(text == '4'){
+                return "较差";
+              }else if(text == '5'){
+                return "很差";
+              }
+            }
 
           },
           {
@@ -412,12 +425,9 @@
       },
       exportDate: function () {
         var params = Object.assign({}, this.queryParam, this.isorter );
-
         var param = JSON.stringify(params);
-        //alert("param="+param);
         param = param.replace("{", "");
         param = param.replace("}", "");
-        alert("param="+param)
         window.location.href = window._CONFIG['domainURL'] +this.url.export + "?param="+param;
 
 

@@ -5,12 +5,12 @@
           <a-row :gutter="24">
             <a-col :span="6">
               <a-form-item label="工单名称" >
-                <a-input placeholder="请输入工单名称" v-model="queryParam.workName"></a-input>
+                <a-input placeholder="请输入工单名称" v-model="queryParam.workName"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="负责人">
-                <a-input placeholder="请输入负责人" v-model="queryParam.chargePerson"></a-input>
+                <a-input placeholder="请输入负责人" v-model="queryParam.chargePerson"  maxlength="20"></a-input>
               </a-form-item>
             </a-col>
 
@@ -173,6 +173,17 @@
               title: '状态',
               align: "center",
               dataIndex: 'status',
+              customRender: (text, record, index) => {
+                if(text == '1'){
+                  return "实施";
+                }else if(text == '2'){
+                  return "维修";
+                }else if(text == '3'){
+                  return "拜访";
+                }else if(text == '4'){
+                  return "销售";
+                }
+              }
             },
 
             {
@@ -308,7 +319,6 @@
           postAction(that.url.delete, {id: id}).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
-             /* alert("已删除");*/
               that.loadData();
             } else {
               that.$message.warning(res.message);
@@ -346,12 +356,11 @@
         },
         modalFormOk() {
           // 新增/修改 成功时，重载列表
-          this.loadData();
+          this.loadData(1);
         },
         exportDate(){
           var params = Object.assign({}, this.queryParam, this.isorter);
           var param = JSON.stringify(params);
-          //alert("param="+param);
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;

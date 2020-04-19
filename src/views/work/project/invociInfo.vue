@@ -15,12 +15,12 @@
             </a-col>
             <a-col :span="6">
               <a-form-item label="合同名称">
-                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxLength="50"></a-input>
+                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxLength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
               <a-form-item label="公司名称">
-                <a-input placeholder="请输入公司名称" v-model="queryParam.companyName" maxLength="50"></a-input>
+                <a-input placeholder="请输入公司名称" v-model="queryParam.companyName" maxLength="30"></a-input>
               </a-form-item>
             </a-col>
           </a-row>
@@ -46,10 +46,6 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <a-button type="primary" >
-          <a :href="'http://localhost:8080/jeecg-boot/renche/invoci/exportInvoci'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>
-
 
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -62,6 +58,8 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
+
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->
@@ -209,6 +207,7 @@
             delete: "/renche/invoci/delete",
             deleteBatch: "/renche/invoci/deleteBat",
             filelist: "/renche/purchase/fileList",
+            exportList: "/renche/invoci/exportInvoci",
           },
         }
       },
@@ -353,8 +352,15 @@
         modalFormOk() {
           // 新增/修改 成功时，重载列表
           this.loadData(1);
-        }
-      },
+        },
+        exportDate(){
+          var params = Object.assign({}, this.queryParam, this.isorter);
+          var param = JSON.stringify(params);
+          param = param.replace("{","");
+          param = param.replace("}","");
+          window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?param="+param;
+        },
+      }
     }
 
 </script>

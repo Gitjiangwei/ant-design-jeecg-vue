@@ -4,9 +4,7 @@
     :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel"
-    cancelText="关闭">
+    @cancel="handleCancel">
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -56,7 +54,7 @@
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-textarea disabled v-decorator="['content', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
+              <a-textarea readonly v-decorator="['content', {}]" :autosize="{ minRows: 2, maxRows: 6 }"  class="read_tex"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -75,6 +73,9 @@
 
     <ContractInfoShow ref="contractInfoShow" @func="modalFormOk"></ContractInfoShow>
 
+    <div slot="footer">
+      <a-button @click="handleCancel">关闭</a-button>
+    </div>
   </a-modal>
 </template>
 
@@ -86,7 +87,7 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import {queryDepartCGTreeList, doMian} from '@/api/api'
-  import ContractInfoShow from './ContractInfoShow'
+  import ContractInfoShow from '../modules/ContractInfoShow'
 
   export default {
     name: "moneyBackModel",
@@ -247,5 +248,8 @@
 </script>
 
 <style scoped>
-
+  .read_tex{
+    background-color: #e6e5e56b;
+    color: #8b89898a;
+  }
 </style>
