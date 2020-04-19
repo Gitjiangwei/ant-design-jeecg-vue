@@ -189,6 +189,9 @@
         }
       },
       validateDictOrderNo(rule,value,callback){
+        if(value==null||value==""||value==undefined){
+          callback();
+        }
         var reg = /^[0-9]*$/;
         if(!reg.test(value)){
           callback("顺序只能输入数字");
