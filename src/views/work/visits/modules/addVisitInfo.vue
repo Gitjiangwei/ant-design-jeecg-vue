@@ -14,9 +14,9 @@
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyId', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
-                  <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                  <a-select-option v-for="item in companyNameListA" :key="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
             </a-form-item>
@@ -217,6 +217,7 @@
         //TODO 验证文件大小
       },
       handleChange(info) {
+        alert("info.file.status ="+info.file.status );
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
             if(item.uid == info.file.uid){
@@ -283,7 +284,7 @@
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
-        this.companyIdA = record.partyA;
+        this.companyIdA = record.companyId;
         this.visible = true;
         this.fileList = [];
         this.$nextTick(() => {
@@ -305,7 +306,7 @@
       handleOk () {
         const that = this;
         if(that.companyIdA == ""){
-          this.form.setFieldsValue({companyNameA:""});
+          this.form.setFieldsValue({companyName:""});
         }
         // 触发表单验证
         this.form.validateFields((err, values) => {
