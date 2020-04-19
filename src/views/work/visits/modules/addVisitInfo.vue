@@ -217,7 +217,6 @@
         //TODO 验证文件大小
       },
       handleChange(info) {
-        alert("info.file.status ="+info.file.status );
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
             if(item.uid == info.file.uid){
