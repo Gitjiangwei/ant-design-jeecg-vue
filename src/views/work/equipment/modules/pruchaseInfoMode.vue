@@ -88,9 +88,10 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="到货日期"
+          v-show = "isTimeShow"
           hasFeedback>
           <a-date-picker showTime format="YYYY-MM-DD" v-on:focus="calculation" v-on:blur="calculation"
-                         v-decorator="[ 'arrivalTime', {rules: [{ required: true,message: '请选择到货日期' }]}]"/>
+                         v-decorator="[ 'arrivalTime', {}]"/>
         </a-form-item>
         <a-form-item style="display: none" class="isarr"
                      :labelCol="labelCol"
@@ -157,6 +158,7 @@
         title: "操作",
         visible: false,
         model: {},
+        isTimeShow: false,
         isEdit:true,
         isarrivals: "",
         treeData: [],
@@ -255,6 +257,9 @@
            this.isarrivals = res.message;
           }
         });
+        if(record.purchaseId!=null && record.purchaseId != "" && record.purchaseId != undefined){
+          this.isTimeShow = true;
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.fileList = this.model.filelist;
