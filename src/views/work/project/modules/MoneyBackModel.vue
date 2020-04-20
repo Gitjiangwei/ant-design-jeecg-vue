@@ -99,7 +99,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import {queryDepartCGTreeList, doMian} from '@/api/api'
+  import { doMian} from '@/api/api'
   import ContractInfoShow from './ContractInfoShow'
 
   export default {

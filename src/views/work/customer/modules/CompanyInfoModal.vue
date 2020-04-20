@@ -84,13 +84,20 @@
         </a-row>
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
+<!--              <a-upload-->
+<!--                name="file"-->
+<!--                :multiple="true"-->
+<!--                :headers="headers"-->
+<!--                :customRequest="uploadFileRequest"-->
+<!--                :show-upload-list="false"-->
+<!--                @change="handleChange"-->
+<!--              >-->
               <a-upload
                 name="file"
                 :multiple="true"
                 :action="uploadAction"
                 :headers="headers"
-                :before-upload="beforeUpload"
                 :file-list="fileList"
                 @change="handleChange"
               >
@@ -128,6 +135,7 @@
         //字典数组缓存
         typeDictOptions: [],
         fileList: [],
+        isUpload: false,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -142,17 +150,20 @@
         validatorRules:{},
         uploadLoading: false,
         headers: {},
+        formData: {},
         avatar: "",
         url: {
           add: "/renche/companyInfo/add",
           edit: "/renche/companyInfo/edit",
           fileUpload: doMian + "/sys/common/upload",
+          // fileUpload: "/sys/common/upload",
         },
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
+      // this.headers = {"X-Access-Token": token,'Content-Type':'multipart/form-data'}
       //初始化字典配置
       this.initDictConfig();
     },
@@ -178,6 +189,7 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.isUpload = false;
         this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'companyName','type','shuihao','bank','bankNo','contacts','idCard','phone','email','hobby','address'))
@@ -227,21 +239,36 @@
       handleCancel () {
         this.close()
       },
-      beforeUpload: function (file) {
-        // const timeStamp = new Date() - 0
-        // const nowDate = this.getDate();
-        // const copyFile = new File([file], `${nowDate}${file.name}`)
-        // this.uploadFile(copyFile)
-        return true;
+      uploadFileRequest(data){
+        const nowDate = this.getDate();
+        const copyFile = new File([data.file], `${nowDate}${data.file.name}`)
+        console.log(copyFile)
+        this.uploadFile(copyFile);
       },
-      // uploadFile(file) {
-      //   const formdata = new FormData()
-      //   formdata.append('lbf-file-upload', file)
-      //   formdata.append('name', 'lbf-file-upload')
-      //   formdata.append('_csrfToken', this.$ajax.getCsrfToken()._csrfToken)
-      //   this.postForm(formdata)
-      // },
-
+      uploadFile: function (file){
+        this.formData=new FormData();
+        this.formData.append("file",file);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            this.avatar = res.message + "," + this.avatar;
+            this.isUpload = true;
+          } else {
+            this.$message.warning(res.message);
+            this.isUpload = false;
+          }
+        })
+      },
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      },
       handleChange(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
@@ -268,17 +295,6 @@
           }
         }
       },
-      getDate() {
-        let nowDate = new Date();
-        let date = {
-          year: nowDate.getFullYear(),
-          month: nowDate.getMonth() + 1,
-          date: nowDate.getDate(),
-        }
-        let systemDate = date.year + '-' + date.month + '-' +  date.date;
-        return systemDate;
-      }
-
     }
   }
 </script>

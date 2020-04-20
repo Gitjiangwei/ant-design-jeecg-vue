@@ -414,9 +414,9 @@
             dataIndex: 'companyName'
           },
           {
-            title: '负责人',
+            title: '附件',
             align: "center",
-            dataIndex: 'personInCharge'
+            dataIndex: 'fileCount'
           },
           {
             title: '操作',

@@ -122,6 +122,8 @@
           @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
+            <a @click="fileDeteil(record)">附件</a>
+            <a-divider type="vertical"/>
             <a @click="handleEdit(record)">编辑</a>
 
             <a-divider type="vertical"/>
@@ -143,12 +145,15 @@
       <!-- 表单区域 -->
       <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
 
+      <ProjectItemFileDetail ref="fileDetail" @ok="modalFormOk"></ProjectItemFileDetail>
+
     </a-card>
 
 </template>
 
 <script>
     import ProjectItemModal from './modules/ProjectItemModel'
+    import ProjectItemFileDetail from './modules/ProjectItemFileDetail'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
@@ -162,6 +167,7 @@
       components: {
         ARow,
         ProjectItemModal,
+        ProjectItemFileDetail,
       },
       data() {
         return{
@@ -233,6 +239,11 @@
               }
             },
             {
+              title: '附件',
+              align: "center",
+              dataIndex: 'fileCount',
+            },
+            {
               title: '操作',
               dataIndex: 'action',
               align: "center",
@@ -267,6 +278,7 @@
             deleteBatch: "/renche/projectItem/deleteBatch",
             importExcelUrl: doMian + "/renche/projectItem/importPrjItem",
             exportModel: "/renche/projectItem/exportPrjItemModel",
+            filelist: "/renche/purchase/fileList",
             exportPrjItem:  "/renche/projectItem/exportPrjItem",
           },
         }
@@ -422,7 +434,11 @@
             }
           });
         },
-        handleEdit: function (record) {
+        async handleEdit (record) {
+          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+            record.filelist = result.list;
+          }
           this.$refs.projectItemModal.edit(record);
           this.$refs.projectItemModal.title = "编辑";
         },
@@ -477,6 +493,10 @@
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.exportPrjItem + "?param="+param;
+        },
+        fileDeteil:function(record){
+          this.$refs.fileDetail.fileLoad(record);
+          this.$refs.fileDetail.title = "附件";
         },
       }
     }

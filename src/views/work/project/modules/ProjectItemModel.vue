@@ -116,6 +116,29 @@
                 </a-form-item>
               </a-col>
             </a-row>
+            <a-row>
+              <a-col :span="12" style="padding-left: 40px;">
+                <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+                  <a-upload
+                    name="file"
+                    :multiple="true"
+                    :action="uploadAction"
+                    :headers="headers"
+                    :before-upload="beforeUpload"
+                    :file-list="fileList"
+                    @change="handleChange"
+                  >
+                    <a-button>
+                      <a-icon type="upload"/>
+                      上传
+                    </a-button>
+                  </a-upload>
+                  <div>
+                    <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+                  </div>
+                </a-form-item>
+              </a-col>
+            </a-row>
           </a-form>
           <a-row style="text-align: center;">
             <a-col>
@@ -173,6 +196,9 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import {filterObj} from '@/utils/util';
   import ContractInfoLook from "../show/ContractInfoLook";
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import { doMian} from '@/api/api'
 
   export default {
     name: "projectItemModal",
@@ -191,6 +217,10 @@
         thisMessage: "",
         defaultActiveKey: "1",
         dateFormat: 'YYYY-MM-DD',
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        fileList: [],
         //字典数组缓存
         typeDictOptions: [],
         labelCol: {
@@ -257,8 +287,7 @@
         loading: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{
-        },
+        validatorRules:{},
         companyNameList: [],
         url: {
           add: "/renche/projectItem/add",
@@ -269,12 +298,20 @@
           searchCompany: "/renche/companyInfo/searchCompany",
           searchContract: "/renche/contractInfo/getContractById",
           filelist: "/renche/purchase/fileList",
+          fileUpload: doMian + "/sys/common/upload",
         },
       }
     },
     created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
       //初始化字典配置
       this.initDictConfig();
+    },
+    computed: {
+      uploadAction: function () {
+        return this.url.fileUpload;
+      }
     },
     methods: {
       initDictConfig() {
@@ -320,8 +357,10 @@
         this.edit({});
       },
       edit (record) {
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.dataSource = [];
+        this.fileList = [];
         this.projectId = record.prjItemId;
         this.companyId = record.belongCompany;
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
@@ -368,6 +407,7 @@
               if(this.companyId != ''){
                 this.model.belongCompany = this.companyId;
               }
+              that.model.fileRelId = that.avatar;
               let formData = Object.assign(this.model, values);
 
               httpAction(httpurl,formData,method).then((res)=>{
@@ -463,6 +503,36 @@
         }
         this.$refs.contractInfoShow.edit(record);
         this.$refs.contractInfoShow.title = "合同详情";
+      },
+      beforeUpload: function (file) {
+        return true;
+        //TODO 验证文件大小
+      },
+      handleChange(info) {
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
+          }
+        }
       },
     }
   }

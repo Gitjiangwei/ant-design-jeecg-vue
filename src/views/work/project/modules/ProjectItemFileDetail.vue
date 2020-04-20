@@ -14,14 +14,13 @@
 
           <a-col :span="12">
             <a-form-item label="附件名称" >
-              <a-input placeholder="请输入附件名称" v-model="queryParam.fileName"  maxLength="100"></a-input>
+              <a-input placeholder="请输入附件名称" v-model="queryParam.fileName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
         </a-row>
@@ -29,8 +28,7 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator"  v-show="!readOnly">
-<!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
+    <div class="table-operator" v-show="!readOnly">
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel(1)">
@@ -45,7 +43,7 @@
     </div>
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;"  v-show="!readOnly">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;" v-show="!readOnly">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -65,7 +63,7 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="fileDownload(record)" :href="'http://localhost:3000/jeecg-boot/sys/common/download?fileRelId='+record.fileRelId" target="_blank">下载</a>
+          <a @click="fileDownload(record)"  target="_blank">下载</a>
         </span>
 
       </a-table>
@@ -84,7 +82,7 @@
 
 
   export default {
-    name: "invociInfoFileDetail",
+    name: "FileDetail",
     components: {
       ARow,
     },
@@ -93,7 +91,8 @@
         description: '附件详情页',
         timer:"",
         fileRelId:"",
-        invociId:"",
+        elecFileRel:"",
+        prjItemId:"",
         readOnly: false,
         title: "操作",
         visible: false,
@@ -150,7 +149,7 @@
           list: "/renche/purchase/fileList",
           download: "/sys/common/download",
           deleteFile: "/renche/file/deleteIds",
-          listFileUpdate: "/renche/invoci/updateFileIds",
+          listFileUpdate: "/renche/projectItem/updateFileIds",
         },
       }
     },
@@ -179,10 +178,12 @@
       fileLoad:function(record){
         this.visible = true;
         this.fileRelId = record.fileRelId;
-        this.invociId = record.invociId;
+        this.elecFileRel = record.elecFileRel;
+        this.prjItemId = record.prjItemId;
         if(record.readOnly != undefined){
           this.readOnly = record.readOnly;
         }
+
         this.loadData(1);
       },
       batchDel: function () {
@@ -225,19 +226,20 @@
         for (var a = 0; a < this.selectedRowKeys.length; a++) {
           ids += this.selectionRows[a].fileRelId + ",";
         }
-        if (ids != null && ids!="" && ids!=undefined) {
-          var a = ids.charAt(ids.length - 1);
-          if (a == ",") {
-            ids = ids.substring(0, ids.length - 1);
-          }
+        var a = ids.charAt(ids.length - 1);
+        if(a == ",") {
+          ids = ids.substring(0, ids.length - 1);
         }
-        deleteAction(that.url.listFileUpdate, {invociId:this.invociId,ids: ids}).then((res) => {
+        deleteAction(that.url.listFileUpdate, {prjItemId:this.prjItemId,ids: ids}).then((res) => {
           if (!res.success) {
             that.$message.warning(res.message);
           }
         });
       },
       handleCancel() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.$emit('ok');
         this.close();
       },
       close() {
@@ -258,7 +260,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.fileRelId = this.fileRelId;
+        param.fileRelId = this.fileRelId+','+this.elecFileRel;
         return filterObj(param);
       },
       getQueryField() {
