@@ -242,11 +242,10 @@
         this.formData.append("headers",this.headers);
         httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
           if (res.success) {
-            // this.avatar = res.message + "," + this.avatar;
             data.onSuccess(res);
-          } else {
-            this.$message.warning(res.message);
           }
+        }).catch(({err}) => {
+          f.onError()
         })
       },
       getDate() {
