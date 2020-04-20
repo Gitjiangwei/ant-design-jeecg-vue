@@ -29,7 +29,7 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" v-show="!readOnly">
       <!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -45,7 +45,7 @@
     </div>
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;" v-show="!readOnly">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -94,6 +94,7 @@
         timer:"",
         fileRelId:"",
         backId:"",
+        readOnly: false,
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -179,6 +180,9 @@
         this.visible = true;
         this.fileRelId = record.fileRelId;
         this.backId = record.backId;
+        if(record.readOnly != undefined){
+          this.readOnly = record.readOnly;
+        }
         this.loadData(1);
       },
       batchDel: function () {

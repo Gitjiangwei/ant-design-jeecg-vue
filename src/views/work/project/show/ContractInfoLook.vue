@@ -188,6 +188,8 @@
             @change="handleTableChange" style="padding-top: 10px;">
 
             <span slot="action" slot-scope="text, record">
+              <a @click="projectItemfileDeteil(record)">附件</a>
+              <a-divider type="vertical"/>
               <a @click="prjItemShow(record)">详情</a>
             </span>
           </a-table>
@@ -239,13 +241,14 @@
       </a-tab-pane>
     </a-tabs>
 
+    <ProjectItemFileDetail ref="projectItemFileDetail" @ok=""></ProjectItemFileDetail>
     <ProjectItemShow ref="projectItemShow" ></ProjectItemShow>
 
-    <invoci-info-file-detail ref="invociInfoFileDetail" @ok="invociInfoShowList"></invoci-info-file-detail>
+    <invoci-info-file-detail ref="invociInfoFileDetail" @ok=""></invoci-info-file-detail>
     <InvociInfoShow ref="invociInfoShow" ></InvociInfoShow>
 
     <MoneyBackShow ref="moneyBackShow" ></MoneyBackShow>
-    <FileDetail ref="fileDetail" @ok="backInfoShowList"></FileDetail>
+    <FileDetail ref="fileDetail" @ok=""></FileDetail>
 
     <TenderInfoLook ref="tenderInfoLook"></TenderInfoLook>
 
@@ -266,6 +269,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
   import InvociInfoFileDetail from "../modules/InvociInfoFileDetail";
+  import ProjectItemFileDetail from "../modules/ProjectItemFileDetail";
   import InvociInfoShow from "./InvociInfoShow";
   import MoneyBackShow from "./MoneyBackShow";
   import ProjectItemShow from "./ProjectItemShow";
@@ -275,7 +279,7 @@
   export default {
     name: "contractInfoLook",
     components: {
-      FileDetail, ACol, ATextarea, ARow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow, TenderInfoLook},
+      FileDetail, ACol, ATextarea, ARow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow, TenderInfoLook,ProjectItemFileDetail},
     data () {
       return {
         title:"操作",
@@ -348,9 +352,9 @@
             dataIndex: 'companyName'
           },
           {
-            title: '负责人',
+            title: '附件',
             align: "center",
-            dataIndex: 'personInCharge'
+            dataIndex: 'fileCount'
           },
           {
             title: '操作',
@@ -703,14 +707,13 @@
           this.defaultActiveKey = key;
         }
       },
-      invociInfoShowList() {
-        this.loadinvociData();
-      },
-      backInfoShowList() {
-        this.loadbackData();
+      projectItemfileDeteil:function(record){
+        record.readOnly = true;
+        this.$refs.projectItemFileDetail.fileLoad(record);
+        this.$refs.projectItemFileDetail.title = "附件";
       },
       fileDeteil:function(record){
-        console.log(record);
+        record.readOnly = true;
         this.$refs.invociInfoFileDetail.fileLoad(record);
         this.$refs.invociInfoFileDetail.title = "附件";
       },
@@ -723,7 +726,7 @@
         this.$refs.invociInfoShow.title = "详情";
       },
       backfileDeteil:function(record){
-        console.log(record);
+        record.readOnly = true;
         this.$refs.fileDetail.fileLoad(record);
         this.$refs.fileDetail.title = "附件";
       },
@@ -735,7 +738,11 @@
         this.$refs.moneyBackShow.edit(record);
         this.$refs.moneyBackShow.title = "详情";
       },
-      prjItemShow: function(record){
+      async prjItemShow (record) {
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
         this.$refs.projectItemShow.edit(record);
         this.$refs.projectItemShow.title = "详情";
       },

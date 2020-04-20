@@ -80,9 +80,9 @@
 
       <!-- 操作按钮区域 -->
       <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+       <!-- <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
 
-        <a-dropdown v-if="selectedRowKeys.length > 0">
+     <!--   <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel">
               <a-icon type="delete"/>
@@ -92,11 +92,11 @@
           <a-button style="margin-left: 8px"> 批量操作
             <a-icon type="down"/>
           </a-button>
-        </a-dropdown>
+        </a-dropdown>-->
 
-        <a-button @click="handleExport" type="primary" icon="download">下载导入模板</a-button>
+     <!--   <a-button @click="handleExport" type="primary" icon="download">下载导入模板</a-button>-->
         <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" :beforeUpload="beforeUpload" accept=".xls">
-          <a-button type="primary" icon="import">导入</a-button>
+          <!--<a-button type="primary" icon="import">导入</a-button>-->
         </a-upload>
         <a-button @click="exportPrjItemDate" type="primary" icon="export">导出</a-button>
       </div>
@@ -122,12 +122,10 @@
           @change="handleTableChange">
 
           <span slot="action" slot-scope="text, record">
-            <a @click="fileDeteil(record)">附件</a>
-            <a-divider type="vertical"/>
-            <a @click="handleEdit(record)">编辑</a>
+            <a @click="handleEdit(record)">详情</a>
 
             <a-divider type="vertical"/>
-            <a-dropdown>
+        <!--    <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
@@ -136,7 +134,7 @@
                   </a-popconfirm>
                 </a-menu-item>
               </a-menu>
-            </a-dropdown>
+            </a-dropdown>-->
           </span>
         </a-table>
       </div>
@@ -145,15 +143,12 @@
       <!-- 表单区域 -->
       <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
 
-      <ProjectItemFileDetail ref="fileDetail" @ok="modalFormOk"></ProjectItemFileDetail>
-
     </a-card>
 
 </template>
 
 <script>
-    import ProjectItemModal from './modules/ProjectItemModel'
-    import ProjectItemFileDetail from './modules/ProjectItemFileDetail'
+    import ProjectItemModal from './modules/ProjectItemModelShow'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
@@ -163,11 +158,10 @@
     import axios from 'axios';
 
     export default {
-      name: "projectItenList",
+      name: "projectItenListRead",
       components: {
         ARow,
         ProjectItemModal,
-        ProjectItemFileDetail,
       },
       data() {
         return{
@@ -238,11 +232,6 @@
                 }
               }
             },
-           /* {
-              title: '附件',
-              align: "center",
-              dataIndex: 'fileCount',
-            },*/
             {
               title: '操作',
               dataIndex: 'action',
@@ -278,7 +267,6 @@
             deleteBatch: "/renche/projectItem/deleteBatch",
             importExcelUrl: doMian + "/renche/projectItem/importPrjItem",
             exportModel: "/renche/projectItem/exportPrjItemModel",
-            filelist: "/renche/purchase/fileList",
             exportPrjItem:  "/renche/projectItem/exportPrjItem",
           },
         }
@@ -434,13 +422,10 @@
             }
           });
         },
-        async handleEdit (record) {
-          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
-            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
-            record.filelist = result.list;
-          }
+        handleEdit: function (record) {
+          record.readOnly=true;
           this.$refs.projectItemModal.edit(record);
-          this.$refs.projectItemModal.title = "编辑";
+          this.$refs.projectItemModal.title = "详情";
         },
         handleAdd: function () {
           this.$refs.projectItemModal.add();
@@ -493,10 +478,6 @@
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.exportPrjItem + "?param="+param;
-        },
-        fileDeteil:function(record){
-          this.$refs.fileDetail.fileLoad(record);
-          this.$refs.fileDetail.title = "附件";
         },
       }
     }

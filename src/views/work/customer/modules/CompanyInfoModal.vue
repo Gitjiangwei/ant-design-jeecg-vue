@@ -84,14 +84,13 @@
         </a-row>
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
               <a-upload
                 name="file"
                 :multiple="true"
-                :action="uploadAction"
                 :headers="headers"
-                :before-upload="beforeUpload"
                 :file-list="fileList"
+                :customRequest="uploadFileRequest"
                 @change="handleChange"
               >
                 <a-button>
@@ -128,6 +127,7 @@
         //字典数组缓存
         typeDictOptions: [],
         fileList: [],
+        isUpload: false,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -142,11 +142,12 @@
         validatorRules:{},
         uploadLoading: false,
         headers: {},
+        formData: {},
         avatar: "",
         url: {
           add: "/renche/companyInfo/add",
           edit: "/renche/companyInfo/edit",
-          fileUpload: doMian + "/sys/common/upload",
+          fileUpload: "/sys/common/upload",
         },
       }
     },
@@ -157,7 +158,8 @@
       this.initDictConfig();
     },
     computed: {
-      uploadAction: function () {
+      uploadAction: function (data) {
+        console.log("data",data)
         return this.url.fileUpload;
       }
     },
@@ -175,9 +177,13 @@
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        if(record.filelist == undefined){
+          record.filelist = [];
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.isUpload = false;
         this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'companyName','type','shuihao','bank','bankNo','contacts','idCard','phone','email','hobby','address'))
@@ -227,21 +233,32 @@
       handleCancel () {
         this.close()
       },
-      beforeUpload: function (file) {
-        // const timeStamp = new Date() - 0
-        // const nowDate = this.getDate();
-        // const copyFile = new File([file], `${nowDate}${file.name}`)
-        // this.uploadFile(copyFile)
-        return true;
+      uploadFileRequest(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        console.log(copyFile)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            data.onSuccess(res);
+          }
+        }).catch(({err}) => {
+          f.onError()
+        })
       },
-      // uploadFile(file) {
-      //   const formdata = new FormData()
-      //   formdata.append('lbf-file-upload', file)
-      //   formdata.append('name', 'lbf-file-upload')
-      //   formdata.append('_csrfToken', this.$ajax.getCsrfToken()._csrfToken)
-      //   this.postForm(formdata)
-      // },
-
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      },
       handleChange(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
@@ -262,23 +279,20 @@
             if (response.success) {
               this.avatar = response.message + "," + this.avatar;
               this.fileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
             } else {
               this.$message.warning(response.message);
             }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar = this.avatar.replace(info.file.id+',','')
           }
         }
       },
-      getDate() {
-        let nowDate = new Date();
-        let date = {
-          year: nowDate.getFullYear(),
-          month: nowDate.getMonth() + 1,
-          date: nowDate.getDate(),
-        }
-        let systemDate = date.year + '-' + date.month + '-' +  date.date;
-        return systemDate;
-      }
-
     }
   }
 </script>

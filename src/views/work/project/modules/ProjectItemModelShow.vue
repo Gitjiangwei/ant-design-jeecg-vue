@@ -7,33 +7,33 @@
     @cancel="handleCancel"
     cancelText="关闭">
 
-    <a-tabs :activeKey="defaultActiveKey" @change="callback" type="card" >
+    <a-tabs :activeKey="defaultActiveKey" @change="callback" type="card" readonly="readonly" >
       <a-tab-pane tab="工程点信息" key="1" style="padding-bottom: 14px">
         <a-spin :spinning="confirmLoading">
           <a-form :form="form">
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程名称" >
-                  <a-textarea placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea disabled="true" placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目名称" >
-                  <a-textarea placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea disabled="true" placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程编号" >
-                  <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
+                  <a-input disabled="true" placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
-                  <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
+                  <a-select disabled="true" v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
                     <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
@@ -42,7 +42,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-                  <a-auto-complete placeholder="请输入所属公司"  @search="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
+                  <a-auto-complete disabled="true"   @search="getCompanyList" @select="chooseThis" v-decorator="['companyName', {}]" maxLength="30">
                     <template slot="dataSource">
                       <a-select-option v-for="item in companyNameList" :key="item.companyId">{{ item.companyName }}</a-select-option>
                     </template>
@@ -51,19 +51,19 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
-                  <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
+                  <a-input disabled="true"  v-decorator="['personInCharge', {}]"  maxLength="30"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话" >
-                  <a-input placeholder="请输入联系电话" v-decorator="['personTel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" />
+                  <a-input disabled="true"  v-decorator="['personTel', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程状态" >
-                  <a-select v-decorator="['prjItemStatus', {rules: [{ required: true, message: '请选择工程状态', }]}]" placeholder="请选择工程状态">
+                  <a-select disabled="true" v-decorator="['prjItemStatus', {}]" >
                     <a-select-option value="0">未开始</a-select-option>
                     <a-select-option value="1">进行中</a-select-option>
                     <a-select-option value="2">已结束</a-select-option>
@@ -74,67 +74,45 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
-                  <a-date-picker v-decorator="[ 'entryTime', {}]" />
+                  <a-date-picker disabled="true" v-decorator="[ 'entryTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="完成时间" >
-                  <a-date-picker v-decorator="[ 'finishTime', {}]" />
+                  <a-date-picker disabled="true" v-decorator="[ 'finishTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
-                  <a-date-picker v-decorator="['requireDeployTime', {}]" />
+                  <a-date-picker disabled="true" v-decorator="['requireDeployTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;" v-show="isShow">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联合同" >
-                  <a @click="showContractInfo">{{contractName}}</a>
+                  <a disabled="true"   @click="showContractInfo">{{contractName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程进度" >
-                  <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
+                  <a-textarea disabled="true"   v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程地址" >
-                  <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
+                  <a-textarea disabled="true"  v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
-                  <a-textarea  placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :headers="headers"
-                    :file-list="fileList"
-                    :customRequest="uploadFileRequest"
-                    @change="handleChange"
-                  >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
-                  <div>
-                    <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
-                  </div>
+                  <a-textarea disabled="true"  v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -142,7 +120,7 @@
           <a-row style="text-align: center;">
             <a-col>
               <span style="overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleOk" icon="check">保存</a-button>
+               <!-- <a-button type="primary" @click="handleOk" icon="check">保存</a-button>-->
               </span>
             </a-col>
           </a-row>
@@ -150,7 +128,7 @@
       </a-tab-pane>
       <a-tab-pane tab="关联设备" key="2" style="padding-bottom: 14px">
         <div style="float: right;">
-          <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
+          <!--<a-button @click="showTender" type="primary" icon="plus">新增</a-button>-->
         </div>
         <div style="padding-top: 42px;">
           <a-table
@@ -164,9 +142,9 @@
             :loading="loading"
             @change="handleTableChange" style="padding-top: 10px;">
 
-                <span slot="action" slot-scope="text, record">
+               <!-- <span slot="action" slot-scope="text, record">
                   <a @click="handleDelete(record.outId)">删除</a>
-                </span>
+                </span>-->
           </a-table>
         </div>
       </a-tab-pane>
@@ -195,9 +173,6 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import {filterObj} from '@/utils/util';
   import ContractInfoLook from "../show/ContractInfoLook";
-  import Vue from 'vue'
-  import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import { doMian} from '@/api/api'
 
   export default {
     name: "projectItemModal",
@@ -206,8 +181,6 @@
       return {
         title:"操作",
         visible: false,
-        isUpload: false,
-        formData: {},
         model: {},
         isOk: true,
         projectId:"",
@@ -218,10 +191,6 @@
         thisMessage: "",
         defaultActiveKey: "1",
         dateFormat: 'YYYY-MM-DD',
-        uploadLoading: false,
-        headers: {},
-        avatar: "",
-        fileList: [],
         //字典数组缓存
         typeDictOptions: [],
         labelCol: {
@@ -264,12 +233,12 @@
             align: "center",
             dataIndex: 'useTimes'
           },
-          {
+         /* {
             title: '操作',
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
-          }
+          }*/
         ],
         //数据集
         dataSource: [],
@@ -288,7 +257,8 @@
         loading: false,
         confirmLoading: false,
         form: this.$form.createForm(this),
-        validatorRules:{},
+        validatorRules:{
+        },
         companyNameList: [],
         url: {
           add: "/renche/projectItem/add",
@@ -299,20 +269,12 @@
           searchCompany: "/renche/companyInfo/searchCompany",
           searchContract: "/renche/contractInfo/getContractById",
           filelist: "/renche/purchase/fileList",
-          fileUpload: "/sys/common/upload",
         },
       }
     },
     created () {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token}
       //初始化字典配置
       this.initDictConfig();
-    },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
       initDictConfig() {
@@ -358,14 +320,8 @@
         this.edit({});
       },
       edit (record) {
-        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
-        if(record.filelist == undefined){
-          record.filelist = [];
-        }
-        this.isUpload = false;
         this.form.resetFields();
         this.dataSource = [];
-        this.fileList = [];
         this.projectId = record.prjItemId;
         this.companyId = record.belongCompany;
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
@@ -412,7 +368,6 @@
               if(this.companyId != ''){
                 this.model.belongCompany = this.companyId;
               }
-              that.model.fileRelId = that.avatar;
               let formData = Object.assign(this.model, values);
 
               httpAction(httpurl,formData,method).then((res)=>{
@@ -508,72 +463,6 @@
         }
         this.$refs.contractInfoShow.edit(record);
         this.$refs.contractInfoShow.title = "合同详情";
-      },
-      beforeUpload: function (file) {
-        return true;
-        //TODO 验证文件大小
-      },
-      uploadFileRequest(data){
-        const timeStamp = new Date() - 0
-        const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
-        console.log(copyFile)
-        this.formData=new FormData();
-        this.formData.append("file",copyFile);
-        this.formData.append("headers",this.headers);
-        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
-          if (res.success) {
-            // this.avatar = res.message + "," + this.avatar;
-            data.onSuccess(res);
-          } else {
-            this.$message.warning(res.message);
-          }
-        })
-      },
-      getDate() {
-        let nowDate = new Date();
-        let date = {
-          year: nowDate.getFullYear(),
-          month: nowDate.getMonth() + 1,
-          date: nowDate.getDate(),
-        }
-        let systemDate = date.year + '-' + date.month + '-' +  date.date;
-        return systemDate;
-      },
-
-      handleChange(info) {
-        if(info.file.status == undefined){
-          info.fileList.some((item,i) => {
-            if(item.uid == info.file.uid){
-              info.fileList.splice(i,1);
-            }
-          })
-        }else{
-          if (info.file.status === 'uploading') {
-            this.uploadLoading = true
-            this.fileList = [...info.fileList];
-            return
-          }
-          if (info.file.status === 'done') {
-            var response = info.file.response;
-            this.uploadLoading = false;
-            console.log(response);
-            if (response.success) {
-              this.avatar = response.message + "," + this.avatar;
-              this.fileList = [...info.fileList];
-              let fileItem = info.fileList.slice(-1);
-              fileItem[0].id = response.message;
-              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
-            } else {
-              this.$message.warning(response.message);
-            }
-            return
-          }
-
-          if(info.file.status === 'removed'){
-            this.avatar = this.avatar.replace(info.file.id+',','')
-          }
-        }
       },
     }
   }

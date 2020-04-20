@@ -182,7 +182,20 @@ export const asyncRouterMap = [
             name: 'contractList',
             component: () => import('@/views/work/project/contractInfo'),
             meta: { title: '合同信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/project/moneyBackInfo',
+            name: 'moneyBackList',
+            component: () => import('@/views/work/project/moneyBackInfo'),
+            meta: { title: '回款信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/project/contractInfoRead',
+            name: 'contractRead',
+            component: () => import('@/views/work/project/contractInfoRead'),
+            meta: { title: '按合同信息查询', permission: [ 'dashboard' ] }
           }
+
         ]
       },
       // forms

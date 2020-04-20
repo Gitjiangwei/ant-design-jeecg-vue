@@ -28,7 +28,7 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" v-show="!readOnly">
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel(1)">
@@ -43,7 +43,7 @@
     </div>
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;" v-show="!readOnly">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -63,7 +63,7 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="fileDownload(record)" :href="'http://localhost:3000/jeecg-boot/sys/common/download?fileRelId='+record.fileRelId" target="_blank">下载</a>
+          <a @click="fileDownload(record)"  target="_blank">下载</a>
         </span>
 
       </a-table>
@@ -93,6 +93,7 @@
         fileRelId:"",
         elecFileRel:"",
         contractId:"",
+        readOnly: false,
         title: "操作",
         visible: false,
         confirmLoading: false,
@@ -179,6 +180,10 @@
         this.fileRelId = record.fileRelId;
         this.elecFileRel = record.elecFileRel;
         this.contractId = record.contractId;
+        if(record.readOnly != undefined){
+          this.readOnly = record.readOnly;
+        }
+
         this.loadData(1);
       },
       batchDel: function () {
