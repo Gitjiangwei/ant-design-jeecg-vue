@@ -81,14 +81,13 @@
       </a-row>
     <a-row :gutter="24">
       <a-col :span="16" style="padding-left: 8px;">
-        <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+        <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
           <a-upload
             name="file"
             :multiple="true"
-            :action="uploadAction"
             :headers="headers"
-            :before-upload="beforeUpload"
             :file-list="fileList"
+            :customRequest="uploadFileRequest"
             @change="handleChange"
           >
             <a-button>
@@ -125,6 +124,8 @@
         title:"操作",
         visible: false,
         model: {},
+        isUpload: false,
+        formData: {},
         fileList:[],
         prjItemNames:[],
         labelCol: {
@@ -147,7 +148,8 @@
           add: "/renche/workOrder/addWorkOrderInfo",
           edit: "/renche/workOrder/up",
           getn:"/renche/workOrder/getn",
-          fileUpload: doMian + "/sys/common/upload",
+          //fileUpload: doMian + "/sys/common/upload",
+          fileUpload: "/sys/common/upload",
         },
       }
     },
@@ -166,9 +168,6 @@
       }
     },
     methods: {
-      load: function(){
-        this.isEdit = true;
-      },
       beforeUpload: function (file) {
        /* var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
@@ -178,6 +177,35 @@
         return true;
         //TODO 验证文件大小
       },
+
+      uploadFileRequest(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        console.log(copyFile)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            // this.avatar = res.message + "," + this.avatar;
+            data.onSuccess(res);
+          } else {
+            this.$message.warning(res.message);
+          }
+        })
+      },
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      },
+
       handleChange(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
@@ -198,9 +226,17 @@
             if (response.success) {
               this.avatar = response.message + "," + this.avatar;
               this.fileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
             } else {
               this.$message.warning(response.message);
             }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar = this.avatar.replace(info.file.id+',','')
           }
         }
       },
@@ -227,10 +263,14 @@
       edit (record) {
 
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        if(record.filelist == undefined){
+          record.filelist = [];
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.fileList = this.model.filelist;
         this.visible = true;
+        this.isUpload = false;
         this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'workName','createPerson','describe','chargePerson','content','prjItemName','completeTime','status'));
