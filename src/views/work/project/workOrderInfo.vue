@@ -220,7 +220,8 @@
             list: "/renche/workOrder/qryWorkOrderInfo",
             delete: "/renche/workOrder/removeWorkOrder",
             deleteBatch:"/renche/workOrder/removeWorkOrders",
-            export: "/renche/workOrder/exportVisit"
+            export: "/renche/workOrder/exportVisit",
+            filelist: "/renche/purchase/fileList"
 
           },
         }
@@ -325,10 +326,18 @@
             }
           });
         },
-        handleEdit: function (record) {
+
+        async  handleEdit (record) {
+          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+            record.filelist = result.list;
+          }
           this.$refs.addWorkOrderInfo.edit(record);
           this.$refs.addWorkOrderInfo.title = "编辑";
         },
+
+
+
         fileDeteil:function(record){
           console.log(record);
           this.$refs.workOrderFileDetail.fileLoad(record);

@@ -14,9 +14,9 @@
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyId', {rules: [{ required: true, message: '请输入客户名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
-                  <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                  <a-select-option v-for="item in companyNameListA" :key="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
             </a-form-item>
@@ -113,28 +113,29 @@
         </a-row>
 
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="附件">
-          <!--  -->
-          <a-upload
-            name="file"
-            :multiple="true"
-            :action="uploadAction"
-            :headers="headers"
-            @change="handleChange"
-            :showUploadList="isEdit"
-          >
-            <a-button v-on:click="load">
-              <a-icon type="upload"/>
-              上传
-            </a-button>
-          </a-upload>
-          <div>
-            <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
-          </div>
-        </a-form-item>
+        <a-row>
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-upload
+                name="file"
+                :multiple="true"
+                :action="uploadAction"
+                :headers="headers"
+                :before-upload="beforeUpload"
+                :file-list="fileList"
+                @change="handleChange"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
       </a-form>
     </a-spin>
@@ -159,6 +160,7 @@
         title:"操作",
         visible: false,
         model: {},
+        fileList: [],
         companyNames:[],
         labelCol: {
           xs: { span: 24 },
@@ -202,34 +204,41 @@
     },
     methods: {
 
-      load: function(){
+  /*    load: function(){
         this.isEdit = true;
-      },
+      },*/
       beforeUpload: function (file) {
-        var fileType = file.type;
+   /*     var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
           this.$message.warning('请上传图片');
           return false;
-        }
+        }*/
+   return true;
         //TODO 验证文件大小
       },
       handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true
-          return
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            if(this.avatar == undefined || this.avatar == null){
-              this.avatar = "";
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
             }
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
           }
         }
       },
@@ -274,8 +283,9 @@
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
-        this.companyIdA = record.partyA;
+        this.companyIdA = record.companyId;
         this.visible = true;
+        this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'planExecuTime','companyName','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersoNum','content','result','evaluate','remark'))
           //时间格式化
@@ -295,7 +305,7 @@
       handleOk () {
         const that = this;
         if(that.companyIdA == ""){
-          this.form.setFieldsValue({companyNameA:""});
+          this.form.setFieldsValue({companyName:""});
         }
         // 触发表单验证
         this.form.validateFields((err, values) => {

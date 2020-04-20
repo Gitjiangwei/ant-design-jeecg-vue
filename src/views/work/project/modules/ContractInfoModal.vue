@@ -130,19 +130,23 @@
                 </a-form-item>
               </a-col>
             </a-row>
+
+            <a-row>
+              <a-col :span="16" style="padding-left: 8px;">
+
+              </a-col>
+            </a-row>
+
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="电子版附件"
-                  hasFeedback>
-                  <!--  -->
+                <a-form-item label="电子版附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
                   <a-upload
                     name="file"
                     :multiple="true"
                     :action="uploadAction"
                     :headers="headers"
+                    :before-upload="beforeUpload"
+                    :file-list="elefileList"
                     @change="handleChangeElec"
                   >
                     <a-button>
@@ -159,14 +163,15 @@
                 <a-form-item
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
-                  label="扫描件附件"
-                  hasFeedback>
+                  label="扫描件附件">
                   <!--  -->
                   <a-upload
                     name="file"
                     :multiple="true"
                     :action="uploadAction"
                     :headers="headers"
+                    :before-upload="beforeUpload"
+                    :file-list= "fileList"
                     @change="handleChange"
                   >
                     <a-button>
@@ -335,6 +340,8 @@
         visible: false,
         isShow: false,
         model: {},
+        elefileList:[],
+        fileList:[],
         //字典数组缓存
         typeDictOptions: [],
         remindTypeOptions: [],
@@ -688,6 +695,8 @@
         this.avatarElec = record.elecFileRel == undefined?'':record.elecFileRel;
         this.companyIdA = record.partyA;
         this.companyIdB = record.partyB;
+        this.elefileList=[];
+        this.fileList=[];
 
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -868,36 +877,61 @@
         this.loadbackData();
       },
       handleChangeElec(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatarElec = response.message + "," + this.avatarElec;
-            console.log(this.avatarElec);
-          } else {
-            this.$message.warning(response.message);
+
+
+
+        if(info.file.status == undefined){
+          info.elefilelist.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.elefilelist.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.elefilelist = [...info.elefilelist];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatarElec = response.message + "," + this.avatarElec;
+              this.elefilelist = [...info.elefilelist];
+            } else {
+              this.$message.warning(response.message);
+            }
           }
         }
       },
+
+      beforeUpload: function (file) {
+        return true;
+      },
       handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return;
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
           }
         }
       },

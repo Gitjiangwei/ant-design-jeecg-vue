@@ -138,6 +138,8 @@
                 :multiple="true"
                 :action="uploadAction"
                 :headers="headers"
+                :before-upload="beforeUpload"
+                :file-list="fileList"
                 @change="handleChange"
               >
                 <a-button>
@@ -177,6 +179,7 @@
       return {
         title:"操作",
         visible: false,
+        fileList:[],
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -213,27 +216,37 @@
 
     methods: {
       beforeUpload: function (file) {
-        var fileType = file.type;
-        if (fileType.indexOf('image') < 0) {
-          this.$message.warning('请上传图片');
-          return false;
-        }
+        /*     var fileType = file.type;
+             if (fileType.indexOf('image') < 0) {
+               this.$message.warning('请上传图片');
+               return false;
+             }*/
+        return true;
         //TODO 验证文件大小
       },
       handleChange(info) {
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true
-          return
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if (response.success) {
-            this.avatar = response.message + "," + this.avatar;
-            console.log(this.avatar);
-          } else {
-            this.$message.warning(response.message);
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+            } else {
+              this.$message.warning(response.message);
+            }
           }
         }
       },
@@ -247,6 +260,7 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
+        this.fileList = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'invociName','invociCode','invociNumber','price','shuiMoney','shuiPercent','totalMoney','companyName','shuihao','bank','bankNo','address','content','signatory','contractName'))
           //时间格式化

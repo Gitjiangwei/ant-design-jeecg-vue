@@ -119,7 +119,6 @@
     data() {
       return {
         description: '我的工单',
-        fileRelId: "",
         // 查询条件
         queryParam: {},
         // 表头
@@ -271,6 +270,7 @@
           delete: "/renche/visit/delete",
           deleteBatch: "/renche/visit/deleteBatch",
           export: "/renche/WorkSerivice/exportWorkService",
+          filelist: "/renche/purchase/fileList",
 
         },
       }
@@ -392,7 +392,12 @@
           }
         })
       },
-      handleEdit: function (record) {
+
+      async  handleEdit (record) {
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
         this.$refs.addVisit.edit(record);
         this.$refs.addVisit.title = "编辑";
       },
