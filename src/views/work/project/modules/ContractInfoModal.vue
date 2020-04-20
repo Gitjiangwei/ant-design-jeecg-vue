@@ -143,9 +143,8 @@
                   <a-upload
                     name="file"
                     :multiple="true"
-                    :action="uploadAction"
                     :headers="headers"
-                    :before-upload="beforeUpload"
+                    :customRequest="uploadFileRequest"
                     :file-list="elefileList"
                     @change="handleChangeElec"
                   >
@@ -160,18 +159,13 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
-                <a-form-item
-                  :labelCol="labelCol"
-                  :wrapperCol="wrapperCol"
-                  label="扫描件附件">
-                  <!--  -->
+                <a-form-item label="扫描件附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
                   <a-upload
                     name="file"
                     :multiple="true"
-                    :action="uploadAction"
                     :headers="headers"
-                    :before-upload="beforeUpload"
-                    :file-list= "fileList"
+                    :file-list="fileList"
+                    :customRequest="uploadFileRequest"
                     @change="handleChange"
                   >
                     <a-button>
@@ -338,6 +332,8 @@
       return {
         title:"操作",
         visible: false,
+        isUpload: false,
+        formData: {},
         isShow: false,
         model: {},
         elefileList:[],
@@ -604,7 +600,7 @@
           searchCompany: "/renche/companyInfo/searchCompany",
           prjItemList: "/renche/contractInfo/contractPrjItemList",
           delprjItem: "/renche/contractInfo/delPrjItem",
-          fileUpload: doMian + "/sys/common/upload",
+          fileUpload: "/sys/common/upload",
           invociList: "renche/invoci/qryInvociList",
           filelist: "/renche/purchase/fileList",
           backList: "/renche/moneyBack/list",
@@ -692,6 +688,10 @@
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        if(record.filelist == undefined){
+          record.filelist = [];
+        }
+        this.isUpload = false;
         this.avatarElec = record.elecFileRel == undefined?'':record.elecFileRel;
         this.companyIdA = record.partyA;
         this.companyIdB = record.partyB;
@@ -876,6 +876,10 @@
       backInfoShowList() {
         this.loadbackData();
       },
+      beforeUpload: function (file) {
+        return true;
+      },
+
       handleChangeElec(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
@@ -892,19 +896,51 @@
           if (info.file.status === 'done') {
             var response = info.file.response;
             this.uploadLoading = false;
-            console.log(response);L
+            console.log(response);
             if (response.success) {
               this.avatarElec = response.message + "," + this.avatarElec;
               this.elefileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
             } else {
               this.$message.warning(response.message);
             }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatarElec = this.avatarElec.replace(info.file.id+',','')
           }
         }
       },
 
-      beforeUpload: function (file) {
-        return true;
+
+      uploadFileRequest(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        console.log(copyFile)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            data.onSuccess(res);
+          }
+        }).catch(({err}) => {
+          f.onError()
+        })
+      },
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
       },
       handleChange(info) {
         if(info.file.status == undefined){
@@ -926,9 +962,17 @@
             if (response.success) {
               this.avatar = response.message + "," + this.avatar;
               this.fileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
             } else {
               this.$message.warning(response.message);
             }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar = this.avatar.replace(info.file.id+',','')
           }
         }
       },
