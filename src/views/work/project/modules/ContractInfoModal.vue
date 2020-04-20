@@ -877,28 +877,25 @@
         this.loadbackData();
       },
       handleChangeElec(info) {
-
-
-
         if(info.file.status == undefined){
-          info.elefilelist.some((item,i) => {
+          info.fileList.some((item,i) => {
             if(item.uid == info.file.uid){
-              info.elefilelist.splice(i,1);
+              info.fileList.splice(i,1);
             }
           })
         }else{
           if (info.file.status === 'uploading') {
             this.uploadLoading = true
-            this.elefilelist = [...info.elefilelist];
+            this.elefileList = [...info.fileList];
             return
           }
           if (info.file.status === 'done') {
             var response = info.file.response;
             this.uploadLoading = false;
-            console.log(response);
+            console.log(response);L
             if (response.success) {
               this.avatarElec = response.message + "," + this.avatarElec;
-              this.elefilelist = [...info.elefilelist];
+              this.elefileList = [...info.fileList];
             } else {
               this.$message.warning(response.message);
             }

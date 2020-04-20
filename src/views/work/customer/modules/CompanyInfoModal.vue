@@ -85,20 +85,11 @@
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
-<!--              <a-upload-->
-<!--                name="file"-->
-<!--                :multiple="true"-->
-<!--                :headers="headers"-->
-<!--                :customRequest="uploadFileRequest"-->
-<!--                :show-upload-list="false"-->
-<!--                @change="handleChange"-->
-<!--              >-->
               <a-upload
                 name="file"
                 :multiple="true"
-                :action="uploadAction"
                 :headers="headers"
-                :file-list="fileList"
+                :customRequest="uploadFileRequest"
                 @change="handleChange"
               >
                 <a-button>
@@ -155,20 +146,19 @@
         url: {
           add: "/renche/companyInfo/add",
           edit: "/renche/companyInfo/edit",
-          fileUpload: doMian + "/sys/common/upload",
-          // fileUpload: "/sys/common/upload",
+          fileUpload: "/sys/common/upload",
         },
       }
     },
     created () {
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
-      // this.headers = {"X-Access-Token": token,'Content-Type':'multipart/form-data'}
       //初始化字典配置
       this.initDictConfig();
     },
     computed: {
-      uploadAction: function () {
+      uploadAction: function (data) {
+        console.log("data",data)
         return this.url.fileUpload;
       }
     },
@@ -186,6 +176,9 @@
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        if(record.filelist == undefined){
+          record.filelist = [];
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -240,22 +233,19 @@
         this.close()
       },
       uploadFileRequest(data){
+        const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}${data.file.name}`)
+        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
         console.log(copyFile)
-        this.uploadFile(copyFile);
-      },
-      uploadFile: function (file){
         this.formData=new FormData();
-        this.formData.append("file",file);
+        this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
         httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
           if (res.success) {
-            this.avatar = res.message + "," + this.avatar;
-            this.isUpload = true;
+            // this.avatar = res.message + "," + this.avatar;
+            data.onSuccess(res);
           } else {
             this.$message.warning(res.message);
-            this.isUpload = false;
           }
         })
       },
@@ -289,9 +279,17 @@
             if (response.success) {
               this.avatar = response.message + "," + this.avatar;
               this.fileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
             } else {
               this.$message.warning(response.message);
             }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar = this.avatar.replace(info.file.id+',','')
           }
         }
       },
