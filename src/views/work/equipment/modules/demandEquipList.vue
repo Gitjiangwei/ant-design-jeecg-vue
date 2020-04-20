@@ -1,23 +1,19 @@
 <template>
   <a-modal
     :title="title"
-    :width="1050"
+    :width="1000"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleOk"
     @cancel="handleCancel"
-    cancelText="关闭">
+    @ok="handleCancel"
+    cancelText="关闭"
+  >
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :span="6">
-            <a-form-item label="设备名称" >
-              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :span="6">
-            <a-form-item label="设备型号">
-              <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
+          <a-col :span="12">
+            <a-form-item label="设备名称">
+              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipmentName"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -26,17 +22,13 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                &nbsp;
-                <a-button type="primary" @click="addDemand" icon="plus" >新增设备需求</a-button>
+                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
         </a-row>
       </a-form>
     </div>
-
-    <!-- table区域-begin -->
     <div>
-
       <a-table
         ref="table"
         size="middle"
@@ -49,49 +41,41 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <!-- 操作按钮区域 -->
         <span slot="action" slot-scope="text, record">
-          <a @click="handleDetail(record)">详情</a>
-
+            <a @click="updateStatus(record)">处理</a>
         </span>
-
       </a-table>
     </div>
-
-    <purchase-detail-show ref="PurchaseDetailShow"  @ok="modalFormOk"></purchase-detail-show>
-    <demand-modules ref="DemandModules"></demand-modules>
   </a-modal>
-
-
-
-
-
 </template>
-
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import ACol from "ant-design-vue/es/grid/Col";
-  import PurchaseDetailShow from "./PurchaseDetailShow";
-  import DemandModules from "../../demand/modules/demandModules";
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {deleteAction, getAction, httpAction} from '@/api/manage';
   import {filterObj} from '@/utils/util';
-
+  import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil';
 
   export default {
-    name: "PurchaseInfoStockShow",
-    components: {ACol, ARow,PurchaseDetailShow,DemandModules},
+    name: "EquipInfoDetail",
+    components: {
+      ARow,
+    },
     data() {
       return{
-        description: '设备库存页面',
-        visible: false,
+        description: '采购管理页面',
+        timer:"",
+        purchaseId:"",
         title: "操作",
-        projectId:"",
+        visible: false,
+        confirmLoading: false,
         // 查询条件
         queryParam: {},
-        confirmLoading: false,
+        //字典数组缓存
+        statDictOptions: [],
         // 表头
         columns: [
           {
-            title: '序号',
+            title: '#',
             dataIndex: '',
             key: 'rowIndex',
             width: 60,
@@ -103,43 +87,48 @@
           {
             title: '设备名称',
             align: "center",
-            dataIndex: 'equipName',
+            dataIndex: 'equipmentName'
           },
           {
             title: '设备型号',
             align: "center",
-            dataIndex: 'equipModel'
+            dataIndex: 'equipmentModel'
           },
           {
-            title: '数量',
+            title: '需要采购的设备数量',
             align: "center",
-            dataIndex: 'count'
+            dataIndex: 'equipmentNumber'
           },
           {
-            title: '使用中',
+            title: '提交人',
             align: "center",
-            dataIndex: 'inuseCount',
-
+            dataIndex: 'createName'
           },
           {
-            title:"空闲",
-            align:"center",
-            dataIndex: "freeCount",
+            title: '处理时间',
+            align: "center",
+            dataIndex: 'whetherTime'
           },
           {
-            title:"报废",
+            title:"状态",
             align:"center",
-            dataIndex: "scripCount",
+            dataIndex: "isSend",
+            customRender:function (text) {
+              if(text==1){
+                return "未处理";
+              }else if(text==2){
+                return "已处理";
+              }else if(text==3){
+                return "退回";
+              }else {
+                return text
+              }
+            }
           },
           {
-            title:"维修中",
+            title:"备注",
             align:"center",
-            dataIndex: "maintenonceCount",
-          },
-          {
-            title:"入库时间",
-            align:"center",
-            dataIndex: "createTime",
+            dataIndex: "remarks",
           },
           {
             title: '操作',
@@ -148,6 +137,7 @@
             scopedSlots: {customRender: 'action'},
           }
         ],
+        purchaseId:"",
         //数据集
         dataSource: [],
         // 分页参数
@@ -170,21 +160,25 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-           list: "/renche/equip/equipList",
+          list: "/renche/demand/queryDemandStatus",
+          updateStatus:"/renche/demand/updateStatus",
         },
       }
     },
     created() {
-      this.loadData();
+      //初始化字典配置
+
+      this.initDictConfig();
     },
-    methods: {
+    methods:{
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
         }
+        debugger;
         var params = this.getQueryParams();//查询条件
-        console.log(params);
+        params.purchaseId = this.purchaseId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -192,68 +186,42 @@
           }
         })
       },
-      show (record) {
-        this.projectId = record;
+      load:function(record){
+        debugger;
         this.visible = true;
-        this.loadData();
+        this.loadData(1);
       },
-
-      close () {
-        this.$emit('close');
-        this.visible = false;
-      },
-
-      handleOk () {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条数据！');
-          return;
-        } else {
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
-          this.$emit('func',this.selectedRows);
-          this.close();
-        }
-      },
-      handleCancel() {
-        this.close()
-      },
-      close() {
-        this.$emit('close');
-        this.visible = false;
-      },
-      handleDetail: function(record){
-        //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
-        this.$refs.PurchaseDetailShow.show(record,this.projectId);
-        this.$refs.PurchaseDetailShow.title("设备详情");
-
-      },
-
-/*      handleDelete: function (id) {
+      updateStatus:function(record){
         var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
+        var demandId = record.demandId;
+        if (record.isSend=='2'){
+          that.$message.warning("该设备需求单已处理完成，不需要重复处理！");
+          return
+        }
+        deleteAction(that.url.updateStatus, {demandId: demandId,status:'2'}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
             that.loadData();
+            that.onClearSelected();
           } else {
             that.$message.warning(res.message);
           }
         });
-      },*/
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        //this.loadData();
-        debugger;
-        this.$emit('ok');
+      },
+      handleCancel() {
         this.close();
       },
-      searchReset() {
-        var that = this;
-        that.queryParam = {}
-        that.loadData(1);
+      close() {
+        this.$emit('ok');
+        this.visible = false;
       },
-      addDemand(){
-        this.$refs.DemandModules.add();
-        this.$refs.DemandModules.title("添加采购设备需求");
+      modalFormOk() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
+      },
+      modalFormOk() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
       },
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
@@ -273,20 +241,6 @@
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectionRows = selectionRows;
-        if(selectionRows.length > 1){
-          var selectKey = this.selectedRowKeys[1];
-          var selectRow0 = this.selectedRows[0];
-          var selectRow1 = this.selectedRows[1];
-          this.selectedRowKeys = [];
-          this.selectedRowKeys.push(selectKey);
-          this.selectedRows = [];
-          if(selectKey == selectRow0.tenderId){
-            this.selectedRows.push(selectRow0);
-          }else{
-            this.selectedRows.push(selectRow1);
-          }
-
-        }
       },
       onClearSelected() {
         this.selectedRowKeys = [];
@@ -306,11 +260,13 @@
         this.ipagination = pagination;
         this.loadData();
       },
+      handleCancel() {
+        this.close();
+      },
+      close() {
+        this.$emit('ok');
+        this.visible = false;
+      },
     }
   }
-
 </script>
-
-<style scoped>
-
-</style>
