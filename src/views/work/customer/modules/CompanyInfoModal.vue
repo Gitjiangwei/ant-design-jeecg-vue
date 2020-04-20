@@ -89,6 +89,7 @@
                 name="file"
                 :multiple="true"
                 :headers="headers"
+                :file-list="fileList"
                 :customRequest="uploadFileRequest"
                 @change="handleChange"
               >
