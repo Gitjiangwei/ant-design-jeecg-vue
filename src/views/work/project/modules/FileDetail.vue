@@ -65,7 +65,7 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="fileDownload(record)" :href="'http://localhost:3000/jeecg-boot/sys/common/download?fileRelId='+record.fileRelId" target="_blank">下载</a>
+          <a @click="fileDownload(record)"  target="_blank">下载</a>
         </span>
 
       </a-table>
@@ -174,7 +174,7 @@
         })
       },
       fileDownload:function(record){
-        console.log(record.fileRelId)
+        window.location.href = window._CONFIG['domainURL'] + this.url.download + "?fileRelId="+record.fileRelId;
       },
       fileLoad:function(record){
         this.visible = true;
