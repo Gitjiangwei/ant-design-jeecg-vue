@@ -114,7 +114,7 @@
 
 
         <a-row>
-          <a-col :span="16" style="padding-left: 8px;">
+          <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
               <a-upload
                 name="file"
@@ -132,6 +132,18 @@
               <div>
                 <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
               </div>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" float:left>
+            <a-form-item
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              label="状态">
+              <a-select v-decorator="['state', {}]" placeholder="请选择工单状态">
+                <a-select-option value="1">未开始</a-select-option>
+                <a-select-option value="2">进行时</a-select-option>
+                <a-select-option value="3">已完成</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -329,7 +341,7 @@
         this.isUpload = false;
         this.fileList = [];
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'planExecuTime','companyName','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersonNum','content','result','evaluate','remark'))
+          this.form.setFieldsValue(pick(this.model,'planExecuTime','companyName','realityExecuTime','planOutTime','realityOutTime','planPersonNum','realityPersonNum','content','result','evaluate','remark','state'))
           //时间格式化
         //  this.form.setFieldsValue({visitTime:this.model.visitTime?moment(this.model.visitTime,'YYYY-MM-DD HH:mm:ss'):null});
           this.form.setFieldsValue({planExecuTime:this.model.planExecuTime?moment(this.model.planExecuTime,'YYYY-MM-DD'):null});

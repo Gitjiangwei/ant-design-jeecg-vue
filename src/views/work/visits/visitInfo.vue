@@ -231,6 +231,20 @@
             dataIndex: 'remark',
 
           },*/
+          {
+            title: '状态',
+            align: "center",
+            dataIndex: 'state',
+            customRender: (text, record, index) => {
+              if(text == '1'){
+                return "未开始";
+              }else if(text == '2'){
+                return "进行时";
+              }else if(text == '3'){
+                return "已完成";
+              }
+            }
+          },
 
 
           {

@@ -182,6 +182,20 @@
                 }
               }
             },
+            {
+              title: '状态',
+              align: "center",
+              dataIndex: 'state',
+              customRender: (text, record, index) => {
+                if(text == '1'){
+                  return "未开始";
+                }else if(text == '2'){
+                  return "进行时";
+                }else if(text == '3'){
+                  return "已完成";
+                }
+              }
+            },
 
             {
               title: '操作',
@@ -194,6 +208,7 @@
 
           //数据集
           dataSource: [],
+
           // 分页参数
           ipagination: {
             current: 1,
@@ -239,6 +254,7 @@
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
+              console.log(this.dataSource )
               this.ipagination.total = res.result.total;
             }
           })
@@ -329,6 +345,10 @@
           if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
+          }
+          if(record.fileRelId1 != null || record.fileRelId1 != "" || record.fileRelId1 != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId1});
+            record.filelist1 = result.list;
           }
           this.$refs.addWorkOrderInfo.edit(record);
           this.$refs.addWorkOrderInfo.title = "编辑";
