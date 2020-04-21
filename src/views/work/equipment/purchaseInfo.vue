@@ -51,6 +51,8 @@
         </a-button>-->
         &nbsp;
         <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
+        &nbsp;
+        <a-button @click="demandQuery" type="primary" icon="search">设备需求</a-button>
        <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel(1)">
@@ -125,6 +127,8 @@
       <pruchase-info-detail ref="pruchaseInfoDetail" ></pruchase-info-detail>
 
       <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
+
+      <demand-equip-list ref="demandEquipList"></demand-equip-list>
     </a-card>
 
 </template>
@@ -134,6 +138,7 @@
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
     import pruchaseInfoDetail from "./modules/pruchaseInfoDetail";
     import fileDetail from "./modules/FileDetail";
+    import demandEquipList from "./modules/demandEquipList"
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {filterObj,timeFix} from '@/utils/util';
 
@@ -145,6 +150,7 @@
         prochaseInfoMode,
         pruchaseInfoDetail,
         fileDetail,
+        demandEquipList
       },
       data() {
         return{
@@ -342,6 +348,10 @@
         handleDetail: function(record){
           this.$refs.pruchaseInfoDetail.detail(record);
           this.$refs.pruchaseInfoDetail.title = "详情";
+        },
+        demandQuery: function(){
+          this.$refs.demandEquipList.load();
+          this.$refs.demandEquipList.title = "设备需求单"
         },
         batchDel: function (flag) {
           if (this.selectedRowKeys.length <= 0 && (flag==1||flag==2)) {
