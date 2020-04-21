@@ -174,7 +174,7 @@
         })
       },
       fileDownload:function(record){
-        window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?fileRelId="+record.fileRelId;
+        window.location.href = window._CONFIG['domainURL'] + this.url.download + "?fileRelId="+record.fileRelId;
       },
       fileLoad:function(record){
         this.visible = true;
