@@ -65,7 +65,7 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="fileDownload(record)" :href="'http://localhost:3000/jeecg-boot/sys/common/download?fileRelId='+record.fileRelId" target="_blank">下载</a>
+          <a @click="fileDownload(record)"  target="_blank">下载</a>
         </span>
 
       </a-table>
@@ -174,18 +174,7 @@
         })
       },
       fileDownload:function(record){
-        console.log(record.fileRelId)
-        // let that = this;
-        // getAction(this.url.download, {fileRelId: record.fileRelId}).then((res) => {
-        //   console.log(res)
-        //   if (res.success) {
-        //     that.$message.success(res.message);
-        //     that.loadData();
-        //     that.onClearSelected();
-        //   } else {
-        //     that.$message.warning("下载出错");
-        //   }
-        // });
+        window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?fileRelId="+record.fileRelId;
       },
       fileLoad:function(record){
         debugger;

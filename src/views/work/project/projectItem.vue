@@ -238,11 +238,11 @@
                 }
               }
             },
-           /* {
+           {
               title: '附件',
               align: "center",
               dataIndex: 'fileCount',
-            },*/
+            },
             {
               title: '操作',
               dataIndex: 'action',
