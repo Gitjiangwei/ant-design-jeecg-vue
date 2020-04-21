@@ -27,9 +27,6 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <!--<a-button type="primary" >
-          <a :href="'http://localhost:8080/jeecg-boot/renche/workOrder/exportVisit'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>-->
         <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -109,7 +106,7 @@
 
 
     export default {
-      name: "workOrderInfo",
+      name: "WorkOrderInfo",
       components: {
         ARow,
         addWorkOrderInfo,
@@ -170,7 +167,7 @@
               dataIndex: 'prjItemName',
             },
             {
-              title: '状态',
+              title: '类型',
               align: "center",
               dataIndex: 'status',
               customRender: (text, record, index) => {
@@ -229,7 +226,7 @@
       created() {
         this.loadData();
         //初始化字典配置
-        this.initDictConfig();
+        /*this.initDictConfig();*/
       },
       methods: {
         loadData(arg) {
@@ -238,6 +235,7 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          console.log(params)
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
@@ -254,7 +252,7 @@
           });
         },
         getQueryParams() {
-          var param = Object.assign({}, this.queryParam, this.isorter);
+          var param = Object.assign({}, this.queryParam, this.isorter );
           param.field = this.getQueryField();
           param.pageNo = this.ipagination.current;
           param.pageSize = this.ipagination.pageSize;

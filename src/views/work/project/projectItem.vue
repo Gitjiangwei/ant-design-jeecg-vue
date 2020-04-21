@@ -238,7 +238,7 @@
                 }
               }
             },
-           {
+            {
               title: '附件',
               align: "center",
               dataIndex: 'fileCount',

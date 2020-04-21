@@ -21,14 +21,14 @@
         </a-form-item>
           </a-col>
         </a-row>
-
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="负责人">
-              <a-input placeholder="请输入负责人" v-decorator="['chargePerson', {rules: [{ required: true,message: '请输入负责人' }]}]" />
+            <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-auto-complete placeholder="请输入负责人"  @search="getChargePersonList" @select="chooseThisA" v-decorator="['chargePerson', {rules: [{ required: true, message: '请输入正确的负责人名称', }]}]" maxLength="30">
+                <template slot="dataSource">
+                  <a-select-option v-for="item in chargePersonList" :key="item.username">{{ item.username }}</a-select-option>
+                </template>
+              </a-auto-complete>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;" float:left>
@@ -43,22 +43,20 @@
 
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              label="工程点">
-              <a-select v-decorator="['prjItemName', {}]" placeholder="请选择工程点">
-                <a-select-option value="">请选择工程点</a-select-option>
-                <a-select-option v-for="item in prjItemNames" :key="item.value" :value="item.value">{{item.value}}</a-select-option>
-              </a-select>
+            <a-form-item label="工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-auto-complete placeholder="请输入工程点"  @search="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
+                <template slot="dataSource">
+                  <a-select-option v-for="item in prjItemNamesList" :key="item.prjItemName">{{ item.prjItemName }}</a-select-option>
+                </template>
+              </a-auto-complete>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;" float:left>
             <a-form-item
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              label="状态">
-              <a-select v-decorator="['status', {}]" placeholder="请选择状态">
+              label="类型">
+              <a-select v-decorator="['status', {}]" placeholder="请选择工单类型">
                 <a-select-option value="1">实施</a-select-option>
                 <a-select-option value="2">维修</a-select-option>
                 <a-select-option value="3">拜访</a-select-option>
@@ -126,6 +124,9 @@
         model: {},
         isUpload: false,
         formData: {},
+        chargePersonList:[],
+        prjItemNamesList:[],
+        Id:"",
         fileList:[],
         prjItemNames:[],
         labelCol: {
@@ -150,6 +151,7 @@
           getn:"/renche/workOrder/getn",
           //fileUpload: doMian + "/sys/common/upload",
           fileUpload: "/sys/common/upload",
+          searchSysUser:"/renche/workOrder/userList"
         },
       }
     },
@@ -168,6 +170,47 @@
       }
     },
     methods: {
+
+      getChargePersonList: function(val){
+        getAction(this.url.searchSysUser, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
+          if (res.success) {
+            console.log(res.result.list)
+            this.chargePersonList = res.result.list;
+            if(this.chargePersonList.length == 1){
+                this.model.chargePerson=this.chargePersonList[0].username;
+            }else{
+              this.model.chargePerson = "";
+            }
+          }
+        })
+      },
+      chooseThisA: function(val){
+        this.model.chargePerson= val;
+
+      },
+
+      getPrjItemNamesList: function(val){
+        getAction(this.url.getn, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
+          if (res.success) {
+            console.log(res.result.list)
+            this.prjItemNamesList = res.result.list;
+            alert("this.chargePersonList[0].value="+this.chargePersonList[0].prjItemName)
+            if(this.prjItemNamesList.length == 1){
+              this.model.prjItemName=this.chargePersonList[0].prjItemName;
+            }else{
+              this.model.prjItemName = "";
+            }
+          }
+        })
+      },
+      chooseThisB: function(val){
+        this.model.prjItemName= val;
+
+      },
+
+
+
+
       beforeUpload: function (file) {
        /* var fileType = file.type;
         if (fileType.indexOf('image') < 0) {
