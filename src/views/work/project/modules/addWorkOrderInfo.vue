@@ -84,8 +84,8 @@
         </a-form-item>
         </a-col>
       </a-row>
-    <a-row >
-      <a-col :span="12" style="padding-left: 40px;">
+    <a-row :gutter="24">
+      <a-col :span="16" style="padding-left: 0px;">
         <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
           <a-upload
             name="file"
@@ -105,7 +105,7 @@
           </div>
         </a-form-item>
       </a-col>
-      <a-col :span="12" style="padding-left: 0px;" float:left>
+     <!-- <a-col :span="12" style="padding-left: 0px;" float:left>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -116,7 +116,7 @@
             <a-select-option value="3">已完成</a-select-option>
           </a-select>
         </a-form-item>
-      </a-col>
+      </a-col>-->
     </a-row>
 
       </a-form>
