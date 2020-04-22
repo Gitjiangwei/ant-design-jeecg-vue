@@ -107,7 +107,7 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if (!this.model.dictId) {
+            if (!this.model.demandId) {
               httpurl += this.url.add;
               method = 'post';
             } else {
