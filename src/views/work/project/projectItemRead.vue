@@ -72,43 +72,15 @@
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
                 <a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>
+                <a-button @click="exportPrjItemDate" type="primary" icon="export">导出</a-button>
               </span>
             </a-col>
           </a-row>
         </a-form>
       </div>
 
-      <!-- 操作按钮区域 -->
-      <div class="table-operator">
-       <!-- <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
-
-     <!--   <a-dropdown v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="batchDel">
-              <a-icon type="delete"/>
-              删除
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作
-            <a-icon type="down"/>
-          </a-button>
-        </a-dropdown>-->
-
-     <!--   <a-button @click="handleExport" type="primary" icon="download">下载导入模板</a-button>-->
-        <a-upload name="file" :showUploadList="false" :multiple="false" :action="importExcelUrl" :beforeUpload="beforeUpload" accept=".xls">
-          <!--<a-button type="primary" icon="import">导入</a-button>-->
-        </a-upload>
-        <a-button @click="exportPrjItemDate" type="primary" icon="export">导出</a-button>
-      </div>
-
       <!-- table区域-begin -->
       <div>
-        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-          <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-          selectedRowKeys.length }}</a>项
-          <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-        </div>
-
         <a-table
           ref="table"
           size="middle"
@@ -123,18 +95,6 @@
 
           <span slot="action" slot-scope="text, record">
             <a @click="handleEdit(record)">详情</a>
-
-            <a-divider type="vertical"/>
-        <!--    <a-dropdown>
-              <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.prjItemId)">
-                    <a>删除</a>
-                  </a-popconfirm>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>-->
           </span>
         </a-table>
       </div>

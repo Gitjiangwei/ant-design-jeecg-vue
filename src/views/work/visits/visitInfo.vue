@@ -143,11 +143,11 @@
             align: "center",
             dataIndex: 'companyName',
           },
-          {
+          /*{
             title: '客户电话',
             align: "center",
             dataIndex: 'phone',
-          },
+          },*/
           /* {
              title: '拜访人',
              align: "center",
@@ -165,25 +165,25 @@
             dataIndex: 'planExecuTime',
 
           },
-          {
+          /*{
             title: '实际执行时间',
             align: "center",
             dataIndex: 'realityExecuTime',
 
-          },
+          },*/
           {
             title: '计划完成时间',
             align: "center",
             dataIndex: 'planOutTime',
 
           },
-          {
+         /* {
             title: '实际完成时间',
             align: "center",
             dataIndex: 'realityOutTime',
 
-          },
-          {
+          },*/
+          /*{
             title: '计划参与人数',
             align: "center",
             dataIndex: 'planPersonNum',
@@ -194,19 +194,19 @@
             align: "center",
             dataIndex: 'realityPersonNum',
 
-          },
+          },*/
           {
             title: '任务内容',
             align: "center",
             dataIndex: 'content',
           },
-          {
+        /*  {
             title: '执行情况',
             align: "center",
             dataIndex: 'result',
 
-          },
-          {
+          },*/
+         /* {
             title: '用户评价',
             align: "center",
             dataIndex: 'evaluate',
@@ -224,12 +224,26 @@
               }
             }
 
-          },
-          {
+          },*/
+     /*     {
             title: '备注',
             align: "center",
             dataIndex: 'remark',
 
+          },*/
+          {
+            title: '状态',
+            align: "center",
+            dataIndex: 'state',
+            customRender: (text, record, index) => {
+              if(text == '1'){
+                return "未开始";
+              }else if(text == '2'){
+                return "进行时";
+              }else if(text == '3'){
+                return "已完成";
+              }
+            }
           },
 
 

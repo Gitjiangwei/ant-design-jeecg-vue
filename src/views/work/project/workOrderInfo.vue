@@ -27,9 +27,6 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <!--<a-button type="primary" >
-          <a :href="'http://localhost:8080/jeecg-boot/renche/workOrder/exportVisit'" target="_blank" style="margin-left: 10px">导出</a>
-        </a-button>-->
         <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -109,7 +106,7 @@
 
 
     export default {
-      name: "workOrderInfo",
+      name: "WorkOrderInfo",
       components: {
         ARow,
         addWorkOrderInfo,
@@ -170,7 +167,7 @@
               dataIndex: 'prjItemName',
             },
             {
-              title: '状态',
+              title: '类型',
               align: "center",
               dataIndex: 'status',
               customRender: (text, record, index) => {
@@ -182,6 +179,20 @@
                   return "拜访";
                 }else if(text == '4'){
                   return "销售";
+                }
+              }
+            },
+            {
+              title: '状态',
+              align: "center",
+              dataIndex: 'state',
+              customRender: (text, record, index) => {
+                if(text == '1'){
+                  return "未开始";
+                }else if(text == '2'){
+                  return "进行时";
+                }else if(text == '3'){
+                  return "已完成";
                 }
               }
             },
@@ -197,6 +208,7 @@
 
           //数据集
           dataSource: [],
+
           // 分页参数
           ipagination: {
             current: 1,
@@ -229,7 +241,7 @@
       created() {
         this.loadData();
         //初始化字典配置
-        this.initDictConfig();
+        /*this.initDictConfig();*/
       },
       methods: {
         loadData(arg) {
@@ -238,9 +250,11 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          console.log(params)
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
+              console.log(this.dataSource )
               this.ipagination.total = res.result.total;
             }
           })
@@ -254,7 +268,7 @@
           });
         },
         getQueryParams() {
-          var param = Object.assign({}, this.queryParam, this.isorter);
+          var param = Object.assign({}, this.queryParam, this.isorter );
           param.field = this.getQueryField();
           param.pageNo = this.ipagination.current;
           param.pageSize = this.ipagination.pageSize;
@@ -331,6 +345,10 @@
           if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
+          }
+          if(record.fileRelId1 != null || record.fileRelId1 != "" || record.fileRelId1 != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId1});
+            record.filelist1 = result.list;
           }
           this.$refs.addWorkOrderInfo.edit(record);
           this.$refs.addWorkOrderInfo.title = "编辑";

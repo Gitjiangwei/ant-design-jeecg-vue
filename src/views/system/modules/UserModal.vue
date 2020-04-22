@@ -22,85 +22,100 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
+              <a-input placeholder="请输入用户账号" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="用户名称" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-input placeholder="请输入用户名称" v-decorator="[ 'realname', validatorRules.realname]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row v-if="!model.id">
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password', validatorRules.password]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-select
+                mode="multiple"
+                style="width: 100%"
+                placeholder="请选择用户角色"
+                v-model="selectedRole">
+                <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
+                  {{ role.roleName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-date-picker
+                style="width: 100%"
+                placeholder="请选择生日"
+                v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-select
+                v-decorator="[ 'sex', {initialValue:model.sex && model.sex.toString()}]"
+                placeholder="请选择性别">
+                <a-select-option value="1">男</a-select-option>
+                <a-select-option value="2">女</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
+              <a-input placeholder="请输入手机号码" v-decorator="[ 'phone', validatorRules.phone]" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-upload
+                listType="picture-card"
+                class="avatar-uploader"
+                :showUploadList="false"
+                :action="uploadAction"
+                :data="{'isup':1}"
+                :headers="headers"
+                :beforeUpload="beforeUpload"
+                @change="handleChange"
+              >
+                <img v-if="model.avatar" :src="getAvatarView()" alt="头像" style="height:104px;max-width:300px"/>
+                <div v-else>
+                  <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
+                  <div class="ant-upload-text">上传</div>
+                </div>
+              </a-upload>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-        <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback>
-          <a-input placeholder="请输入用户账号" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
-        </a-form-item>
-
-        <template v-if="!model.id">
-          <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-            <a-input type="password" placeholder="请输入登陆密码" v-decorator="[ 'password', validatorRules.password]" />
-          </a-form-item>
-
-          <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-            <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
-          </a-form-item>
-        </template>
-
-        <a-form-item label="用户名称" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-input placeholder="请输入用户名称" v-decorator="[ 'realname', validatorRules.realname]" />
-        </a-form-item>
-
-        <a-form-item label="角色分配" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-select
-            mode="multiple"
-            style="width: 100%"
-            placeholder="请选择用户角色"
-            v-model="selectedRole">
-            <a-select-option v-for="(role,roleindex) in roleList" :key="roleindex.toString()" :value="role.id">
-              {{ role.roleName }}
-            </a-select-option>
-
-
-          </a-select>
-
-        </a-form-item>
-
-
-
-
-        <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-upload
-            listType="picture-card"
-            class="avatar-uploader"
-            :showUploadList="false"
-            :action="uploadAction"
-            :data="{'isup':1}"
-            :headers="headers"
-            :beforeUpload="beforeUpload"
-            @change="handleChange"
-          >
-            <img v-if="model.avatar" :src="getAvatarView()" alt="头像" style="height:104px;max-width:300px"/>
-            <div v-else>
-              <a-icon :type="uploadLoading ? 'loading' : 'plus'" />
-              <div class="ant-upload-text">上传</div>
-            </div>
-          </a-upload>
-        </a-form-item>
-
-        <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-date-picker
-            style="width: 100%"
-            placeholder="请选择生日"
-            v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"/>
-        </a-form-item>
-
-        <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-select
-            v-decorator="[ 'sex', {initialValue:model.sex && model.sex.toString()}]"
-            placeholder="请选择性别">
-            <a-select-option value="1">男</a-select-option>
-            <a-select-option value="2">女</a-select-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
-        </a-form-item>
-
-        <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol" hasFeedback >
-          <a-input placeholder="请输入手机号码" v-decorator="[ 'phone', validatorRules.phone]" />
-        </a-form-item>
 
       </a-form>
     </a-spin>
@@ -118,7 +133,7 @@
     name: "RoleModal",
     data () {
       return {
-        modalWidth:800,
+        modalWidth:1050,
         modaltoggleFlag:true,
         confirmDirty: false,
         disableSubmit:false,
