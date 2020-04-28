@@ -165,7 +165,7 @@
                     :multiple="true"
                     :headers="headers"
                     :file-list="fileList"
-                    :customRequest="uploadFileRequest"
+                    :customRequest="uploadFileRequest1"
                     @change="handleChange"
                   >
                     <a-button>
@@ -692,7 +692,7 @@
           record.filelist = [];
         }
         this.isUpload = false;
-        this.avatarElec = record.elecFileRel == undefined?'':record.elecFileRel;
+        this.elecFileRel = record.elecFileRel == undefined?'':record.elecFileRel;
         this.companyIdA = record.partyA;
         this.companyIdB = record.partyB;
         this.elefileList=[];
@@ -919,7 +919,31 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        const contracName = this.model.contractName;
+        var fileName=data.file.name.toString();
+        var str1=fileName.substring(0,fileName.lastIndexOf("."));
+        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
+        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"电子版"}_${str1}_${timeStamp}_${str2}`)
+        console.log(copyFile)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            data.onSuccess(res);
+          }
+        }).catch(({err}) => {
+          f.onError()
+        })
+      },
+      uploadFileRequest1(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const contracName = this.model.contractName;
+        var fileName=data.file.name.toString();
+        var str1=fileName.substring(0,fileName.lastIndexOf("."));
+        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
+        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"扫描件"}_${str1}_${timeStamp}_${str2}`)
         console.log(copyFile)
         this.formData=new FormData();
         this.formData.append("file",copyFile);

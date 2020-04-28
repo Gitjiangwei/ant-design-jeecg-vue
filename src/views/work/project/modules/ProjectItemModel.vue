@@ -516,7 +516,11 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        const prjIteName = this.model.prjItemName;
+        var fileName=data.file.name.toString();
+         var str1=fileName.substring(0,fileName.lastIndexOf("."));
+        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
+        const copyFile = new File([data.file], `${prjIteName}_${nowDate}_${str1}_${timeStamp}_${str2}`)
         console.log(copyFile)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
