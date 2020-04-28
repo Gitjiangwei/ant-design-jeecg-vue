@@ -151,6 +151,27 @@
               </div>
             </a-form-item>
           </a-col>
+
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item label="签收单" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
+              <a-upload
+                name="file"
+                :multiple="true"
+                :headers="headers"
+                :file-list="fileList1"
+                :customRequest="uploadFileRequest1"
+                @change="handleChange1"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist1" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
         </a-row>
 
       </a-form>
@@ -181,6 +202,7 @@
         isUpload: false,
         formData: {},
         fileList:[],
+        fileList1:[],
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -193,6 +215,7 @@
         uploadLoading: false,
         headers: {},
         avatar: "",
+        avatar1: "",
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -228,7 +251,32 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
+        const contracName = this.model.contractName;
+        var fileName=data.file.name.toString();
+        var str1=fileName.substring(0,fileName.lastIndexOf("."));
+        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
+        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"发票附件"}_${str1}_${timeStamp}_${str2}`)
+        console.log(copyFile)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            // this.avatar = res.message + "," + this.avatar;
+            data.onSuccess(res);
+          } else {
+            this.$message.warning(res.message);
+          }
+        })
+      },
+      uploadFileRequest1(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const contracName = this.model.contractName;
+        var fileName=data.file.name.toString();
+        var str1=fileName.substring(0,fileName.lastIndexOf("."));
+        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
+        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"签收单附件"}_${str1}_${timeStamp}_${str2}`)
         console.log(copyFile)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
@@ -288,12 +336,48 @@
         }
       },
 
+      handleChange1(info) {
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList1 = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar1 = response.message + "," + this.avatar1;
+              this.fileList1 = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
+            } else {
+              this.$message.warning(response.message);
+            }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar1 = this.avatar1.replace(info.file.id+',','')
+          }
+        }
+      },
+
 
       add () {
         this.edit({});
       },
       edit (record) {
         this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        this.avatar1 = record.fileRelId1 == undefined?'':record.fileRelId1;
         if(record.filelist == undefined){
           record.filelist = [];
         }
@@ -302,6 +386,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.fileList = [];
+        this.fileList1 = [];
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'invociName','invociCode','invociNumber','price','shuiMoney','shuiPercent','totalMoney','companyName','shuihao','bank','bankNo','address','content','signatory','contractName'))
           //时间格式化
@@ -331,6 +416,8 @@
             }
 
             that.model.fileRelId = that.avatar;
+
+            this.model.fileRelId1 = that.avatar1;
             values.totalMoney = that.model.totalMoney;
             let formData = Object.assign(that.model, values);
 

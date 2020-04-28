@@ -319,6 +319,10 @@
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
           }
+          if(record.fileRelId1 != null || record.fileRelId1 != "" || record.fileRelId1 != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId1});
+            record.filelist1 = result.list;
+          }
           this.$refs.addInvociInfo.edit(record);
           this.$refs.addInvociInfo.title = "编辑";
         },
