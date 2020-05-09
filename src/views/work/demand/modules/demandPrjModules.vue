@@ -8,61 +8,54 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
-
   >
-    <a-spin :spinning="confirmLoading">
-      <a-form :form="form" >
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备名称"
-          hasFeedback
-        >
-          <a-input placeholder="请输入设备名称" :disabled= "!isEdit"   maxlength="30"  v-decorator="['equipmentName', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备型号"
-          hasFeedback >
-          <a-input placeholder="请输入设备型号" :disabled= "!isEdit" maxlength="30"  v-decorator="['equipmentModel', {rules: [{ required: true, message: '请输入设备型号' }]}]" />
-        </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="采购数量"
-          hasFeedback >
-          <a-input   placeholder="请输入需求数量" :disabled= "!isEdit" maxlength="6"  v-decorator="['equipmentNumber', {rules: [{ required: true,validator: this.validateDictOrderNo}]}]" />
-        </a-form-item>
+      <div style="float: right;">
+        <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
+      </div>
+      <div style="padding-top: 42px;">
+        <a-table
+          ref="table"
+          size="middle"
+          bordered
+          rowKey="prjItemId"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="ipagination"
+          :loading="loading"
+          @change="handleTableChange" style="padding-top: 10px;">
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="备注"
-          hasFeedback >
-          <a-textarea  placeholder="请输入备注" :disabled= "!isEdit" maxlength="1000" v-decorator="['remarks', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
-        </a-form-item>
-      </a-form>
-    </a-spin>
+                  <span slot="action" slot-scope="text, record">
+                    <a @click="handleDelete(record.outId)">删除</a>
+                  </span>
+        </a-table>
+      </div>
 
+
+
+    <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
   </a-modal>
 </template>
 <script>
-  import {httpAction,getAction} from '@/api/manage'
+  import {httpAction,getAction,deleteAction} from '@/api/manage'
   import pick from 'lodash.pick'
+  import PurchaseInfoStockShow from './PurchaseInfoStockShow'
+  import {filterObj} from '@/utils/util';
 
   export default {
-    name:"demandModules",
-    components:{},
+    name:"demandPrjModules",
+    components:{
+      PurchaseInfoStockShow
+    },
     data(){
       return{
         isShowFile: false,
-        isEdit:"",
+        isEdit:false,
         title: "操作",
         visible: false,
         defaultActiveKey: "1",
         dictItemId:"",
+        projectId:"",
         model: {},
         disableSubmit: false,
         labelCol: {
@@ -135,10 +128,13 @@
         url: {
           add:"renche/demand/saveDemand",
           edit:"renche/demand/updateDemand",
+          projectIdList:"/renche/projectItem/projectIdList",
+          delOutId: "/renche/outEquip/delOutEquip",
         },
       }
     },
     created() {
+
     },
     methods:{
 
@@ -153,23 +149,79 @@
         this.ipagination = pagination;
         this.loadData();
       },
+      getQueryParams() {
+        var param = {};
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
+          param.projectId = this.projectId;
+        }else {
+          param.projectId=" ";
+
+        }
+        console.log(filterObj(param));
+        return filterObj(param);
+      },
+      handleDelete: function (id) {
+        var that = this;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.delOutId, {outId: id}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        })
+      },
+      addProjectItem() {
+        this.loadData();
+      },
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        getAction(this.url.projectIdList, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.list;
+            this.ipagination.total = res.result.total;
+          }
+        })
+      },
       add() {
+
         this.edit({});
       },
       edit(record) {
+
         this.projectId = record.prjItemId;
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
-          this.isEdit=false;
+          this.loadData();
         }else {
-          this.isEdit=true;
+          this.loadData();
         }
+
+
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'equipmentName', 'equipmentModel','equipmentNumber','remarks'))
-        });
 
+
+      },
+      showTender:function (){
+        if(this.projectId==null || this.projectId == "" || this.projectId == undefined ){
+          this.$message.warning("工程點ID為空，不能添加设备");
+          return;
+        }
+        this.$refs.PurchaseInfoStockShow.show(this.projectId);
+        this.$refs.PurchaseInfoStockShow.title = "选择关联设备信息";
       },
       close() {
         this.$emit('close');
@@ -191,6 +243,7 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
+            formData.isSend = "1";
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -219,10 +272,13 @@
       },
       handleCancel() {
         this.$emit('ok');
-        this.defaultActiveKey = "1";
         this.close()
       },
-
+      close () {
+        this.$emit('close');
+        this.visible = false;
+        this.isShow = false;
+      },
 
       validateDictOrderNo(rule,value,callback){
         if(value==null||value==""||value==undefined){

@@ -13,7 +13,7 @@
           <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+               <!-- <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
                 <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
@@ -62,7 +62,9 @@
         <!-- 操作按钮区域 -->
         <span slot="action" slot-scope="text, record">
             <a @click="updateStatus(record)">编辑</a>
-                    <a-divider type="vertical"/>
+          <a-divider type="vertical"/>
+          <a @click="relevanceEqu(record)">处理</a>
+          <a-divider type="vertical"/>
                 <a-dropdown>
                   <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
                   <a-menu slot="overlay">
@@ -72,8 +74,13 @@
                       </a-popconfirm>
                     </a-menu-item>
                     <a-menu-item>
-                      <a-popconfirm title="确定发送吗?" @confirm="() => handleSendOut(record)">
+<!--                      <a-popconfirm title="确定发送吗?" @confirm="() => handleSendOut(record)">
                         <a>发送</a>
+                      </a-popconfirm>-->
+                    </a-menu-item>
+                    <a-menu-item>
+                      <a-popconfirm title="确定通知领料吗?" @confirm="() => handleAdvice(record)">
+                        <a>通知领料</a>
                       </a-popconfirm>
                     </a-menu-item>
                     <a-menu-item v-if="record.isSend=='3'">
@@ -85,6 +92,8 @@
       </a-table>
     </div>
     <demand-modules ref="DemandModules" @ok="modalFormOk"></demand-modules>
+    <demand-modules ref="DemandPrjModules" @ok="modalFormOk"></demand-modules>
+    <DemandPrjModules ref="DemandPrjModules" @ok="modalFormOk"></DemandPrjModules>
     <demand-resons-modules ref="DemandResonsModules"></demand-resons-modules>
   </a-card>
 </template>
@@ -92,6 +101,7 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import {deleteAction, getAction, httpAction} from '@/api/manage';
   import DemandModules from "./modules/demandModules";
+  import DemandPrjModules from "./modules/demandPrjModules";
   import DemandResonsModules from "./modules/demandResonsModules"
   import {filterObj} from '@/utils/util';
 
@@ -100,6 +110,7 @@
     components: {
       ARow,
       DemandModules,
+      DemandPrjModules,
       DemandResonsModules
     },
     data() {
@@ -134,7 +145,7 @@
             dataIndex: 'equipmentModel'
           },
           {
-            title: '需要采购的设备数量',
+            title: '需求数量',
             align: "center",
             dataIndex: 'equipmentNumber'
           },
@@ -143,29 +154,41 @@
             align: "center",
             dataIndex: 'createName'
           },
-          {
+        /*  {
             title: '处理时间',
             align: "center",
             dataIndex: 'whetherTime'
-          },
+          },*/
           {
             title:"状态",
             align:"center",
-            dataIndex: "isSend",
+            dataIndex: "status",
             customRender:function (text) {
               if(text==1){
-                return "未处理";
-              }else if(text==2){
                 return "已处理";
-              }else if(text==3){
-                return "退回";
+              }else if(text==2){
+                return "已通知";
               }else if (text==0) {
-                return "未发送"
+                return "未处理"
               }else {
                 return text;
               }
             }
           },
+         /* {
+            title:"是否通知领料",
+            align:"center",
+            dataIndex: "adviceStatus",
+            customRender:function (text) {
+              if(text==0){
+                return "未通知";
+              }else if(text==1) {
+                return "已通知";
+              }else {
+                return text;
+              }
+            }
+          },*/
           {
             title:"备注",
             align:"center",
@@ -205,13 +228,14 @@
           delete:"/renche/deamand/delDemand",
           sendOut:"renche/demand/updateStatus",
           deletes:"renche/demand/delDemands",
+          advice:"renche/demand/advice"
         },
       }
     },
     created() {
       this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
+
+
     },
     methods: {
       loadData(arg) {
@@ -219,8 +243,8 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        debugger;
         var params = this.getQueryParams();//查询条件
+        console.log(params)
         params.purchaseId = this.purchaseId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -236,8 +260,8 @@
         }else {
           var ids = "";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            if(this.selectionRows[a].isSend == "1" || this.selectionRows[a].isSend == "2"){
-              this.$message.warning('您要删除的设备需求单中包含未处理或已经处理的需求单，只能删除未发送和退回的设备需求！');
+            if(this.selectionRows[a].status == "1" || this.selectionRows[a].status == "2"){
+              this.$message.warning('您要删除的设备需求单中包含已处理或已通知的需求单，只能删除未处理的设备需求！');
               return;
             }
             ids += this.selectionRows[a].demandId + ",";
@@ -268,13 +292,20 @@
         this.$refs.DemandModules.title="新增设备需求";
       },
       updateStatus:function(record){
-        if(record.isSend=="1"|| record.isSend == "2"){
-          this.$message.warning("只能编辑未发送和退回的设备需求！");
-          return;
-        }
         this.$refs.DemandModules.edit(record);
         this.$refs.DemandModules.title="编辑设备需求";
       },
+     relevanceEqu:function(record){
+       var projectId=record.prjItemId;
+       console.log(record.prjItemId)
+       if(projectId==null||projectId==undefined||projectId==''){
+         this.$message.warning("工程点ID为空，不能处理此设备请求！");
+         return;
+       }
+        this.$refs.DemandPrjModules.edit(record);
+        this.$refs.DemandPrjModules.title="处理";
+      },
+
       handleReasons:function(record){
         this.$refs.DemandResonsModules.edit(record);
         this.$refs.DemandResonsModules.title="查看退回原因";
@@ -299,6 +330,35 @@
           }
         })
       },
+
+      handleAdvice:function(record){
+        var projectId=record.prjItemId;
+        console.log(record.prjItemId)
+        if(projectId==null||projectId==undefined||projectId==''){
+          this.$message.warning("工程点ID为空，不能通知设备需求！");
+          return;
+        }
+
+        if(record.status != "1"){
+          if(record.status == "2"){
+            this.$message.warning("该设备需求已通知工程人员，无需重复通知！");
+          }else {
+            this.$message.warning("只能通知已处理的设备需求");
+          }
+          return;
+        }
+        var that = this;
+        deleteAction(that.url.advice,{demandId:record.demandId,AdviceStatus:"1",status:"2"}).then((res)=>{
+          if(res.success){
+            that.$message.success(res.message);
+            that.loadData();
+            that.onClearSelected();
+          }else {
+            that.$message.warning(res.message);
+          }
+        })
+      },
+
       handleDelete:function(record){
         if(record.isSend=="1"||record.isSend=="2"){
           this.$message.warning("只能删除未发送和退回的设备需求！");

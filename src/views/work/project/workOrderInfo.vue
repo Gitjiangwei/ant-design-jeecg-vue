@@ -173,7 +173,7 @@
               customRender: (text, record, index) => {
                 if(text == '1'){
                   return "实施";
-                }else if(text == '2'){
+                }else if(text == '2'){demandList
                   return "维修";
                 }else if(text == '3'){
                   return "拜访";

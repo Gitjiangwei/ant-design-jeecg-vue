@@ -52,7 +52,7 @@
         &nbsp;
         <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
         &nbsp;
-        <a-button @click="demandQuery" type="primary" icon="search">设备需求</a-button>
+        <!--<a-button @click="demandQuery" type="primary" icon="search">设备需求</a-button>-->
        <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel(1)">

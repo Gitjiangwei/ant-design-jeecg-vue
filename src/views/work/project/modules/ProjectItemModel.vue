@@ -71,6 +71,28 @@
                 </a-form-item>
               </a-col>
             </a-row>
+
+            <a-row>
+              <a-col :span="12" style="padding-left: 40px;">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="建设方式" >
+                  <a-select v-decorator="['buildType', {rules: [{ required: true, message: '请选择建设方式', }]}]" placeholder="请选择建设方式">
+                    <a-select-option value="0">迁移</a-select-option>
+                    <a-select-option value="1">新建</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12" style="padding-left: 0px;">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="拥有方式" >
+                  <a-select v-decorator="['haveWay', {rules: [{ required: true, message: '请选择拥有方式', }]}]" placeholder="请选择拥有方式">
+                    <a-select-option value="0">租赁</a-select-option>
+                    <a-select-option value="1">购买</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+
+
+
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
@@ -377,7 +399,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','prjItemStatus','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
+          this.form.setFieldsValue(pick(this.model,'buildType','haveWay','prjItemName','prjItemNum','prjItemType','prjName','prjItemStatus','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
           this.form.setFieldsValue({entryTime:this.model.entryTime?moment(this.model.entryTime):null});
           this.form.setFieldsValue({finishTime:this.model.finishTime?moment(this.model.finishTime):null});
           this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});
