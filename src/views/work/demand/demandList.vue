@@ -150,6 +150,20 @@
             dataIndex: 'equipmentNumber'
           },
           {
+            title: '拥有方式',
+            align: "center",
+            dataIndex: 'haveWay',
+            customRender: (text, record, index) => {
+              if(text == '0'){
+                return "租赁";
+              }else if(text == '1'){
+                return "购买";
+              }else {
+                return text;
+              }
+            }
+          },
+          {
             title: '提交人',
             align: "center",
             dataIndex: 'createName'
