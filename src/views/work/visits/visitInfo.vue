@@ -27,12 +27,7 @@
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="table-operator"
-         name="file"
-         :multiple="true"
-         :action="uploadAction"
-         :headers="headers"
-        >
+    <div class="table-operator">
       <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
 
       <a-dropdown v-if="selectedRowKeys.length > 0">
@@ -104,7 +99,7 @@
   import addVisit from './modules/addVisitInfo';
   import {filterObj} from '@/utils/util';
   import fileDetail from "./modules/FileDetail";
-  import {deleteAction, getAction, postAction , exportAction} from '@/api/manage';
+  import {deleteAction, getAction, postAction } from '@/api/manage';
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil';
   import Vue from 'vue';
   import {ACCESS_TOKEN} from "@/store/mutation-types";
@@ -143,94 +138,23 @@
             align: "center",
             dataIndex: 'companyName',
           },
-          /*{
-            title: '客户电话',
-            align: "center",
-            dataIndex: 'phone',
-          },*/
-          /* {
-             title: '拜访人',
-             align: "center",
-             dataIndex: 'visitor',
-           },*/
-          /*  {
-              title: '拜访时间',
-              align: "center",
-              dataIndex: 'visitTime',
-            },*/
-
           {
             title: '计划执行时间',
             align: "center",
             dataIndex: 'planExecuTime',
 
           },
-          /*{
-            title: '实际执行时间',
-            align: "center",
-            dataIndex: 'realityExecuTime',
-
-          },*/
           {
             title: '计划完成时间',
             align: "center",
             dataIndex: 'planOutTime',
 
           },
-         /* {
-            title: '实际完成时间',
-            align: "center",
-            dataIndex: 'realityOutTime',
-
-          },*/
-          /*{
-            title: '计划参与人数',
-            align: "center",
-            dataIndex: 'planPersonNum',
-
-          },
-          {
-            title: '实际参与人数',
-            align: "center",
-            dataIndex: 'realityPersonNum',
-
-          },*/
           {
             title: '任务内容',
             align: "center",
             dataIndex: 'content',
           },
-        /*  {
-            title: '执行情况',
-            align: "center",
-            dataIndex: 'result',
-
-          },*/
-         /* {
-            title: '用户评价',
-            align: "center",
-            dataIndex: 'evaluate',
-            customRender: (text, record, index) => {
-              if(text == '1'){
-                return "很满意";
-              }else if(text == '2'){
-                return "满意";
-              }else if(text == '3'){
-                return "一般";
-              }else if(text == '4'){
-                return "较差";
-              }else if(text == '5'){
-                return "很差";
-              }
-            }
-
-          },*/
-     /*     {
-            title: '备注',
-            align: "center",
-            dataIndex: 'remark',
-
-          },*/
           {
             title: '状态',
             align: "center",
@@ -245,8 +169,6 @@
               }
             }
           },
-
-
           {
             title: '操作',
             dataIndex: 'action',
@@ -255,8 +177,6 @@
           }
         ],
         headers: {},
-
-
         //数据集
         dataSource: [],
         // 分页参数
@@ -395,16 +315,6 @@
             that.$message.warning(res.message);
           }
         });
-      },
-
-
-      exportfile: function () {
-        getAction(this.url.export).then((res) => {
-          if (res.success) {
-            this.dataSource = res.result.list;
-            this.ipagination.total = res.result.total;
-          }
-        })
       },
 
       async  handleEdit (record) {

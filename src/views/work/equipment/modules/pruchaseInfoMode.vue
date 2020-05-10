@@ -189,11 +189,6 @@
       this.headers = {"X-Access-Token": token};
 
     },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
-    },
     methods: {
       loadTree() {
         var that = this;

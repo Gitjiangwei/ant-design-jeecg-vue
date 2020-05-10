@@ -1,5 +1,4 @@
 <template>
-
   <a-modal
     :title="title"
     :width="800"
@@ -8,44 +7,25 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭"
-
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" >
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备名称"
-          hasFeedback
-        >
-          <a-input placeholder="请输入设备名称" :disabled= "!isEdit"   maxlength="30"  v-decorator="['equipmentName', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备名称">
+          <a-input placeholder="请输入设备名称"  maxlength="30"  v-decorator="['equipmentName', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备型号"
-          hasFeedback >
-          <a-input placeholder="请输入设备型号" :disabled= "!isEdit" maxlength="30"  v-decorator="['equipmentModel', {rules: [{ required: true, message: '请输入设备型号' }]}]" />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备型号">
+          <a-input placeholder="请输入设备型号" maxlength="30"  v-decorator="['equipmentModel', {rules: [{ required: true, message: '请输入设备型号' }]}]" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="采购数量"
-          hasFeedback >
-          <a-input   placeholder="请输入需求数量" :disabled= "!isEdit" maxlength="6"  v-decorator="['equipmentNumber', {rules: [{ required: true,validator: this.validateDictOrderNo}]}]" />
+        <a-form-item :labelCol="labelCol"  :wrapperCol="wrapperCol"  label="需求数量">
+          <a-input-number v-decorator="['equipmentNumber', {rules: [{ required: true,message: '请输入正确需求数量' }],initialValue: '0'}]" :min="0" :max="999999" :step="1" style="width: 60%;" />
         </a-form-item>
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="备注"
-          hasFeedback >
-          <a-textarea  placeholder="请输入备注" :disabled= "!isEdit" maxlength="1000" v-decorator="['remarks', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
+          <a-textarea  placeholder="请输入备注" maxlength="1000" v-decorator="['remarks', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
       </a-form>
     </a-spin>
-
   </a-modal>
 </template>
 <script>
@@ -222,20 +202,6 @@
         this.defaultActiveKey = "1";
         this.close()
       },
-
-
-      validateDictOrderNo(rule,value,callback){
-        if(value==null||value==""||value==undefined){
-          callback("请输入采购数量");
-        }
-        var reg = /^[0-9]*$/;
-        if(!reg.test(value)){
-          callback("采购数量只能输入数字");
-        }else {
-          callback();
-        }
-      }
-
     }
   }
 </script>

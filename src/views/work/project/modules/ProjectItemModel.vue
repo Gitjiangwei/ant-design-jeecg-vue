@@ -42,9 +42,9 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-                  <a-auto-complete placeholder="请输入所属公司"  @search="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
+                  <a-auto-complete placeholder="请输入所属公司" :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
                     <template slot="dataSource">
-                      <a-select-option v-for="item in companyNameList" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                      <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                     </template>
                   </a-auto-complete>
                 </a-form-item>
@@ -231,13 +231,12 @@
         isUpload: false,
         formData: {},
         model: {},
-        isOk: true,
+        isOpen: false,
         projectId:"",
         isShow: false,
         companyId:"",
         contractId: "",
         contractName: "",
-        thisMessage: "",
         defaultActiveKey: "1",
         dateFormat: 'YYYY-MM-DD',
         uploadLoading: false,
@@ -312,6 +311,7 @@
         form: this.$form.createForm(this),
         validatorRules:{},
         companyNameList: [],
+        chooseCompanyName: '',
         url: {
           add: "/renche/projectItem/add",
           edit: "/renche/projectItem/edit",
@@ -330,11 +330,6 @@
       this.headers = {"X-Access-Token": token}
       //初始化字典配置
       this.initDictConfig();
-    },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
       initDictConfig() {
@@ -408,8 +403,10 @@
       },
       close () {
         this.$emit('close');
-        this.visible = false;
         this.isShow = false;
+        this.isOpen = false;
+        this.chooseCompanyName = '';
+        this.visible = false;
       },
       handleOk () {
         const that = this;
@@ -419,38 +416,34 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            if(that.isOk){
-
-              that.confirmLoading = true;
-              let httpurl = '';
-              let method = '';
-              if(!this.model.prjItemId){
-                httpurl+=this.url.add;
-                method = 'post';
-              }else{
-                httpurl+=this.url.edit;
-                method = 'put';
-              }
-              if(this.companyId != ''){
-                this.model.belongCompany = this.companyId;
-              }
-              that.model.fileRelId = that.avatar;
-              let formData = Object.assign(this.model, values);
-
-              httpAction(httpurl,formData,method).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-              })
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.prjItemId){
+              httpurl+=this.url.add;
+              method = 'post';
             }else{
-              that.$message.warning(this.thisMessage);
-              that.thisMessage = "";
+              httpurl+=this.url.edit;
+              method = 'put';
             }
+            if(this.companyId != ''){
+              this.model.belongCompany = this.companyId;
+            }
+            that.model.fileRelId = that.avatar;
+            let formData = Object.assign(this.model, values);
 
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                if(method = 'post'){
+                  this.model.prjItemId = res.result.prjItemId;
+                }
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+            })
           }
         })
       },
@@ -498,22 +491,28 @@
         this.defaultActiveKey = "1";
         this.close()
       },
-      getCompanyList: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            this.companyNameList = res.result.list;
-            if(this.companyNameList.length == 1){
-              if(val == this.companyNameList[0].companyName){
-                this.companyId = this.companyNameList[0].companyId;
+      getCompanyList(val){
+        if(val != this.chooseCompanyName){
+          this.chooseCompanyName = '';
+          getAction(this.url.searchCompany, {pageNo: "1",pageSize: "30",name: val}).then((res) => {
+            if (res.success) {
+              this.companyNameList = res.result.list;
+              this.isOpen = true;
+              if(this.companyNameList.length == 1){
+                if(val == this.companyNameList[0].companyName){
+                  this.companyId = this.companyNameList[0].companyId;
+                }
+              }else if(this.companyNameList.length == 0){
+                this.companyId = "";
               }
-            }else{
-              this.companyId = "";
             }
-          }
-        })
+          })
+        }
       },
-      chooseThis: function(val){
-        this.companyId = val;
+      chooseThis: function(val,option){
+        this.companyId = option.data.key;
+        this.isOpen = false;
+        this.chooseCompanyName = val;
       },
       async showContractInfo(){
         let {result} = await getAction(this.url.searchContract, {contractId: this.contractId});

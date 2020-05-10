@@ -157,12 +157,6 @@
       //初始化字典配置
       this.initDictConfig();
     },
-    computed: {
-      uploadAction: function (data) {
-        console.log("data",data)
-        return this.url.fileUpload;
-      }
-    },
     methods: {
       initDictConfig() {
         //初始化字典 - 客戶類型
