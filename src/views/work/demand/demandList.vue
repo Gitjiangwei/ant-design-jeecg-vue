@@ -348,7 +348,7 @@
           return;
         }
         var that = this;
-        deleteAction(that.url.advice,{demandId:record.demandId,AdviceStatus:"1",status:"2"}).then((res)=>{
+        deleteAction(that.url.advice,{demandId:record.demandId,status:"2"}).then((res)=>{
           if(res.success){
             that.$message.success(res.message);
             that.loadData();
