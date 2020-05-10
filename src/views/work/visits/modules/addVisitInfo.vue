@@ -14,7 +14,7 @@
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入客户名称"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入客户名称"  :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option v-for="item in companyNameListA" :key="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
@@ -194,6 +194,8 @@
         form: this.$form.createForm(this),
         validatorRules:{
         },
+        isOpen: false,
+        chooseCompanyName:'',
         url: {
           add: "/renche/WorkSerivice/upWorkSerivice",
           edit: "renche/WorkSerivice/upWorkSerivice",
@@ -303,21 +305,27 @@
 
       },
       getCompanyListA: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            this.companyNameListA = res.result.list;
-            if(this.companyNameListA.length == 1){
-              if(val == this.companyNameListA[0].companyName){
-                this.companyIdA = this.companyNameListA[0].companyId;
+        if(val != this.chooseCompanyName) {
+          this.chooseCompanyName = '';
+          getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
+            if (res.success) {
+              this.companyNameListA = res.result.list;
+              this.isOpen = true;
+              if (this.companyNameListA.length == 1) {
+                if (val == this.companyNameListA[0].companyName) {
+                  this.companyIdA = this.companyNameListA[0].companyId;
+                }
+              } else {
+                this.companyIdA = "";
               }
-            }else{
-              this.companyIdA = "";
             }
-          }
-        })
+          })
+        }
       },
       chooseThisA: function(val){
         this.companyIdA = val;
+        this.isOpen = false;
+        this.chooseCompanyName = val;
 
       },
       add () {
@@ -349,6 +357,8 @@
       },
       close () {
         this.$emit('close');
+        this.isOpen = false;
+        this.chooseCompanyName = '';
         this.visible = false;
       },
       handleOk () {
