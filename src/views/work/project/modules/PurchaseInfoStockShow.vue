@@ -60,11 +60,6 @@
     <purchase-detail-show ref="PurchaseDetailShow"  @ok="modalFormOk"></purchase-detail-show>
     <demand-modules ref="DemandModules"></demand-modules>
   </a-modal>
-
-
-
-
-
 </template>
 
 <script>
@@ -224,7 +219,7 @@
       handleDetail: function(record){
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
         this.$refs.PurchaseDetailShow.show(record,this.projectId);
-        this.$refs.PurchaseDetailShow.title("设备详情");
+        this.$refs.PurchaseDetailShow.title = "设备详情";
 
       },
 
@@ -253,7 +248,7 @@
       },
       addDemand(){
         this.$refs.DemandModules.add();
-        this.$refs.DemandModules.title("添加采购设备需求");
+        this.$refs.DemandModules.title = "添加采购设备需求";
       },
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);

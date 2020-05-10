@@ -14,26 +14,26 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程名称" >
-                  <a-textarea disabled="true" placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea disabled placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目名称" >
-                  <a-textarea disabled="true" placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea disabled placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程编号" >
-                  <a-input disabled="true" placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
+                  <a-input disabled placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
-                  <a-select disabled="true" v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
+                  <a-select disabled v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
                     <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
@@ -42,7 +42,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-                  <a-auto-complete disabled="true"   @search="getCompanyList" @select="chooseThis" v-decorator="['companyName', {}]" maxLength="30">
+                  <a-auto-complete disabled   @search="getCompanyList" @select="chooseThis" v-decorator="['companyName', {}]" maxLength="30">
                     <template slot="dataSource">
                       <a-select-option v-for="item in companyNameList" :key="item.companyId">{{ item.companyName }}</a-select-option>
                     </template>
@@ -51,19 +51,19 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
-                  <a-input disabled="true"  v-decorator="['personInCharge', {}]"  maxLength="30"/>
+                  <a-input disabled  v-decorator="['personInCharge', {}]"  maxLength="30"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话" >
-                  <a-input disabled="true"  v-decorator="['personTel', {}]" />
+                  <a-input disabled  v-decorator="['personTel', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程状态" >
-                  <a-select disabled="true" v-decorator="['prjItemStatus', {}]" >
+                  <a-select disabled v-decorator="['prjItemStatus', {}]" >
                     <a-select-option value="0">未开始</a-select-option>
                     <a-select-option value="1">进行中</a-select-option>
                     <a-select-option value="2">已结束</a-select-option>
@@ -74,45 +74,45 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
-                  <a-date-picker disabled="true" v-decorator="[ 'entryTime', {}]" />
+                  <a-date-picker disabled v-decorator="[ 'entryTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="完成时间" >
-                  <a-date-picker disabled="true" v-decorator="[ 'finishTime', {}]" />
+                  <a-date-picker disabled v-decorator="[ 'finishTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
-                  <a-date-picker disabled="true" v-decorator="['requireDeployTime', {}]" />
+                  <a-date-picker disabled v-decorator="['requireDeployTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;" v-show="isShow">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联合同" >
-                  <a disabled="true"   @click="showContractInfo">{{contractName}}</a>
+                  <a  @click="showContractInfo">{{contractName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程进度" >
-                  <a-textarea disabled="true"   v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
+                  <a-textarea disabled   v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程地址" >
-                  <a-textarea disabled="true"  v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
+                  <a-textarea disabled  v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
-                  <a-textarea disabled="true"  v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
+                  <a-textarea disabled  v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
                 </a-form-item>
               </a-col>
             </a-row>

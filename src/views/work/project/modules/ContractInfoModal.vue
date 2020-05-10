@@ -613,11 +613,6 @@
       //初始化字典配置
       this.initDictConfig();
     },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      },
-    },
     methods: {
       initDictConfig() {
         //初始化字典 - 合同类型

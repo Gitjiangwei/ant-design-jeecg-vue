@@ -142,7 +142,7 @@
             <a-row >
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划执行时间">
-                  <a-date-picker disabled="true"  format="YYYY-MM-DD"  v-decorator="[ 'planExecuTime', {}]" />
+                  <a-date-picker disabled  format="YYYY-MM-DD"  v-decorator="[ 'planExecuTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;" float:left>
@@ -150,31 +150,31 @@
                   :labelCol="labelCol"
                   :wrapperCol="wrapperCol"
                   label="实际执行时间">
-                  <a-date-picker disabled="true" format="YYYY-MM-DD"  v-decorator="[ 'realityExecuTime', {}]" />
+                  <a-date-picker disabled format="YYYY-MM-DD"  v-decorator="[ 'realityExecuTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row >
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划完成时间">
-                  <a-date-picker disabled="true"  format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {}]" />
+                  <a-date-picker disabled  format="YYYY-MM-DD"  v-decorator="[ 'planOutTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际完成时间">
-                  <a-date-picker disabled="true" format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {}]" />
+                  <a-date-picker disabled format="YYYY-MM-DD"  v-decorator="[ 'realityOutTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row >
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划参与人数">
-                  <a-input-number disabled="true" :defaultValue="0"  v-decorator="['planPersonNum', {}]" :min="0" :max="100000"   />
+                  <a-input-number disabled   v-decorator="['planPersonNum', {}]" :min="0" :max="100000"   />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际参与人数">
-                  <a-input-number disabled="true" :defaultValue="0" v-decorator="['realityPersonNum', {}]" :min="0" :max="100000"  />
+                  <a-input-number disabled  v-decorator="['realityPersonNum', {}]" :min="0" :max="100000"  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -182,7 +182,7 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="任务内容" >
-                  <a-textarea disabled="true"  v-decorator="['content', {}]"  :autosize="{ minRows: 2, maxRows: 6 }" />
+                  <a-textarea readonly  v-decorator="['content', {}]"  :autosize="{ minRows: 2, maxRows: 6 }" class="read_tex"/>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -190,14 +190,14 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="执行情况" >
-                  <a-textarea  disabled="true"  v-decorator="['result', {}]"  :autosize="{ minRows: 2, maxRows: 6 }" />
+                  <a-textarea  readonly  v-decorator="['result', {}]"  :autosize="{ minRows: 2, maxRows: 6 }" class="read_tex" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户评价" >
-                  <a-select disabled="true" v-decorator="['evaluate', {}]" >
+                  <a-select disabled v-decorator="['evaluate', {}]" >
                     <a-select-option value="1">很满意</a-select-option>
                     <a-select-option value="2">满意</a-select-option>
                     <a-select-option value="3">一般</a-select-option>
@@ -211,7 +211,7 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
-                  <a-textarea disabled="true" placeholder="请输入备注"  v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" />
+                  <a-textarea readonly placeholder="请输入备注"  v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" class="read_tex" />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -219,20 +219,7 @@
 
             <a-row>
               <a-col :span="16" style="padding-left: 8px;">
-                <a-form-item disabled="true" label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :headers="headers"
-                    :file-list="fileList"
-                    :customRequest="uploadFileRequest"
-                    @change="handleChange"
-                    disabled="true" >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
+                <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
                   <div>
                     <div v-for="(item,index) in model.filelist1" :key="index">{{item.fileName}}</div>
                   </div>
@@ -306,14 +293,6 @@
       this.initprojectNames();
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
-
-
-    },
-
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
 
@@ -345,6 +324,10 @@
         })
       },
       chooseThisA: function(val){
+        this.model.chargePerson= val;
+
+      },
+      chooseThis: function(val){
         this.model.chargePerson= val;
 
       },
@@ -556,12 +539,13 @@
         this.defaultActiveKey = "1";
         this.close()
       },
-
-
     }
   }
 </script>
 
 <style scoped>
-
+  .read_tex{
+    background-color: #e6e5e56b;
+    color: #8b89898a;
+  }
 </style>

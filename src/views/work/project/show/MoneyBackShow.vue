@@ -124,13 +124,6 @@
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
     },
-
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
-    },
-
     methods: {
       beforeUpload: function (file) {
         var fileType = file.type;

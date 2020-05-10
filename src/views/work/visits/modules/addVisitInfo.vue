@@ -65,12 +65,12 @@
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="计划参与人数">
-              <a-input-number :defaultValue="0" placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {initialValue: '0'}]" :min="0" :max="100000"   />
+              <a-input-number  placeholder="请输入计划参与人数" v-decorator="['planPersonNum', {initialValue: '0'}]" :min="0" :max="100000"   />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="实际参与人数">
-              <a-input-number :defaultValue="0" placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', { initialValue: '0'}]" :min="0" :max="100000"  />
+              <a-input-number placeholder="请输入实际参与人数" v-decorator="['realityPersonNum', { initialValue: '0'}]" :min="0" :max="100000"  />
             </a-form-item>
           </a-col>
         </a-row>
@@ -210,11 +210,6 @@
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
 
-    },
-    computed: {
-      uploadAction: function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
 
