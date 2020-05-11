@@ -4,45 +4,34 @@
         <a-form layout="inline">
           <a-row :gutter="24">
             <a-col :span="6">
-              <a-form-item label="合同名称">
-                <a-input placeholder="请输入合同名称" v-model="queryParam.contractName" maxlength="150"></a-input>
+              <a-form-item label="任务名称">
+                <a-input placeholder="请输入任务名称" v-model="queryParam.taskName" maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="合同类型">
-                <RencheDictSelectTag v-model="queryParam.contractType" placeholder="请选择合同类型" dictCode="CONTRACTTYPE"/>
+              <a-form-item label="工程名称">
+                <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName" maxlength="150"></a-input>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="甲方公司">
-                <a-input placeholder="请输入甲方公司名称" v-model="queryParam.partyA"  maxlength="30"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item label="乙方公司">
-                <a-input placeholder="请输入乙方公司名称" v-model="queryParam.partyB"  maxlength="30"></a-input>
-              </a-form-item>
-            </a-col>
-          </a-row>
-          <a-row  :gutter="24" v-show="isShow">
-            <a-col :span="6"  >
-              <a-form-item label="合同签订状态">
-                <a-select placeholder="请选择合同签订状态" v-model="queryParam.contractStatus">
-                  <a-select-option value="">请选择</a-select-option>
-                  <a-select-option value="2">未签订</a-select-option>
-                  <a-select-option value="1">已签订</a-select-option>
-                  <a-select-option value="0">已结束</a-select-option>
+              <a-form-item label="任务状态">
+                <a-select v-model="queryParam.status"  placeholder="请选择任务状态">
+                  <a-select-option value="0">新建</a-select-option>
+                  <a-select-option value="1">进行中</a-select-option>
+                  <a-select-option value="2">已结束</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :span="6">
-              <a-form-item label="甲方合同编号">
-                <a-input placeholder="请输入甲方合同编号" v-model="queryParam.contractNoA"  maxlength="30"></a-input>
+              <a-form-item label="创建人">
+                <a-input placeholder="请输入创建人" v-model="queryParam.createUserName"  maxlength="30"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
-              <a-form-item label="乙方合同编号">
-                <a-input placeholder="请输入乙方合同编号" v-model="queryParam.contractNoB"  maxlength="30"></a-input>
+          </a-row>
+          <a-row  :gutter="24" v-show="isShow">
+            <a-col :span="12"  >
+              <a-form-item label="开始时间">
+                <a-date-picker v-decorator="[ 'startTime', {}]" />  --  <a-date-picker v-decorator="[ 'startTime', {}]" />
               </a-form-item>
             </a-col>
           </a-row>
@@ -52,28 +41,12 @@
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
                 <a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>
+                <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
+                <a-button v-if="selectedRowKeys.length > 0" @click="batchMakeDemand" type="primary" icon="plus">批量生成设备需求</a-button>
               </span>
             </a-col>
           </a-row>
         </a-form>
-      </div>
-
-      <!-- 操作按钮区域 -->
-      <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
-
-        <a-dropdown v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="batchDel">
-              <a-icon type="delete"/>
-              删除
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作
-            <a-icon type="down"/>
-          </a-button>
-        </a-dropdown>
       </div>
 
       <!-- table区域-begin -->
@@ -105,8 +78,13 @@
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.contractId)">
-                    <a>删除</a>
+                  <a-popconfirm title="确定生成设备需求?" @confirm="() => handleMakeDemand(record)">
+                    <a>生成需求</a>
+                  </a-popconfirm>
+                </a-menu-item>
+                <a-menu-item>
+                  <a-popconfirm title="确定结束任务吗?" @confirm="() => handleEnd(record.taskId, '2')">
+                    <a>结束</a>
                   </a-popconfirm>
                 </a-menu-item>
               </a-menu>
@@ -117,7 +95,7 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
+      <MyTaskInfoModel ref="taskInfoModel" @ok="modalFormOk"></MyTaskInfoModel>
 
       <contract-file-detail ref="contractFileDetail" @ok="modalFormOk"></contract-file-detail>
     </a-card>
@@ -125,29 +103,29 @@
 </template>
 
 <script>
-    import ContractInfoModal from './modules/ContractInfoModal'
+    import MyTaskInfoModel from './modules/MyTaskInfoModel'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import ARow from "ant-design-vue/es/grid/Row";
-    import ContractFileDetail from "./modules/ContractFileDetail";
+    import ContractFileDetail from "../project/modules/ContractFileDetail";
+    import moment from "moment"
 
     export default {
-      name: "contractInfoList",
+      name: "myTaskInfoList",
       components: {
         ARow,
-        ContractInfoModal,
+        MyTaskInfoModel,
         ContractFileDetail,
       },
       data() {
         return{
-          description: '合同信息管理页面',
-
           // 查询条件
           queryParam: {},
           //字典数组缓存
           typeDictOptions: [],
           isShow:false,
+          receiveUser: '',
           // 表头
           columns: [
             {
@@ -161,45 +139,41 @@
               }
             },
             {
-              title: '合同名称',
+              title: '任务名称',
               align: "center",
-              dataIndex: 'contractName'
+              dataIndex: 'taskName'
             },
             {
-              title: '合同类型',
+              title: '工程名称',
               align: "center",
-              dataIndex: 'contractType',
+              dataIndex: 'prjItemName'
+            },
+            {
+              title: '计划开始时间',
+              align: "center",
+              dataIndex: 'planStartTime'
+            },
+            {
+              title: '实际开始时间',
+              align: "center",
+              dataIndex: 'startTime'
+            },
+            {
+              title: '负责人',
+              align: "center",
+              dataIndex: 'receiveUserName'
+            },
+            {
+              title: '任务状态',
+              align: "center",
+              dataIndex: 'status',
               customRender: (text, record, index) => {
                 //字典值替换通用方法
-                return filterDictText(this.typeDictOptions, text);
-              }
-            },
-            {
-              title: '甲方公司',
-              align: "center",
-              dataIndex: 'companyNameA'
-            },
-            {
-              title: '乙方公司',
-              align: "center",
-              dataIndex: 'companyNameB'
-            },
-            {
-              title: '合同金额(万元)',
-              align: "center",
-              dataIndex: 'contractMoney'
-            },
-            {
-              title: '合同状态',
-              align: "center",
-              dataIndex: 'contractStatus',
-              customRender: (text, record, index) => {
-                //字典值替换通用方法
-                if(text == '2'){
-                  return "未签订";
-                }else if (text == '1'){
-                  return "已签订";
-                }else if (text == '0'){
+                if (text == '0'){
+                  return "新建";
+                }else if(text == '1'){
+                  return "进行中";
+                }else if (text == '2'){
                   return "已结束";
                 }
               }
@@ -238,11 +212,11 @@
           selectedRowKeys: [],
           selectedRows: [],
           url: {
-            list: "/renche/contractInfo/list",
-            delete: "/renche/contractInfo/delete",
-            deleteBatch: "/renche/contractInfo/deleteBatch",
+            list: "/renche/taskInfo/qryMyTaskInfoList",
             filelist: "/renche/purchase/fileList",
-            exportList: "/renche/contractInfo/exportContractInfo"
+            exportList: "/renche/taskInfo/exportTaskInfo",
+            editTaskStatus: "/renche/taskInfo/editTaskStatus",
+            makeDemandList: "/renche/taskInfo/makeDemandList",
           },
         }
       },
@@ -258,9 +232,18 @@
             this.ipagination.current = 1;
           }
           var params = this.getQueryParams();//查询条件
+          if(params.startTime != undefined){
+            var startTime = moment(params.startTime).format('YYYY-MM-DD');
+            params.startTime = startTime;
+          }
+          if(params.endTime != undefined){
+            var endTime = moment(params.endTime).format('YYYY-MM-DD');
+            params.endTime = endTime;
+          }
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
+              this.receiveUser = res.message;
               this.ipagination.total = res.result.total;
             }
           })
@@ -322,55 +305,13 @@
           this.selectedRowKeys = [];
           this.selectionRows = [];
         },
-        batchDel: function () {
-          if (this.selectedRowKeys.length <= 0) {
-            this.$message.warning('请选择一条记录！');
-            return;
-          } else {
-            var ids = "";
-            for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectedRowKeys[a] + ",";
-            }
-            var that = this;
-            this.$confirm({
-              title: "确认删除",
-              content: "是否删除选中数据?",
-              onOk: function () {
-                deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
-                  if (res.success) {
-                    that.$message.success(res.message);
-                    that.loadData();
-                    that.onClearSelected();
-                  } else {
-                    that.$message.warning(res.message);
-                  }
-                });
-              }
-            });
-          }
-        },
-        handleDelete: function (id) {
-          var that = this;
-          deleteAction(that.url.delete, {id: id}).then((res) => {
-            if (res.success) {
-              that.$message.success(res.message);
-              that.loadData();
-            } else {
-              that.$message.warning(res.message);
-            }
-          });
-        },
         async handleEdit(record) {
           if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
             let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
             record.filelist = result.list;
           }
-          if(record.elecFileRel != null || record.elecFileRel != "" || record.elecFileRel != undefined) {
-            let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
-            record.elefilelist = result.list;
-          }
-          this.$refs.contractInfoModal.edit(record);
-          this.$refs.contractInfoModal.title = "编辑";
+          this.$refs.taskInfoModel.edit(record);
+          this.$refs.taskInfoModel.title = "编辑";
         },
         fileDeteil:function(record){
           console.log(record);
@@ -378,8 +319,8 @@
           this.$refs.contractFileDetail.title = "附件";
         },
         handleAdd: function () {
-          this.$refs.contractInfoModal.add();
-          this.$refs.contractInfoModal.title = "新增";
+          this.$refs.taskInfoModel.add();
+          this.$refs.taskInfoModel.title = "新增";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发
@@ -403,10 +344,72 @@
         },
         exportDate(){
           var params = Object.assign({}, this.queryParam, this.isorter);
+          params.mark = 'query';
+          params.receiveUser = this.receiveUser;
           var param = JSON.stringify(params);
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.exportList + "?param="+param;
+        },
+        handleEnd(id, status){
+          deleteAction(this.url.editTaskStatus, {taskId: id, status: status}).then((res)=>{
+            if(res.success){
+              that.$message.success(res.message);
+              this.loadData();
+            }else{
+              that.$message.warning(res.message);
+            }
+          })
+        },
+        batchMakeDemand: function () {
+          if (this.selectedRowKeys.length <= 0) {
+            this.$message.warning('请选择一条记录！');
+            return;
+          } else {
+            var ids = "";
+            for (var a = 0; a < this.selectedRowKeys.length; a++) {
+              ids += this.selectedRowKeys[a] + ",";
+            }
+            var that = this;
+            this.$confirm({
+              title: "确认生成设备需求",
+              content: "是否确认生成设备需求",
+              onOk: function () {
+                deleteAction(that.url.makeDemandList, {taskIds: ids}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                });
+              }
+            });
+          }
+        },
+        handleMakeDemand(record){
+          var that = this;
+          if(record.isMakeDemand == '1'){
+            that.$message.warning("不能重复生成设备需求！");
+          }else if(record.isMakeDemand == null || record.isMakeDemand == ''){
+            that.$message.warning("请添加需要设备清单！");
+          }else{
+            this.$confirm({
+              title: "确认生成设备需求",
+              content: "再次确认是否生成设备需求",
+              onOk: function () {
+                deleteAction(that.url.makeDemandList, {taskIds: record.taskId}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                });
+              }
+            });
+          }
         },
       }
     }

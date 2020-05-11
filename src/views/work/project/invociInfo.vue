@@ -46,6 +46,7 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
 
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -58,8 +59,6 @@
             <a-icon type="down"/>
           </a-button>
         </a-dropdown>
-
-        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
       </div>
 
       <!-- table区域-begin -->

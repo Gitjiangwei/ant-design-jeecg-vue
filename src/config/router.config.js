@@ -200,6 +200,18 @@ export const asyncRouterMap = [
             name: 'contractRead',
             component: () => import('@/views/work/project/contractInfoRead'),
             meta: { title: '按合同信息查询', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/task/taskInfo',
+            name: 'taskList',
+            component: () => import('@/views/work/task/taskInfo'),
+            meta: { title: '任务信息', permission: [ 'dashboard' ] }
+          },
+          {
+            path: '/work/task/myTaskInfo',
+            name: 'taskList',
+            component: () => import('@/views/work/task/myTaskInfo'),
+            meta: { title: '我的任务', permission: [ 'dashboard' ] }
           }
 
         ]
