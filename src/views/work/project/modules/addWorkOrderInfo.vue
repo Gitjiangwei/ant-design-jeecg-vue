@@ -27,7 +27,7 @@
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入工程点"  @search="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入工程点" :open="isOpen"  @blur="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option v-for="item in prjItemNamesList" :key="item.prjItemName">{{ item.prjItemName }}</a-select-option>
                 </template>
@@ -56,7 +56,7 @@
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入负责人"  @search="getChargePersonList" @select="chooseThisA" v-decorator="['chargePerson', {rules: [{ required: true, message: '请输入正确的负责人名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入负责人"  :open="isOpen1"  @blur="getChargePersonList" @select="chooseThisA" v-decorator="['chargePerson', {rules: [{ required: true, message: '请输入正确的负责人名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option v-for="item in chargePersonList" :key="item.username">{{ item.username }}</a-select-option>
                 </template>
@@ -273,10 +273,15 @@
         headers: {},
         avatar: "",
         isArris: false,
+
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
         },
+        isOpen: false,
+        isOpen1: false,
+        chooseProjectItemName: '',
+        chooseChargePersonName:'',
         url: {
           add: "/renche/workOrder/addWorkOrderInfo",
           edit: "/renche/workOrder/up",
@@ -311,44 +316,59 @@
       },
 
       getChargePersonList: function(val){
-        getAction(this.url.searchSysUser, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            console.log(res.result.list)
-            this.chargePersonList = res.result.list;
-            if(this.chargePersonList.length == 1){
-                this.model.chargePerson=this.chargePersonList[0].username;
-            }else{
-              this.model.chargePerson = "";
+
+        if(val != this.chooseChargePersonName) {
+          this.chooseChargePersonName = '';
+
+          getAction(this.url.searchSysUser, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
+            if (res.success) {
+              console.log(res.result.list)
+              this.chargePersonList = res.result.list;
+              this.isOpen1 = true;
+              if (this.chargePersonList.length == 1) {
+                this.model.chargePerson = this.chargePersonList[0].username;
+              } else {
+                this.model.chargePerson = "";
+              }
             }
-          }
-        })
+          })
+        }
       },
       chooseThisA: function(val){
         this.model.chargePerson= val;
+        this.isOpen1 = false;
+        this.chooseChargePersonName = val;
 
       },
       chooseThis: function(val){
         this.model.chargePerson= val;
 
+
       },
 
       getPrjItemNamesList: function(val){
-        getAction(this.url.getn, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            console.log(res.result.list)
-            this.prjItemNamesList = res.result.list;
-            alert("this.chargePersonList[0].value="+this.chargePersonList[0].prjItemName)
-            if(this.prjItemNamesList.length == 1){
-              this.model.prjItemName=this.chargePersonList[0].prjItemName;
-            }else{
-              this.model.prjItemName = "";
+        if(val != this.chooseProjectItemName) {
+          this.chooseProjectItemName = '';
+
+          getAction(this.url.getn, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
+            if (res.success) {
+              console.log(res.result.list)
+              this.prjItemNamesList = res.result.list;
+              this.isOpen = true;
+              alert("this.chargePersonList[0].value=" + this.chargePersonList[0].prjItemName)
+              if (this.prjItemNamesList.length == 1) {
+                this.model.prjItemName = this.chargePersonList[0].prjItemName;
+              } else {
+                this.model.prjItemName = "";
+              }
             }
-          }
-        })
+          })
+        }
       },
       chooseThisB: function(val){
         this.model.prjItemName= val;
-
+        this.isOpen = false;
+        this.chooseProjectItemName = val;
       },
 
 
@@ -483,6 +503,10 @@
       },
       close () {
         this.$emit('close');
+        this.isOpen = false;
+        this.chooseProjectItemName='';
+        this.isOpen1 = false;
+        this.chooseChargePersonName='';
         this.visible = false;
       },
       handleOk () {

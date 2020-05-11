@@ -147,6 +147,20 @@
             dataIndex: 'equipmentNumber'
           },
           {
+            title: '拥有方式',
+            align: "center",
+            dataIndex: 'haveWay',
+            customRender: (text, record, index) => {
+              if(text == '0'){
+                return "租赁";
+              }else if(text == '1'){
+                return "购买";
+              }else {
+                return text;
+              }
+            }
+          },
+          {
             title: '提交人',
             align: "center",
             dataIndex: 'createName'
@@ -345,7 +359,7 @@
           return;
         }
         var that = this;
-        deleteAction(that.url.advice,{demandId:record.demandId,AdviceStatus:"1",status:"2"}).then((res)=>{
+        deleteAction(that.url.advice,{demandId:record.demandId,status:"2"}).then((res)=>{
           if(res.success){
             that.$message.success(res.message);
             that.loadData();

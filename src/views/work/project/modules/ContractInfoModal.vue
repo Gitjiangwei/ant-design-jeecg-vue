@@ -21,7 +21,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="甲方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入甲方公司"  @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
+                  <a-auto-complete placeholder="请输入甲方公司" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
                     <template slot="dataSource">
                       <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
                     </template>
@@ -37,7 +37,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="乙方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入乙方公司" @search="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
+                  <a-auto-complete placeholder="请输入乙方公司" :open="isOpen1"  @blur="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
                     <template slot="dataSource">
                       <a-select-option v-for="item in companyNameListB" :key="item.companyId">{{ item.companyName }}</a-select-option>
                     </template>
@@ -594,6 +594,10 @@
         backLoading: false,
         backSelectedRowKeys: [],
         backSelectedRows: [],
+        isOpen: false,
+        isOpen1: false,
+        chooseCompanyNameA:'',
+        chooseCompanyNameB:'',
         url: {
           add: "/renche/contractInfo/add",
           edit: "/renche/contractInfo/edit",
@@ -729,6 +733,10 @@
       close () {
         this.$emit('close');
         this.visible = false;
+        this.isOpen = false;
+        this.chooseCompanyNameA = '';
+        this.isOpen1 = false;
+        this.chooseCompanyNameB = '';
       },
       handleOk () {
         const that = this;
@@ -1022,38 +1030,52 @@
         this.$refs.moneyBackShow.title = "详情";
       },
       getCompanyListA: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
-          if (res.success) {
-            this.companyNameListA = res.result.list;
-            if(this.companyNameListA.length == 1){
-              if(val == this.companyNameListA[0].companyName){
-                this.companyIdA = this.companyNameListA[0].companyId;
+
+        if(val != this.chooseCompanyNameA) {
+          this.chooseCompanyNameA = '';
+          getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
+            if (res.success) {
+              this.companyNameListA = res.result.list;
+              this.isOpen = true;
+              if (this.companyNameListA.length == 1) {
+                if (val == this.companyNameListA[0].companyName) {
+                  this.companyIdA = this.companyNameListA[0].companyId;
+                }
+              } else {
+                this.companyIdA = "";
               }
-            }else{
-              this.companyIdA = "";
             }
-          }
-        })
+          })
+        }
       },
-      getCompanyListB: function(val){
-        getAction(this.url.searchCompany, {pageNo: "1",pageSize: "10",name: val}).then((res) => {
+      getCompanyListB: function(val) {
+        if (val != this.chooseCompanyNameB) {
+          this.chooseCompanyNameB = '';
+        }
+        getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
           if (res.success) {
             this.companyNameListB = res.result.list;
-            if(this.companyNameListB.length == 1){
-              if(val == this.companyNameListB[0].companyName){
+            this.isOpen1 = true;
+            if (this.companyNameListB.length == 1) {
+              if (val == this.companyNameListB[0].companyName) {
                 this.companyIdB = this.companyNameListB[0].companyId;
               }
-            }else{
+            } else {
               this.companyIdB = "";
             }
           }
         })
+
       },
       chooseThisA: function(val){
         this.companyIdA = val;
+        this.isOpen = false;
+        this.chooseCompanyNameA = val;
       },
       chooseThisB: function(val){
         this.companyIdB = val;
+        this.isOpen1 = false;
+        this.chooseCompanyNameB = val;
       },
       prjItemShow: function(record){
         this.$refs.projectItemShow.edit(record);

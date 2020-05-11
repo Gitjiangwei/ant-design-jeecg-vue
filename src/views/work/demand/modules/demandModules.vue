@@ -20,10 +20,17 @@
         <a-form-item :labelCol="labelCol"  :wrapperCol="wrapperCol"  label="需求数量">
           <a-input-number v-decorator="['equipmentNumber', {rules: [{ required: true,message: '请输入正确需求数量' }],initialValue: '0'}]" :min="0" :max="999999" :step="1" style="width: 60%;" />
         </a-form-item>
+        <a-form-item :labelCol="labelCol"  :wrapperCol="wrapperCol"  label="拥有方式">
+          <a-select v-decorator="['haveWay', {}]" placeholder="请选择拥有方式">
+            <a-select-option value="0">租赁</a-select-option>
+            <a-select-option value="1">购买</a-select-option>
+          </a-select>
+        </a-form-item>
 
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
           <a-textarea  placeholder="请输入备注" maxlength="1000" v-decorator="['remarks', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
+
       </a-form>
     </a-spin>
   </a-modal>
@@ -53,7 +60,7 @@
           xs: {span: 24},
           sm: {span: 16},
         },
-        //表头
+       /* //表头
         columns:[
           {
             title: '序号',
@@ -105,7 +112,7 @@
           showQuickJumper: true,
           showSizeChanger: true,
           total: 0,
-        },
+        },*/
         loading: false,
         uploadLoading: false,
         headers: {},
@@ -147,7 +154,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'equipmentName', 'equipmentModel','equipmentNumber','remarks'))
+          this.form.setFieldsValue(pick(this.model, 'equipmentName', 'equipmentModel','equipmentNumber','remarks','haveWay'))
         });
 
       },

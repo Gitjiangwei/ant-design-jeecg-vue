@@ -194,7 +194,7 @@
         isorter: {
           column: 'createTime',
           order: 'desc',
-          visitor:'',
+         // visitor:'',
         },
         loading: false,
         selectedRowKeys: [],
@@ -227,7 +227,7 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
-            this.isorter.visitor = res.result.list[0].visitor;
+           // this.isorter.visitor = res.result.list[0].visitor;
            // alert("this.isorter.visitor ="+this.isorter.visitor )
             this.ipagination.total = res.result.total;
 
