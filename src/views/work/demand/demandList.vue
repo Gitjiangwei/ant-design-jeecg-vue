@@ -186,20 +186,6 @@
               }
             }
           },
-         /* {
-            title:"是否通知领料",
-            align:"center",
-            dataIndex: "adviceStatus",
-            customRender:function (text) {
-              if(text==0){
-                return "未通知";
-              }else if(text==1) {
-                return "已通知";
-              }else {
-                return text;
-              }
-            }
-          },*/
           {
             title:"备注",
             align:"center",
@@ -236,7 +222,7 @@
         selectedRows: [],
         url: {
           list: "/renche/demand/queryDemand",
-          delete:"/renche/deamand/delDemand",
+          delete:"renche/demand/delDemand",
           sendOut:"renche/demand/updateStatus",
           deletes:"renche/demand/delDemands",
           advice:"renche/demand/advice"
@@ -273,6 +259,13 @@
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
             if(this.selectionRows[a].status == "1" || this.selectionRows[a].status == "2"){
               this.$message.warning('您要删除的设备需求单中包含已处理或已通知的需求单，只能删除未处理的设备需求！');
+              return;
+            }
+
+            if(this.selectionRows[a].prjItemId==null||this.selectionRows[a].prjItemId==undefined||this.selectionRows[a].prjItemId==''){
+
+            }else {
+              this.$message.warning("您要删除的设备需求单中包含工程点ID不为空的需求单，不能删除此设备请求！");
               return;
             }
             ids += this.selectionRows[a].demandId + ",";
@@ -321,7 +314,9 @@
         this.$refs.DemandResonsModules.edit(record);
         this.$refs.DemandResonsModules.title="查看退回原因";
       },
-      handleSendOut:function(record){
+     /* handleSendOut:function(record){
+
+
         if(record.isSend == "1"){
           this.$message.warning("该设备需已经发送过，无法再次发送");
           return;
@@ -340,13 +335,13 @@
             that.$message.warning(res.message);
           }
         })
-      },
+      },*/
 
       handleAdvice:function(record){
         var projectId=record.prjItemId;
         console.log(record.prjItemId)
         if(projectId==null||projectId==undefined||projectId==''){
-          this.$message.warning("工程点ID为空，不能通知设备需求！");
+          this.$message.warning("工程点ID为空，不能通知此设备需求！");
           return;
         }
 
@@ -371,12 +366,17 @@
       },
 
       handleDelete:function(record){
-        if(record.isSend=="1"||record.isSend=="2"){
-          this.$message.warning("只能删除未发送和退回的设备需求！");
+        if(record.status=="1"||record.status=="2"){
+          this.$message.warning("只能删除未处理设备需求！");
+          return;
+        }
+        if(record.prjItemId ==null || record.prjItemId ==undefined ||record.prjItemId == ''){
+        }else {
+          this.$message.warning("工程点ID不为空，不能删除此设备需求！");
           return;
         }
         var that = this;
-        deleteAction(this.url.delete,{demandId:demandId}).then((res) =>{
+        deleteAction(that.url.delete,{demandId:record.demandId}).then((res) =>{
           if(res.success){
             that.$message.success(res.message);
             that.loadData();
