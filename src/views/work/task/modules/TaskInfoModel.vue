@@ -51,9 +51,12 @@
             <a-row>
               <a-col :span="16" style="padding-left: 0px;">
                 <a-form-item label="关联工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete :open="isOpen"  @blur="getPrjItemList" @select="chooseThis" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程点名称', }]}]" maxLength="150">
-                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }"/>
+                  <a-auto-complete :open="isOpen" :optionLabelProp="optionVal"  @select="chooseThis" @blur="getPrjItemList" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" maxLength="150">
+                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }" />
                     <template slot="dataSource">
+                      <a-select-option key="close">
+                          <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                      </a-select-option>
                       <a-select-option v-for="item in itemList" :key="item.prjItemId" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>
                     </template>
                   </a-auto-complete>
@@ -180,6 +183,7 @@
   import ACol from "ant-design-vue/es/grid/Col";
   import AddProjectItem from "./AddProjectItem";
   import DemandModel from "./DemandModel";
+  import Error from "../../../result/Error";
 
   export default {
     name: "taskInfoModel",
@@ -192,6 +196,8 @@
         isOpen: false,
         prjItemId: '',
         choosePrjItemName: '',
+        optionVal: '',
+        textVal: '',
         formData: {},
         model: {},
         itemList: [],
@@ -466,6 +472,10 @@
       handleOk (status) {
         const that = this;
         // 触发表单验证
+        that.isOpen = false;
+        if(that.prjItemId == ''){
+          this.form.setFieldsValue({prjItemName:""})
+        }
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
@@ -507,28 +517,34 @@
       },
       getPrjItemList(val){
         if(val != undefined && val != this.choosePrjItemName){
+          this.textVal = val;
+          this.prjItemId = '';
           this.choosePrjItemName = '';
           getAction(this.url.searchPrjItem, {prjItemName: val,pageNo: "1",pageSize: "30",}).then((res) => {
             if (res.success) {
               this.itemList = res.result.list;
-              this.isOpen = true;
-              if(this.itemList.length == 1){
-                if(val == this.itemList[0].prjItemName){
-                  this.prjItemId = this.itemList[0].prjItemId;
-                }
-              }else if(this.itemList.length == 0){
+              if(this.itemList.length == 0){
                 this.prjItemId = "";
+              } else{
+                this.isOpen = true;
               }
             }
           })
         }
       },
       chooseThis: function(val,option){
-        this.prjItemId = option.key;
         this.isOpen = false;
-        this.choosePrjItemName = val;
+        if(val != 'close'){
+          this.prjItemId = option.key;
+          this.optionVal = val;
+          this.choosePrjItemName = val;
+          this.itemList = [];
+        }else{
+          this.optionVal = this.textVal;
+        }
       },
       handleAddPrjItem: function () {
+        this.isOpen = false;
         this.$refs.addProjectItem.add();
         this.$refs.addProjectItem.title = "新增";
       },
@@ -574,6 +590,14 @@
           }
         })
       },
+      hideDownList(){
+        this.isOpen = false;
+      },
+      // checkPrjItemId(rule, value, callback){
+      //   if(this.prjItemId == ''){
+      //     callback(new Error("请输入已创建的工程点名称"));
+      //   }
+      // },
     }
   }
 </script>
