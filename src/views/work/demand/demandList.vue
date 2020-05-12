@@ -8,16 +8,23 @@
               <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipmentName"></a-input>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row>
           <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-               <!-- <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
+                <!-- <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
                 <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
         </a-row>
+       <!-- <a-row>
+          <a-col :span="6"  >
+              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+               &lt;!&ndash; <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>&ndash;&gt;
+                &lt;!&ndash;<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>&ndash;&gt;
+              </span>
+          </a-col>
+        </a-row>-->
       </a-form>
     </div>
     <div>
