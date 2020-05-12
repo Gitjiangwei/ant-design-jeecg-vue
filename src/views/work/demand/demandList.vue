@@ -16,15 +16,6 @@
               </span>
           </a-col>
         </a-row>
-       <!-- <a-row>
-          <a-col :span="6"  >
-              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-               &lt;!&ndash; <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>&ndash;&gt;
-                &lt;!&ndash;<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>&ndash;&gt;
-              </span>
-          </a-col>
-        </a-row>-->
       </a-form>
     </div>
     <div>
@@ -227,12 +218,13 @@
         loading: false,
         selectedRowKeys: [],
         selectedRows: [],
+        demandId:"",
         url: {
           list: "/renche/demand/queryDemand",
           delete:"renche/demand/delDemand",
           sendOut:"renche/demand/updateStatus",
           deletes:"renche/demand/delDemands",
-          advice:"renche/demand/advice"
+          advice:"renche/demand/advice1"
         },
       }
     },
@@ -346,30 +338,30 @@
 
       handleAdvice:function(record){
         var projectId=record.prjItemId;
-        console.log(record.prjItemId)
         if(projectId==null||projectId==undefined||projectId==''){
           this.$message.warning("工程点ID为空，不能通知此设备需求！");
           return;
         }
-
-        if(record.status != "1"){
-          if(record.status == "2"){
-            this.$message.warning("该设备需求已通知工程人员，无需重复通知！");
-          }else {
-            this.$message.warning("只能通知已处理的设备需求");
-          }
+           if(record.status == "2"){
+          this.$message.warning("该设备需求已通知工程人员，无需重复通知！");
           return;
         }
+        if(record.status == "1"){
+          this.$message.warning("该设备需求已处理，无需重复通知！");
+          return;
+        }
+
+        this.demandId=record.demandId;
         var that = this;
-        deleteAction(that.url.advice,{demandId:record.demandId,status:"2"}).then((res)=>{
+        deleteAction(that.url.advice,{demandId:that.demandId,status:"2",taskId:record.taskId}).then((res)=>{
           if(res.success){
-            that.$message.success(res.message);
+             that.$message.success(res.message);
             that.loadData();
-            that.onClearSelected();
           }else {
             that.$message.warning(res.message);
           }
         })
+
       },
 
       handleDelete:function(record){

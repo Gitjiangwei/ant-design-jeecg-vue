@@ -14,9 +14,12 @@
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入客户名称"  :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入客户名称" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
-                  <a-select-option v-for="item in companyNameListA" :key="item.companyName">{{ item.companyName }}</a-select-option>
+                  <a-select-option key="close">
+                    <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                  </a-select-option>
+                  <a-select-option v-for="item in companyNameListA" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
             </a-form-item>
@@ -196,6 +199,8 @@
         },
         isOpen: false,
         chooseCompanyName:'',
+        optionVal: '',
+        textVal: '',
         url: {
           add: "/renche/WorkSerivice/upWorkSerivice",
           edit: "renche/WorkSerivice/upWorkSerivice",
@@ -305,7 +310,9 @@
 
       },
       getCompanyListA: function(val){
-        if(val != this.chooseCompanyName) {
+        if(val != undefined && val != this.chooseCompanyName){
+          this.textVal = val;
+          this.companyId = '';
           this.chooseCompanyName = '';
           getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
             if (res.success) {
@@ -315,17 +322,25 @@
                 if (val == this.companyNameListA[0].companyName) {
                   this.companyIdA = this.companyNameListA[0].companyId;
                 }
-              } else {
+              } else if(this.companyNameListA.length == 0){
                 this.companyIdA = "";
+              } else{
+                this.isOpen = true;
               }
             }
           })
         }
       },
-      chooseThisA: function(val){
-        this.companyIdA = val;
+      chooseThisA: function(val,option){
         this.isOpen = false;
-        this.chooseCompanyName = val;
+        if(val != 'close'){
+          this.companyIdA = option.key;
+          this.optionVal = val;
+          this.chooseCompanyName = val;
+          this.companyNameListA = [];
+        }else{
+          this.optionVal = this.textVal;
+        }
 
       },
       add () {
@@ -363,6 +378,7 @@
       },
       handleOk () {
         const that = this;
+        that.isOpen = false;
         if(that.companyIdA == ""){
           this.form.setFieldsValue({companyName:""});
         }
@@ -429,6 +445,9 @@
       },
       handleCancel () {
         this.close()
+      },
+      hideDownList(){
+        this.isOpen = false;
       },
 
 

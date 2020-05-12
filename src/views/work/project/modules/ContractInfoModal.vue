@@ -21,9 +21,12 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="甲方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入甲方公司" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
+                  <a-auto-complete placeholder="请输入甲方公司" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
                     <template slot="dataSource">
-                      <a-select-option v-for="item in companyNameListA" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                      <a-select-option key="close">
+                        <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                      </a-select-option>
+                      <a-select-option v-for="item in companyNameListA" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                     </template>
                   </a-auto-complete>
                 </a-form-item>
@@ -37,9 +40,12 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="乙方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete placeholder="请输入乙方公司" :open="isOpen1"  @blur="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
+                  <a-auto-complete placeholder="请输入乙方公司" :optionLabelProp="optionVal1" :open="isOpen1"  @blur="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
                     <template slot="dataSource">
-                      <a-select-option v-for="item in companyNameListB" :key="item.companyId">{{ item.companyName }}</a-select-option>
+                      <a-select-option key="close">
+                        <a-icon @click="hideDownList1()"  type="close" style="float: right;"></a-icon>
+                      </a-select-option>
+                      <a-select-option v-for="item in companyNameListB" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                     </template>
                   </a-auto-complete>
                 </a-form-item>
@@ -598,6 +604,10 @@
         isOpen1: false,
         chooseCompanyNameA:'',
         chooseCompanyNameB:'',
+        optionVal: '',
+        textVal: '',
+        optionVal1: '',
+        textVal1: '',
         url: {
           add: "/renche/contractInfo/add",
           edit: "/renche/contractInfo/edit",
@@ -740,6 +750,8 @@
       },
       handleOk () {
         const that = this;
+        that.isOpen = false;
+        that.isOpen1 = false;
         if(that.companyIdA == ""){
           this.form.setFieldsValue({companyNameA:""});
         }
@@ -1031,7 +1043,9 @@
       },
       getCompanyListA: function(val){
 
-        if(val != this.chooseCompanyNameA) {
+        if(val != undefined &&val != this.chooseCompanyNameA) {
+          this.textVal = val;
+          this.companyIdA = '';
           this.chooseCompanyNameA = '';
           getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
             if (res.success) {
@@ -1041,8 +1055,10 @@
                 if (val == this.companyNameListA[0].companyName) {
                   this.companyIdA = this.companyNameListA[0].companyId;
                 }
-              } else {
+              } else if(this.companyNameListA.length == 0) {
                 this.companyIdA = "";
+              } else{
+                this.isOpen = true;
               }
             }
           })
@@ -1050,8 +1066,10 @@
       },
       getCompanyListB: function(val) {
         if (val != this.chooseCompanyNameB) {
+          this.textVal = val;
+          this.companyIdB = '';
           this.chooseCompanyNameB = '';
-        }
+
         getAction(this.url.searchCompany, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
           if (res.success) {
             this.companyNameListB = res.result.list;
@@ -1060,27 +1078,50 @@
               if (val == this.companyNameListB[0].companyName) {
                 this.companyIdB = this.companyNameListB[0].companyId;
               }
-            } else {
+            } else if(this.companyNameListB.length == 0){
               this.companyIdB = "";
+            } else{
+              this.isOpen1 = true;
             }
           }
         })
+        }
+      },
+      chooseThisA: function(val,option){
 
-      },
-      chooseThisA: function(val){
-        this.companyIdA = val;
         this.isOpen = false;
-        this.chooseCompanyNameA = val;
+        if(val != 'close'){
+          this.companyIdA = option.key;
+          this.optionVal = val;
+          this.chooseCompanyNameA = val;
+          this.companyNameListA = [];
+        }else{
+          this.optionVal = this.textVal;
+
+        }
       },
-      chooseThisB: function(val){
-        this.companyIdB = val;
+      chooseThisB: function(val,option){
         this.isOpen1 = false;
-        this.chooseCompanyNameB = val;
+        if(val != 'close'){
+          this.companyIdB = option.key;
+          this.optionVal1 = val;
+          this.chooseCompanyNameB = val;
+          this.companyNameListB = [];
+        }else{
+          this.optionVal1 = this.textVal;
+
+        }
       },
       prjItemShow: function(record){
         this.$refs.projectItemShow.edit(record);
         this.$refs.projectItemShow.title = "详情";
-      }
+      },
+      hideDownList(){
+        this.isOpen = false;
+      },
+      hideDownList1(){
+        this.isOpen1 = false;
+      },
     }
   }
 </script>
