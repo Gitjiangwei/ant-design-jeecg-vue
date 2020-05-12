@@ -125,6 +125,8 @@
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules: {},
+        equipmentName:"",
+        equipmentModel:"",
         url: {
           add:"renche/demand/saveDemand",
           edit:"renche/demand/updateDemand",
@@ -200,6 +202,11 @@
         this.edit({});
       },
       edit(record) {
+        this.equipmentName=record.equipmentName;
+        this.equipmentModel=record.equipmentModel;
+
+      /*  alert("equipmentName="+this.equipmentName);
+        alert("equipmentModel="+this.equipmentModel)*/
 
         this.projectId = record.prjItemId;
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
@@ -220,7 +227,7 @@
           this.$message.warning("工程點ID為空，不能添加设备");
           return;
         }
-        this.$refs.PurchaseInfoStockShow.show(this.projectId);
+        this.$refs.PurchaseInfoStockShow.show(this.projectId,this.equipmentName,this.equipmentModel);
         this.$refs.PurchaseInfoStockShow.title = "选择关联设备信息";
       },
       close() {
