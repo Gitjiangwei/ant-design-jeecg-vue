@@ -51,7 +51,7 @@
             <a-row>
               <a-col :span="16" style="padding-left: 0px;">
                 <a-form-item label="关联工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea disabled v-decorator="['prjItemName', {}]" :autosize="{ minRows: 1, maxRows: 2 }"/>
+                  <a @click="showPrjItem">{{model.prjItemName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -153,6 +153,7 @@
 
     <AddProjectItem ref="addProjectItem" @ok="modalFormOk"></AddProjectItem>
     <DemandModel ref="demandModel" @ok="addDemandOk"></DemandModel>
+    <ProjectItemShow ref="projectItemShow" ></ProjectItemShow>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -171,10 +172,11 @@
   import ACol from "ant-design-vue/es/grid/Col";
   import AddProjectItem from "./AddProjectItem";
   import DemandModel from "./DemandModel";
+  import ProjectItemShow from "../../project/show/ProjectItemShow";
 
   export default {
     name: "taskInfoModel",
-    components: {DemandModel, ACol, ATextarea,AddProjectItem},
+    components: {DemandModel, ACol, ATextarea,AddProjectItem, ProjectItemShow},
     data () {
       return {
         title:"操作",
@@ -340,9 +342,10 @@
           add: "/renche/taskInfo/add",
           edit: "/renche/taskInfo/edit",
           fileUpload: "/sys/common/upload",
-          searchPrjItem: "/renche/projectItem/queryItemList",
           demandList: "/renche/demand/queryDemandList",
           taskDemandList: "/renche/demand/queryDemandList",
+          getPrjItem: "/renche/projectItem/qryPrjItemById",
+          filelist: "/renche/purchase/fileList",
         },
       }
     },
@@ -542,6 +545,17 @@
             this.dataSource.splice(i);
           }
         })
+      },
+      async showPrjItem () {
+        let {result} = await getAction(this.url.getPrjItem, {prjItemId: this.model.prjItemId});
+        let record = result;
+
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+        this.$refs.projectItemShow.edit(record);
+        this.$refs.projectItemShow.title = "详情";
       },
     }
   }

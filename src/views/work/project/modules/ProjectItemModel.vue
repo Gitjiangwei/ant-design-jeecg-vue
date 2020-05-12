@@ -93,9 +93,6 @@
                 </a-form-item>
               </a-col>
             </a-row>
-
-
-
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
