@@ -192,6 +192,8 @@
         loading: false,
         selectedRowKeys: [],
         selectedRows: [],
+        equipmentName:"",
+        equipmentModel:"",
         url: {
           list: "/renche/equip/equipKeyDetail",
           outEquip: "/renche/outEquip/inserOutEquip",
@@ -222,7 +224,9 @@
           }
         })
       },
-      show:function(record,projectId){
+      show:function(record,projectId,equipmentName,equipmentModel){
+        this.equipmentName=equipmentName;
+        this.equipmentModel=equipmentModel;
         this.visible = true;
         this.projectId = projectId;
         this.purchaseId = record.purchaseId;

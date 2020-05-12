@@ -10,7 +10,7 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :span="6">
+      <!--    <a-col :span="6">
             <a-form-item label="设备名称" >
               <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipName"></a-input>
             </a-form-item>
@@ -19,7 +19,7 @@
             <a-form-item label="设备型号">
               <a-input placeholder="请输入设备型号" maxlength="15" v-model="queryParam.equipModel"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
         </a-row>
         <a-row>
           <a-col :span="6"  >
@@ -169,6 +169,8 @@
         loading: false,
         selectedRowKeys: [],
         selectedRows: [],
+        equipmentName:"",
+        equipmentModel:"",
         url: {
            list: "/renche/equip/equipList",
         },
@@ -192,7 +194,9 @@
           }
         })
       },
-      show (record) {
+      show (record,equipmentName,equipmentModel) {
+        this.equipmentName=equipmentName;
+        this.equipmentModel=equipmentModel;
         this.projectId = record;
         this.visible = true;
         this.loadData();
@@ -223,7 +227,7 @@
       },
       handleDetail: function(record){
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
-        this.$refs.PurchaseDetailShow.show(record,this.projectId);
+        this.$refs.PurchaseDetailShow.show(record,this.projectId,this.equipmentName,this.equipmentModel);
         this.$refs.PurchaseDetailShow.title("设备详情");
 
       },
@@ -242,7 +246,6 @@
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         //this.loadData();
-        debugger;
         this.$emit('ok');
         this.close();
       },
@@ -251,15 +254,18 @@
         that.queryParam = {}
         that.loadData(1);
       },
-      addDemand(){
+/*      addDemand(){
         this.$refs.DemandModules.add();
         this.$refs.DemandModules.title("添加采购设备需求");
-      },
+      },*/
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.equipName=this.equipmentName;
+        param.equipModel=this.equipmentModel;
+        console.log(param)
         return filterObj(param);
       },
       getQueryField() {
