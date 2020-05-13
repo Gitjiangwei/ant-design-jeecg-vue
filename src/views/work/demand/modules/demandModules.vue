@@ -150,6 +150,7 @@
         }else {
           this.isEdit=true;
         }
+        //alert("this.isEdit="+this.isEdit);
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;

@@ -62,15 +62,13 @@
           </a-col>
         </a-row>
         <a-row>
-       <!--   <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="公司名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入公司名称" v-decorator="['companyName', {}]" maxLength="30" />
-            </a-form-item>
-          </a-col>-->
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-              <a-auto-complete placeholder="请输入所属公司" :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入所属公司" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
                 <template slot="dataSource">
+                  <a-select-option key="close">
+                    <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                  </a-select-option>
                   <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
@@ -233,6 +231,8 @@
         companyNameList: [],
         isOpen: false,
         chooseCompanyName: '',
+        optionVal: '',
+        textVal: '',
         url: {
           add: "/renche/invoci/add",
           edit: "/renche/invoci/edit",
@@ -475,7 +475,9 @@
       },
 
       getCompanyList(val){
-        if(val != this.chooseCompanyName){
+        if(val != undefined && val != this.chooseCompanyName){
+          this.textVal = val;
+          this.companyId = '';
           this.chooseCompanyName = '';
           getAction(this.url.searchCompany, {pageNo: "1",pageSize: "30",name: val}).then((res) => {
             if (res.success) {
@@ -487,15 +489,26 @@
                 }
               }else if(this.companyNameList.length == 0){
                 this.companyId = "";
+              }else{
+                this.isOpen = true;
               }
             }
           })
         }
       },
       chooseThis: function(val,option){
-        this.companyId = option.data.key;
         this.isOpen = false;
-        this.chooseCompanyName = val;
+        if(val != 'close'){
+          this.companyId = option.key;
+          this.optionVal = val;
+          this.chooseCompanyName = val;
+          this.companyNameList = [];
+        }else{
+          this.optionVal = this.textVal;
+        }
+      },
+      hideDownList(){
+        this.isOpen = false;
       },
 
     }

@@ -9,9 +9,10 @@
     @cancel="handleCancel"
     cancelText="关闭"
   >
-
+    <span style="color: red">需求数量: {{ needNum }} 台</span>
       <div style="float: right;">
-        <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
+
+        <a-button style="padding-left: 5px;" @click="showTender" type="primary" icon="plus">新增</a-button>
       </div>
       <div style="padding-top: 42px;">
         <a-table
@@ -56,6 +57,7 @@
         defaultActiveKey: "1",
         dictItemId:"",
         projectId:"",
+        needNum:"0",
         model: {},
         disableSubmit: false,
         labelCol: {
@@ -127,11 +129,13 @@
         validatorRules: {},
         equipmentName:"",
         equipmentModel:"",
+        demandId:"",
         url: {
           add:"renche/demand/saveDemand",
           edit:"renche/demand/updateDemand",
           projectIdList:"/renche/projectItem/projectIdList",
           delOutId: "/renche/outEquip/delOutEquip",
+          updateStatus1:"renche/demand/updateStatus1",
         },
       }
     },
@@ -193,10 +197,23 @@
         getAction(this.url.projectIdList, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
+           // alert("length="+this.dataSource.length);
             this.ipagination.total = res.result.total;
           }
         })
       },
+      updateStatus(record){
+        var that=this;
+        deleteAction(that.url.updateStatus1,{demandId:record.demandId,status:"1"}).then((res)=>{
+          if(res.success){
+            that.$message.success(res.message);
+            that.loadData();
+          }else {
+            that.$message.warning(res.message);
+          }
+        })
+      },
+
       add() {
 
         this.edit({});
@@ -204,10 +221,8 @@
       edit(record) {
         this.equipmentName=record.equipmentName;
         this.equipmentModel=record.equipmentModel;
-
-      /*  alert("equipmentName="+this.equipmentName);
-        alert("equipmentModel="+this.equipmentModel)*/
-
+        this.demandId=record.demandId;
+        this.needNum=record.equipmentNumber;
         this.projectId = record.prjItemId;
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
           this.loadData();
@@ -222,7 +237,17 @@
 
 
       },
+
+
       showTender:function (){
+        var realityNum=this.dataSource.length;
+      if(this.needNum<=realityNum){
+          alert("设备数量已足够，不能再次添加！");
+          return;
+        }
+
+
+
         if(this.projectId==null || this.projectId == "" || this.projectId == undefined ){
           this.$message.warning("工程點ID為空，不能添加设备");
           return;
@@ -234,9 +259,31 @@
         this.$emit('close');
         this.visible = false;
       },
+
       handleOk() {
+        var realityNum=this.dataSource.length;
+        if(this.needNum>realityNum){
+          alert("设备数量小于需求数量，处理失败！");
+        }else if(this.needNum<realityNum){
+          alert("设备数量大于需求数量，不能提交！");
+          return;
+        }
         const that = this;
-        // 触发表单验证
+
+       if(realityNum>0){
+         deleteAction(that.url.updateStatus1,{demandId:that.demandId,status:"1"}).then((res)=>{
+           if(res.success){
+            // that.$message.success(res.message);
+             that.loadData();
+           }else {
+             that.$message.warning(res.message);
+           }
+         })
+        }
+        that.close();
+
+
+     /*   // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
             that.confirmLoading = true;
@@ -263,7 +310,7 @@
               that.close();
             })
           }
-        })
+        })*/
       },
       callback: function(key){
         if(key != 1){
@@ -278,6 +325,13 @@
         }
       },
       handleCancel() {
+        var realityNum=this.dataSource.length;
+        if(this.needNum>realityNum){
+          alert("设备数量不够需求数量，确定不再添加吗？");
+        }else if(this.needNum<realityNum){
+          alert("设备数量大于需求数量，请删除多余设备！");
+          return;
+        }
         this.$emit('ok');
         this.close()
       },
