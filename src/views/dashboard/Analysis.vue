@@ -2,10 +2,10 @@
   <div class="page-header-index-wide">
 
     <a-row :gutter="24">
-      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '200px' }">
+      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '30px' }">
         <div id="main1" style="float:left;width:60%;height: 400px"></div>
       </a-col>
-      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '200px' }">
+      <a-col :sm="24" :md="400" :xl="10" :style="{ marginBottom: '30px' }">
         <div id="main2" style="float:right;width:60%;height: 400px"></div>
 
       </a-col>
@@ -27,8 +27,16 @@
 
                   <a-list-item :key="index" v-for="(item, index) in dataSource">
 
-                    <a-list-item-meta>
-                      <a slot="title" @click="showDetail(item)">
+                    <a-list-item-meta v-if="item.messageType == 1">
+                      <a slot="title" @click="showContract(item)">
+                        <span style="padding-right: 8px">{{index+1}}.</span>{{ item.messageContent }}
+                      </a>
+                      <div slot="description" >{{ item.createTime }}</div>
+                      <a-avatar slot="avatar" style="background-color: #78b1f8;"><a-icon type="sound" /></a-avatar>
+                    </a-list-item-meta>
+
+                    <a-list-item-meta v-if="item.messageType != 1">
+                      <a slot="title" @click="showDemand(item)">
                         <span style="padding-right: 8px">{{index+1}}.</span>{{ item.messageContent }}
                       </a>
                       <div slot="description" >{{ item.createTime }}</div>
@@ -47,6 +55,8 @@
     <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
 
     <message-show ref="messageShow" @close="modalShowOk"></message-show>
+
+    <MyTaskInfoModel ref="myTaskInfoModel" @ok="modalFormOk"></MyTaskInfoModel>
   </div>
 </template>
 
@@ -61,7 +71,7 @@
   import MessageShow from '../work/message/MessageShow'
 
   let echarts = require('echarts/lib/echarts');
-  import {postAction} from '@/api/manage';
+  import MyTaskInfoModel from "../work/task/modules/MyTaskInfoModel";
   // 引入饼状图组件
   require('echarts/lib/chart/pie')
   // 引入提示框和title组件
@@ -80,7 +90,7 @@
     components: {
       ATooltip,
       ACol,
-
+      MyTaskInfoModel,
       ContractInfoModal,
       MessageShow
     },
@@ -99,6 +109,7 @@
           filelist: "/renche/purchase/fileList",
           list2: "/renche/projectItem/qryStatus",
           list1: "/renche/projectItem/qryStatus1",
+          taskList: "/renche/taskInfo/list",
         },
       }
     },
@@ -136,7 +147,19 @@
           }
         })
       },
-      async showDetail(item){
+      async showDemand(item){
+        this.record = item;
+        var record = {};
+        let {result} = await getAction(this.url.taskList, {taskId: item.relId});
+        record = result.list[0];
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+        this.$refs.myTaskInfoModel.edit(record);
+        this.$refs.myTaskInfoModel.title = "编辑";
+      },
+      async showContract(item){
         this.record = item;
         var record = {};
         let {result} = await getAction(this.url.contractList, {contractId: item.relId});
@@ -149,7 +172,6 @@
           let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
           record.elefilelist = result.list;
         }
-        record.mark = "message";
         this.$refs.contractInfoModal.edit(record);
         this.$refs.contractInfoModal.title = "编辑";
       },

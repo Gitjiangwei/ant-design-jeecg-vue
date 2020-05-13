@@ -69,7 +69,8 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-          <a slot="messageContent" slot-scope="text, record" class="a_style" @click="showDetail(record)" >{{text}}</a>
+          <a v-if="record.messageType == 1" slot="messageContent" slot-scope="text, record" class="a_style" @click="showContract(record)" >{{text}}</a>
+          <a v-if="record.messageType != 1" slot="messageContent" slot-scope="text, record" class="a_style" @click="showDemand(record)" >{{text}}</a>
 
          <span slot="action" slot-scope="text, record">
            <a @click="handleDel(record.messageId)">删除</a>
@@ -81,6 +82,7 @@
 
     <!-- 表单区域 -->
     <contract-info-modal ref="contractInfoModal" @ok="modalFormOk"></contract-info-modal>
+    <MyTaskInfoModel ref="myTaskInfoModel" @ok="modalFormOk"></MyTaskInfoModel>
 
   </a-modal>
 </template>
@@ -93,10 +95,11 @@
   import ARangePicker from "ant-design-vue/es/date-picker/RangePicker";
   import moment from "moment"
   import ContractInfoModal from '../project/modules/ContractInfoModal'
+  import MyTaskInfoModel from '../task/modules/MyTaskInfoModel'
 
   export default {
     name: "messageShow",
-    components: {ARangePicker, ACol, ARow,ContractInfoModal},
+    components: {ARangePicker, ACol, ARow,ContractInfoModal,MyTaskInfoModel},
     data () {
       return {
         title:"操作",
@@ -188,6 +191,7 @@
           batchEditRead:"/renche/messageInfo/batchEditRead",
           contractList: "/renche/contractInfo/list",
           filelist: "/renche/purchase/fileList",
+          taskList: "/renche/taskInfo/list",
         },
         labelCol: {
           xs: { span: 24 },
@@ -330,7 +334,19 @@
           }
         })
       },
-      async showDetail(item){
+      async showDemand(item){
+        this.record = item;
+        var record = {};
+        let {result} = await getAction(this.url.taskList, {taskId: item.relId});
+        record = result.list[0];
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+        this.$refs.myTaskInfoModel.edit(record);
+        this.$refs.myTaskInfoModel.title = "编辑";
+      },
+      async showContract(item){
         this.record = item;
         var record = {};
         let {result} = await getAction(this.url.contractList, {contractId: item.relId});
@@ -343,7 +359,6 @@
           let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
           record.elefilelist = result.list;
         }
-        record.mark = "message";
         this.$refs.contractInfoModal.edit(record);
         this.$refs.contractInfoModal.title = "编辑";
       },
