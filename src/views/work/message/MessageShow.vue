@@ -10,7 +10,7 @@
 
     <a-spin :spinning="confirmLoading">
       <a-form  layout="inline">
-        <a-row :gutter="24">
+        <a-row>
           <a-col :span="12" style="padding-left: 12px;padding-right: 0px;">
             <a-form-item label="消息时间" >
               <a-date-picker v-model="queryParam.startDate" placeholder="Start"/>
@@ -18,12 +18,23 @@
             </a-form-item>
           </a-col>
           <a-col :span="8" style="padding-left: 12px;padding-right: 0px;">
-            <a-form-item label="消息状态" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
-                <a-select v-model="queryParam.messageStatus" placeholder="请选择消息状态">
+            <a-form-item label="消息类型" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
+                <a-select v-model="queryParam.messageType" placeholder="请选择消息类型">
                   <a-select-option value="">请选择</a-select-option>
-                  <a-select-option value="0">已读</a-select-option>
-                  <a-select-option value="1">未读</a-select-option>
+                  <a-select-option value="1">合同催款提醒</a-select-option>
+                  <a-select-option value="2">设备领取通知</a-select-option>
                 </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row style="padding-top: 5px;">
+          <a-col :span="8" style="padding-left: 12px;padding-right: 0px;">
+            <a-form-item label="消息状态" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
+              <a-select v-model="queryParam.messageStatus" placeholder="请选择消息状态">
+                <a-select-option value="">请选择</a-select-option>
+                <a-select-option value="0">已读</a-select-option>
+                <a-select-option value="1">未读</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="10" style="padding: 12px;">
@@ -69,8 +80,10 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-          <a v-if="record.messageType == 1" slot="messageContent" slot-scope="text, record" class="a_style" @click="showContract(record)" >{{text}}</a>
-          <a v-if="record.messageType != 1" slot="messageContent" slot-scope="text, record" class="a_style" @click="showDemand(record)" >{{text}}</a>
+        <span slot="messageContent" slot-scope="text, record">
+          <a v-if="record.messageType == 1"  class="a_style" @click="showContract(record)" >{{text}}</a>
+          <a v-if="record.messageType != 1" class="a_style" @click="showDemand(record)" >{{text}}</a>
+        </span>
 
          <span slot="action" slot-scope="text, record">
            <a @click="handleDel(record.messageId)">删除</a>
@@ -134,6 +147,8 @@
             customRender: (text, record, index) => {
               if(text == '1'){
                 return '合同催款提醒';
+              }else if(text == '2'){
+                return '设备领取通知';
               }
             }
           },
