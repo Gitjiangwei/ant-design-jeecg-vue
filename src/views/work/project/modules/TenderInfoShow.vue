@@ -227,19 +227,6 @@
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
         this.selectedRows = selectionRows;
-        if(selectionRows.length > 1){
-          var selectKey = this.selectedRowKeys[1];
-          var selectRow0 = this.selectedRows[0];
-          var selectRow1 = this.selectedRows[1];
-          this.selectedRowKeys = [];
-          this.selectedRowKeys.push(selectKey);
-          this.selectedRows = [];
-          if(selectKey == selectRow0.tenderId){
-            this.selectedRows.push(selectRow0);
-          }else{
-            this.selectedRows.push(selectRow1);
-          }
-        }
       },
       onClearSelected() {
         this.selectedRowKeys = [];
