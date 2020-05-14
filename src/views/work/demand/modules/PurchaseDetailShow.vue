@@ -89,7 +89,6 @@
         </span>-->
 
       </a-table>
-      <purchase-info-stock-edit ref="purchaseInfoStockEdit" @ok="modalFormOk"></purchase-info-stock-edit>
     </div>
   </a-modal>
 
@@ -239,10 +238,6 @@
             console.log(this.statDictOptions);
           }
         });
-      },
-      handleEdit: function (record) {
-        this.$refs.purchaseInfoStockEdit.edit(record);
-        this.$refs.purchaseInfoStockEdit.title = record.equipName+"编辑";
       },
       handleRepair: function(record){
         var that = this;

@@ -151,7 +151,6 @@
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
-  import PurchaseInfoStockShow from '../modules/PurchaseInfoStockShow'
   import ACol from "ant-design-vue/es/grid/Col";
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ARow from "ant-design-vue/es/grid/Row";
@@ -159,7 +158,7 @@
 
   export default {
     name: "projectItemModal",
-    components: {PurchaseInfoStockShow, ACol, ATextarea, ARow},
+    components: {ACol, ATextarea, ARow},
     data () {
       return {
         title:"操作",

@@ -55,7 +55,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type: 'radio'}"
         @change="handleTableChange">
 
       </a-table>
@@ -239,7 +239,6 @@
           }else{
             this.selectedRows.push(selectRow1);
           }
-
         }
       },
       onClearSelected() {

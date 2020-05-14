@@ -101,14 +101,14 @@
       <!-- table区域-end -->
 
       <!-- 表单区域 -->
-      <project-item-modal ref="projectItemModal" @ok="modalFormOk"></project-item-modal>
+      <ProjectItemModelShow ref="projectItemModelShow" @ok="modalFormOk"></ProjectItemModelShow>
 
     </a-card>
 
 </template>
 
 <script>
-    import ProjectItemModal from './modules/ProjectItemModelShow'
+    import ProjectItemModelShow from './modules/ProjectItemModelShow'
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
@@ -121,7 +121,7 @@
       name: "projectItenListRead",
       components: {
         ARow,
-        ProjectItemModal,
+        ProjectItemModelShow,
       },
       data() {
         return{
@@ -384,12 +384,8 @@
         },
         handleEdit: function (record) {
           record.readOnly=true;
-          this.$refs.projectItemModal.edit(record);
-          this.$refs.projectItemModal.title = "详情";
-        },
-        handleAdd: function () {
-          this.$refs.projectItemModal.add();
-          this.$refs.projectItemModal.title = "新增";
+          this.$refs.ProjectItemModelShow.edit(record);
+          this.$refs.ProjectItemModelShow.title = "详情";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发

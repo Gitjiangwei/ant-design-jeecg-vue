@@ -46,7 +46,6 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
@@ -167,8 +166,6 @@
           order: 'desc',
         },
         loading: false,
-        selectedRowKeys: [],
-        selectedRows: [],
         equipmentName:"",
         equipmentModel:"",
         url: {
@@ -208,15 +205,7 @@
       },
 
       handleOk () {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条数据！');
-          return;
-        } else {
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
-          this.$emit('func',this.selectedRows);
-          this.close();
-        }
+        this.close();
       },
       handleCancel() {
         this.close()
@@ -228,7 +217,7 @@
       handleDetail: function(record){
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
         this.$refs.PurchaseDetailShow.show(record,this.projectId,this.equipmentName,this.equipmentModel);
-        this.$refs.PurchaseDetailShow.title("设备详情");
+        this.$refs.PurchaseDetailShow.title = "设备详情";
 
       },
 
@@ -254,10 +243,6 @@
         that.queryParam = {}
         that.loadData(1);
       },
-/*      addDemand(){
-        this.$refs.DemandModules.add();
-        this.$refs.DemandModules.title("添加采购设备需求");
-      },*/
       getQueryParams() {
         var param = Object.assign({}, this.queryParam, this.isorter);
         param.field = this.getQueryField();
@@ -275,28 +260,6 @@
           str += "," + value.dataIndex;
         });
         return str;
-      },
-      onSelectChange(selectedRowKeys, selectionRows) {
-        this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-        if(selectionRows.length > 1){
-          var selectKey = this.selectedRowKeys[1];
-          var selectRow0 = this.selectedRows[0];
-          var selectRow1 = this.selectedRows[1];
-          this.selectedRowKeys = [];
-          this.selectedRowKeys.push(selectKey);
-          this.selectedRows = [];
-          if(selectKey == selectRow0.tenderId){
-            this.selectedRows.push(selectRow0);
-          }else{
-            this.selectedRows.push(selectRow1);
-          }
-
-        }
-      },
-      onClearSelected() {
-        this.selectedRowKeys = [];
-        this.selectionRows = [];
       },
       searchQuery(){
         this.loadData(1);

@@ -46,7 +46,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type:'radio'}"
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
@@ -267,21 +267,7 @@
       },
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
-        if(selectionRows.length > 1){
-          var selectKey = this.selectedRowKeys[1];
-          var selectRow0 = this.selectedRows[0];
-          var selectRow1 = this.selectedRows[1];
-          this.selectedRowKeys = [];
-          this.selectedRowKeys.push(selectKey);
-          this.selectedRows = [];
-          if(selectKey == selectRow0.tenderId){
-            this.selectedRows.push(selectRow0);
-          }else{
-            this.selectedRows.push(selectRow1);
-          }
-
-        }
+        this.selectedRows = selectionRows;
       },
       onClearSelected() {
         this.selectedRowKeys = [];
