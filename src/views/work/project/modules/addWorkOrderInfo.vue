@@ -27,9 +27,12 @@
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-auto-complete placeholder="请输入工程点" :open="isOpen"  @blur="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
+              <a-auto-complete placeholder="请输入工程点" :optionLabelProp="optionVal" :open="isOpen"  @blur="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
                 <template slot="dataSource">
-                  <a-select-option v-for="item in prjItemNamesList" :key="item.prjItemName">{{ item.prjItemName }}</a-select-option>
+                  <a-select-option key="close">
+                    <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                  </a-select-option>
+                  <a-select-option v-for="item in prjItemNamesList" :key="item.prjItemName" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>
                 </template>
               </a-auto-complete>
             </a-form-item>
@@ -58,7 +61,7 @@
             <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-auto-complete placeholder="请输入负责人"  :open="isOpen1"  @blur="getChargePersonList" @select="chooseThisA" v-decorator="['chargePerson', {rules: [{ required: true, message: '请输入正确的负责人名称', }]}]" maxLength="30">
                 <template slot="dataSource">
-                  <a-select-option v-for="item in chargePersonList" :key="item.username">{{ item.username }}</a-select-option>
+                  <a-select-option v-for="item in chargePersonList" :key="item.prjItemId" :value="item.username">{{ item.username }}</a-select-option>
                 </template>
               </a-auto-complete>
             </a-form-item>
@@ -253,6 +256,7 @@
         visible: false,
         defaultActiveKey: '1',
         model: {},
+        prjItemId: '',
         isUpload: false,
         formData: {},
         chargePersonList:[],
@@ -282,6 +286,9 @@
         isOpen1: false,
         chooseProjectItemName: '',
         chooseChargePersonName:'',
+        optionVal: '',
+        optionVal1: '',
+        textVal: '',
         url: {
           add: "/renche/workOrder/addWorkOrderInfo",
           edit: "/renche/workOrder/up",
@@ -318,6 +325,7 @@
       getChargePersonList: function(val){
 
         if(val != this.chooseChargePersonName) {
+
           this.chooseChargePersonName = '';
 
           getAction(this.url.searchSysUser, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
@@ -347,7 +355,9 @@
       },
 
       getPrjItemNamesList: function(val){
-        if(val != this.chooseProjectItemName) {
+        if(val != undefined && val != this.chooseProjectItemName) {
+          this.textVal = val;
+          this.prjItemId = '';
           this.chooseProjectItemName = '';
 
           getAction(this.url.getn, {pageNo: "1", pageSize: "10", name: val}).then((res) => {
@@ -355,20 +365,29 @@
               console.log(res.result.list)
               this.prjItemNamesList = res.result.list;
               this.isOpen = true;
-              alert("this.chargePersonList[0].value=" + this.chargePersonList[0].prjItemName)
               if (this.prjItemNamesList.length == 1) {
                 this.model.prjItemName = this.chargePersonList[0].prjItemName;
-              } else {
-                this.model.prjItemName = "";
+              } else if(this.prjItemNamesList.length == 0){
+                this.prjItemId = "";
+              }else{
+                this.isOpen = true;
               }
             }
           })
         }
       },
-      chooseThisB: function(val){
-        this.model.prjItemName= val;
+      chooseThisB: function(val,option){
+       // this.model.prjItemName= val;
         this.isOpen = false;
-        this.chooseProjectItemName = val;
+       // this.chooseProjectItemName = val;
+        if(val != 'close'){
+          this.prjItemId = option.key;
+          this.optionVal = val;
+          this.chooseProjectItemName = val;
+          this.prjItemNamesList = [];
+        }else{
+          this.optionVal = this.textVal;
+        }
       },
 
 
@@ -512,7 +531,10 @@
       handleOk () {
 
         const that = this;
-
+        that.isOpen = false;
+        if(that.prjItemId == ''){
+          this.form.setFieldsValue({prjItemName:""})
+        }
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
@@ -562,6 +584,12 @@
         this.$emit('ok');
         this.defaultActiveKey = "1";
         this.close()
+      },
+      hideDownList(){
+        this.isOpen = false;
+      },
+      hideDownList1(){
+        this.isOpen1 = false;
       },
     }
   }

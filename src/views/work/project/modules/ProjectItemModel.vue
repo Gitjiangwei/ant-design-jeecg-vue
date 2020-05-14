@@ -31,7 +31,7 @@
                   <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
-              <a-col :span="12" style="padding-left: 0px;">
+              <a-col :span="10" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
                   <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
                     <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
@@ -41,17 +41,21 @@
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+                <!--  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
                   <a-auto-complete placeholder="请输入所属公司" :optionLabelProp="optionVal"  :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
-                    <template slot="dataSource">
-                      <a-select-option key="close">
-                        <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
-                      </a-select-option>
-                      <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
-                    </template>
-                  </a-auto-complete>
+                     <template slot="dataSource">
+                       <a-select-option key="close">
+                         <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
+                       </a-select-option>
+                       <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
+                     </template>
+                   </a-auto-complete>
+                 </a-form-item>-->
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+                  <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @click="showCompanyList"/>
                 </a-form-item>
               </a-col>
+
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
                   <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
@@ -197,7 +201,7 @@
     <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
 
     <ContractInfoLook ref="contractInfoShow"></ContractInfoLook>
-
+    <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk"></CompanyInfoShow>
 
 
     <div slot="footer">
@@ -217,13 +221,14 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import {filterObj} from '@/utils/util';
   import ContractInfoLook from "../show/ContractInfoLook";
+  import CompanyInfoShow from "../show/CompanyInfoShow";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import { doMian} from '@/api/api'
 
   export default {
     name: "projectItemModal",
-    components: {ContractInfoLook, PurchaseInfoStockShow, ACol, ATextarea, ARow},
+    components: {CompanyInfoShow, ContractInfoLook, PurchaseInfoStockShow, ACol, ATextarea, ARow},
     data () {
       return {
         title:"操作",
@@ -403,6 +408,12 @@
         });
 
       },
+      modalFormOk(data) {
+        alert("data="+data)
+        this.model.companyId = data[0].companyId;
+
+        this.form.setFieldsValue({companyName:data[0].companyName});
+      },
       close () {
         this.$emit('close');
         this.isShow = false;
@@ -546,6 +557,11 @@
         }
         this.$refs.contractInfoShow.edit(record);
         this.$refs.contractInfoShow.title = "合同详情";
+      },
+
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
       },
       beforeUpload: function (file) {
         return true;

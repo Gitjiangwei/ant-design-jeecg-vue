@@ -264,6 +264,7 @@
         var realityNum=this.dataSource.length;
         if(this.needNum>realityNum){
           alert("设备数量小于需求数量，处理失败！");
+          return;
         }else if(this.needNum<realityNum){
           alert("设备数量大于需求数量，不能提交！");
           return;
@@ -326,9 +327,16 @@
       },
       handleCancel() {
         var realityNum=this.dataSource.length;
-        if(this.needNum>realityNum){
-          alert("设备数量不够需求数量，确定不再添加吗？");
-        }else if(this.needNum<realityNum){
+       /* if(this.needNum>realityNum){
+          this.$confirm({
+            content: "设备数量小于需求数量，确定不再添加吗？?",
+            onCancel() {
+              return;
+            }
+          })
+
+
+        }else */if(this.needNum<realityNum){
           alert("设备数量大于需求数量，请删除多余设备！");
           return;
         }

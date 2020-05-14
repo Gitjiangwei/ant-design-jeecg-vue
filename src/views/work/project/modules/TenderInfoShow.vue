@@ -188,7 +188,7 @@
       },
       close () {
         this.selectedRowKeys = [];
-        this.selectedRows = [];
+        this.selectionRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -198,6 +198,8 @@
           return;
         } else {
           this.$emit('func',this.selectedRows);
+          this.selectedRowKeys = [];
+          this.selectionRows = [];
           this.close();
         }
       },
@@ -228,7 +230,7 @@
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectedRows = [];
+        this.selectionRows = [];
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
