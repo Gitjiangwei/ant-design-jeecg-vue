@@ -51,20 +51,22 @@
             <a-row>
               <a-col :span="16" style="padding-left: 0px;">
                 <a-form-item label="关联工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete :open="isOpen" :optionLabelProp="optionVal"  @select="chooseThis" @blur="getPrjItemList" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" maxLength="150">
-                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }" />
-                    <template slot="dataSource">
-                      <a-select-option key="close">
-                          <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
-                      </a-select-option>
-                      <a-select-option v-for="item in itemList" :key="item.prjItemId" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>
-                    </template>
-                  </a-auto-complete>
+<!--                  <a-auto-complete :open="isOpen" :optionLabelProp="optionVal"  @select="chooseThis" @blur="getPrjItemList" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" maxLength="150">-->
+<!--                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }" />-->
+<!--                    <template slot="dataSource">-->
+<!--                      <a-select-option key="close">-->
+<!--                          <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>-->
+<!--                      </a-select-option>-->
+<!--                      <a-select-option v-for="item in itemList" :key="item.prjItemId" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>-->
+<!--                    </template>-->
+<!--                  </a-auto-complete>-->
+
+                  <a-input placeholder="请输入工程点名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" @click="showPrjItemList" />
                 </a-form-item>
               </a-col>
-              <a-col>
-                <a-button @click="handleAddPrjItem" type="primary" icon="plus">新增</a-button>
-              </a-col>
+<!--              <a-col>-->
+<!--                <a-button @click="handleAddPrjItem" type="primary" icon="plus">新增</a-button>-->
+<!--              </a-col>-->
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
@@ -162,8 +164,9 @@
       </a-tab-pane>
     </a-tabs>
 
-    <AddProjectItem ref="addProjectItem" @ok="modalFormOk"></AddProjectItem>
+<!--    <AddProjectItem ref="addProjectItem" @ok="modalFormOk"></AddProjectItem>-->
     <DemandModel ref="demandModel" @ok="addDemandOk"></DemandModel>
+    <ShowProjectItemList ref="showProjectItemList" @func="modalFormOk"></ShowProjectItemList>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -183,11 +186,11 @@
   import ACol from "ant-design-vue/es/grid/Col";
   import AddProjectItem from "./AddProjectItem";
   import DemandModel from "./DemandModel";
-  import Error from "../../../result/Error";
+  import ShowProjectItemList from "./ShowProjectItemList";
 
   export default {
     name: "taskInfoModel",
-    components: {DemandModel, ACol, ATextarea,AddProjectItem},
+    components: {DemandModel, ACol, ATextarea,AddProjectItem, ShowProjectItemList},
     data () {
       return {
         title:"操作",
@@ -593,11 +596,10 @@
       hideDownList(){
         this.isOpen = false;
       },
-      // checkPrjItemId(rule, value, callback){
-      //   if(this.prjItemId == ''){
-      //     callback(new Error("请输入已创建的工程点名称"));
-      //   }
-      // },
+      showPrjItemList(){
+        this.$refs.showProjectItemList.show();
+        this.$refs.showProjectItemList.title = "选择关联工程点信息";
+      },
     }
   }
 </script>
