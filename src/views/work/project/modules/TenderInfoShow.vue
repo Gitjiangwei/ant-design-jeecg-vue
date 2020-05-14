@@ -188,7 +188,7 @@
       },
       close () {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -197,8 +197,6 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
           this.$emit('func',this.selectedRows);
           this.close();
         }
@@ -230,7 +228,7 @@
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
