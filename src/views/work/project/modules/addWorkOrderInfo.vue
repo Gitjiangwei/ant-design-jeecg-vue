@@ -26,7 +26,7 @@
         </a-row>
         <a-row >
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
+         <!--   <a-form-item label="工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-auto-complete placeholder="请输入工程点" :optionLabelProp="optionVal" :open="isOpen"  @blur="getPrjItemNamesList" @select="chooseThisB" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确的工程点名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option key="close">
@@ -35,7 +35,11 @@
                   <a-select-option v-for="item in prjItemNamesList" :key="item.prjItemName" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>
                 </template>
               </a-auto-complete>
+            </a-form-item>-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联工程点" >
+              <a-input placeholder="请输入工程点名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" @click="showProjectItem" />
             </a-form-item>
+
           </a-col>
           <a-col :span="12" style="padding-left: 0px;" float:left>
             <a-form-item
@@ -134,10 +138,10 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="客户名称"  :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-auto-complete  disabled="true" @search="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {}]" maxLength="30">
-                    <template slot="dataSource">
+                  <a-auto-complete  disabled="true"  @select="chooseThisA" v-decorator="['companyName', {}]" maxLength="30">
+                   <!-- <template slot="dataSource">
                       <a-select-option v-for="item in companyNameListA" :key="item.companyName">{{ item.companyName }}</a-select-option>
-                    </template>
+                    </template>-->
                   </a-auto-complete>
                 </a-form-item>
               </a-col>
@@ -234,6 +238,9 @@
         </a-spin>
       </a-tab-pane>
     </a-tabs>
+    <AddProjectItemRel ref="addProjectItemRel" @func="modalFormOk"></AddProjectItemRel>
+
+
   </a-modal>
 </template>
 
@@ -245,11 +252,13 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import {queryDepartCGTreeList, doMian} from '@/api/api'
+  import AddProjectItemRel from "./AddProjectItemRel1";
+
 
 
   export default {
     name: "addWorkOrderInfo",
-    components: {ATextarea},
+    components: {AddProjectItemRel, ATextarea},
     data () {
       return {
         title:"操作",
@@ -590,6 +599,14 @@
       },
       hideDownList1(){
         this.isOpen1 = false;
+      },
+      modalFormOk(data) {
+        this.prjItemId = data.prjItemId;
+        this.form.setFieldsValue({prjItemName:data.prjItemName});
+      },
+      showProjectItem:function (){
+        this.$refs.addProjectItemRel.show(this.model.contractId);
+        this.$refs.addProjectItemRel.title = "选择添加关联工程点信息";
       },
     }
   }

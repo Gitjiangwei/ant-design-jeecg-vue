@@ -20,7 +20,7 @@
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="甲方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
+               <!-- <a-form-item label="甲方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
                   <a-auto-complete placeholder="请输入甲方公司" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyNameA', {rules: [{ required: true, message: '请输入甲方公司', }]}]" maxLength="30">
                     <template slot="dataSource">
                       <a-select-option key="close">
@@ -29,6 +29,10 @@
                       <a-select-option v-for="item in companyNameListA" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                     </template>
                   </a-auto-complete>
+                </a-form-item>-->
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="甲方公司" >
+                  <a-input placeholder="请输入甲方公司" v-decorator="['companyNameA', {}]" @click="showCompanyList"/>
+
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
@@ -39,7 +43,7 @@
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="乙方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
+               <!-- <a-form-item label="乙方公司" :wrapperCol="wrapperCol" :labelCol="labelCol">
                   <a-auto-complete placeholder="请输入乙方公司" :optionLabelProp="optionVal1" :open="isOpen1"  @blur="getCompanyListB" @select="chooseThisB" v-decorator="['companyNameB', {rules: [{ required: true, message: '请输入乙方公司', }]}]"  maxLength="30">
                     <template slot="dataSource">
                       <a-select-option key="close">
@@ -48,6 +52,10 @@
                       <a-select-option v-for="item in companyNameListB" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                     </template>
                   </a-auto-complete>
+                </a-form-item>-->
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="乙方公司" >
+                  <a-input placeholder="请输入乙方公司" v-decorator="['companyNameB', {}]" @click="showCompanyList1"/>
+
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
@@ -301,7 +309,8 @@
 
     <MoneyBackShow ref="moneyBackShow" ></MoneyBackShow>
     <FileDetail ref="fileDetail" @ok="backInfoShowList"></FileDetail>
-
+    <company-info-show ref="companyInfoShow" @func="modalFormOk1"></company-info-show>
+    <company-info-show1 ref="companyInfoShow1" @func="modalFormOk2"></company-info-show1>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -328,10 +337,14 @@
   import MoneyBackShow from "../show/MoneyBackShow";
   import ProjectItemShow from "../show/ProjectItemShow";
   import FileDetail from "./FileDetail";
+  import CompanyInfoShow from "../show/CompanyInfoShow";
+  import CompanyInfoShow1 from "../show/CompanyInfoShow1";
 
   export default {
     name: "contractInfoModel",
     components: {
+      CompanyInfoShow1,
+      CompanyInfoShow,
       FileDetail,
       AddProjectItemRel, ACol, ATextarea, ARow,TenderInfoShow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow},
     data () {
@@ -849,6 +862,16 @@
         this.model.tenderId = data[0].tenderId;
         this.form.setFieldsValue({prjName:data[0].prjName});
       },
+      modalFormOk1(data) {
+        this.companyIdA = data.companyId;
+        this.form.setFieldsValue({companyNameA:data.companyName});
+
+      },
+      modalFormOk2(data) {
+        this.companyIdB = data.companyId;
+        this.form.setFieldsValue({companyNameB:data.companyName});
+
+      },
       callback: function(key){
         if(key != 1){
           if(this.model.contractId != undefined && this.model.contractId != ""){
@@ -1121,6 +1144,15 @@
       },
       hideDownList1(){
         this.isOpen1 = false;
+      },
+
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择公司信息";
+      },
+      showCompanyList1:function (){
+        this.$refs.companyInfoShow1.show();
+        this.$refs.companyInfoShow1.title = "选择公司信息";
       },
     }
   }

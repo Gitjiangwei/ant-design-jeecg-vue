@@ -12,7 +12,7 @@
     <span style="color: red">需求数量: {{ needNum }} 台</span>
       <div style="float: right;">
 
-        <a-button style="padding-left: 5px;" @click="showTender" type="primary" icon="plus">新增</a-button>
+        <a-button style="padding-left: 5px;" @click="showTender" type="primary" icon="plus" v-show="isShow1">新增</a-button>
       </div>
       <div style="padding-top: 42px;">
         <a-table
@@ -26,9 +26,9 @@
           :loading="loading"
           @change="handleTableChange" style="padding-top: 10px;">
 
-                  <span slot="action" slot-scope="text, record">
-                    <a @click="handleDelete(record.outId)">删除</a>
-                  </span>
+                  <!--<span slot="action" slot-scope="text, record" v-show="isShow1">
+                    <a @click="handleDelete(record.outId)" >删除</a>
+                  </span>-->
         </a-table>
       </div>
 
@@ -52,6 +52,7 @@
       return{
         isShowFile: false,
         isEdit:false,
+        isShow1:true,
         title: "操作",
         visible: false,
         defaultActiveKey: "1",
@@ -100,12 +101,12 @@
             align: "center",
             dataIndex: 'useTimes'
           },
-          {
+         /* {
             title: '操作',
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
-          }
+          }*/
         ],
         //数据集
         dataSource: [],
@@ -224,6 +225,11 @@
         this.demandId=record.demandId;
         this.needNum=record.equipmentNumber;
         this.projectId = record.prjItemId;
+        if(record.status=="1"){
+          this.isShow1=false;
+        }else{
+          this.isShow1=true;
+        }
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
           this.loadData();
         }else {

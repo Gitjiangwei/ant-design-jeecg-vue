@@ -215,6 +215,7 @@
         }
         var params = this.getQueryParams();//查询条件
         params.purchaseId = this.purchaseId;
+        params.status=
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -278,19 +279,38 @@
               this.$message.warning('您选择的设备有使用过3次的设备');
             }
           }
-          deleteAction(httpurl,{equipIds: ids, prjItemId: this.projectId}).then((res)=> {
-            if (res.success) {
-              that.$message.success(res.message);
-              this.$emit('ok');
-            } else {
-              that.$message.warning(res.message);
+
+          this.$confirm({
+            title: "关联设备",
+            content: "提交后无法修改，是否确定关联？",
+            onOk: function () {
+              deleteAction(httpurl,{equipIds: ids, prjItemId: that.projectId}).then((res)=> {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.selectedRowKeys = [];
+                that.selectionRows = [];
+                that.close();
+              });
             }
-          }).finally(() => {
-            that.confirmLoading = false;
-            that.selectedRowKeys = [];
-            that.selectionRows = [];
-            that.close();
           });
+
+
+
+
+
+
+
+
+
+
+
+
         }
       },
       handleCancel() {

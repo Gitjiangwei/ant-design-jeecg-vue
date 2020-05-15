@@ -70,7 +70,7 @@
    // import FileDetail from "./modules/FileDetail";
 
     export default {
-      name: "companyInfoShow",
+      name: "companyInfoShow1",
       components: {
       /*  FileDetail,
         CompanyInfoModal,*/

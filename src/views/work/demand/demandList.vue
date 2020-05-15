@@ -11,8 +11,6 @@
           <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                <!-- <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>-->
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
               </span>
           </a-col>
         </a-row>
@@ -58,7 +56,7 @@
         <span slot="action" slot-scope="text, record">
             <a @click="updateStatus(record)">编辑</a>
           <a-divider type="vertical"/>
-          <a @click="relevanceEqu(record)">处理</a>
+          <a @click="relevanceEqu(record)"  >处理</a>
           <a-divider type="vertical"/>
                 <a-dropdown>
                   <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
@@ -301,11 +299,12 @@
      relevanceEqu:function(record){
        var projectId=record.prjItemId;
        console.log(record.prjItemId)
+       var status=record.status;
        if(projectId==null||projectId==undefined||projectId==''){
          this.$message.warning("工程点ID为空，不能处理此设备请求！");
          return;
        }
-        this.$refs.DemandPrjModules.edit(record);
+        this.$refs.DemandPrjModules.edit(record,status);
         this.$refs.DemandPrjModules.title="处理";
       },
 

@@ -13,7 +13,7 @@
 
         <a-row :gutter="24">
           <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
+           <!-- <a-form-item label="客户名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-auto-complete placeholder="请输入客户名称" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyListA" @select="chooseThisA" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确的客户名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option key="close">
@@ -22,6 +22,9 @@
                   <a-select-option v-for="item in companyNameListA" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
+            </a-form-item>-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="客户名称" >
+              <a-input placeholder="请输入客户名称" v-decorator="['companyName', {}]" @click="showCompanyList"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -153,6 +156,7 @@
 
       </a-form>
     </a-spin>
+    <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk"></CompanyInfoShow>
   </a-modal>
 </template>
 
@@ -164,11 +168,12 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import { doMian} from '@/api/api'
+  import CompanyInfoShow from "./CompanyInfoShow";
 
 
   export default {
     name: "addVisit",
-    components: {ATextarea},
+    components: {CompanyInfoShow, ATextarea},
     data () {
       return {
         title:"操作",
@@ -448,6 +453,15 @@
       },
       hideDownList(){
         this.isOpen = false;
+      },
+      modalFormOk(data) {
+        this.model.companyId = data.companyId;
+
+        this.form.setFieldsValue({companyName:data.companyName});
+      },
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
       },
 
 

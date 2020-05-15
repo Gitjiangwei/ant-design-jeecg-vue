@@ -409,10 +409,9 @@
 
       },
       modalFormOk(data) {
-        alert("data="+data)
-        this.model.companyId = data[0].companyId;
+        this.model.companyId = data.companyId;
 
-        this.form.setFieldsValue({companyName:data[0].companyName});
+        this.form.setFieldsValue({companyName:data.companyName});
       },
       close () {
         this.$emit('close');
