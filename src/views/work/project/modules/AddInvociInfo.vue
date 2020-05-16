@@ -63,7 +63,7 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+           <!-- <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
               <a-auto-complete placeholder="请输入所属公司" :optionLabelProp="optionVal" :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
                 <template slot="dataSource">
                   <a-select-option key="close">
@@ -72,6 +72,9 @@
                   <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
                 </template>
               </a-auto-complete>
+            </a-form-item>-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+              <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @click="showCompanyList"/>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
@@ -185,7 +188,7 @@
     </a-spin>
 
     <ContractInfoShow ref="contractInfoShow" @func="modalFormOk"></ContractInfoShow>
-
+    <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk1"></CompanyInfoShow>
   </a-modal>
 </template>
 
@@ -198,10 +201,12 @@
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import { doMian} from '@/api/api'
   import ContractInfoShow from './ContractInfoShow'
+  import CompanyInfoShow from "../show/CompanyInfoShow";
+
 
   export default {
     name: "addInvociInfo",
-    components: {ATextarea,ContractInfoShow},
+    components: {CompanyInfoShow, ATextarea,ContractInfoShow},
     data () {
       return {
         title:"操作",
@@ -473,6 +478,10 @@
         this.model.contractId = data[0].contractId;
         this.form.setFieldsValue({contractName:data[0].contractName});
       },
+      modalFormOk1(data) {
+        this.companyId = data.companyId;
+        this.form.setFieldsValue({companyName:data.companyName});
+      },
 
       getCompanyList(val){
         if(val != undefined && val != this.chooseCompanyName){
@@ -509,6 +518,10 @@
       },
       hideDownList(){
         this.isOpen = false;
+      },
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
       },
 
     }

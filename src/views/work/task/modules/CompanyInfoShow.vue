@@ -58,7 +58,7 @@
       </a-table>
 
     </div>
-    <CompanyInfoModal ref="companyInfoModal" @ok="modalFormOk"></CompanyInfoModal>
+    <CompanyInfoModal  ref="companyInfoModal" @ok="modalFormOk"></CompanyInfoModal>
   </a-modal>
 
 
@@ -68,13 +68,15 @@
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
-   // import FileDetail from "./modules/FileDetail";
     import CompanyInfoModal from "./CompanyInfoModal";
+   // import FileDetail from "./modules/FileDetail";
 
     export default {
       name: "companyInfoShow",
       components: {
         CompanyInfoModal
+      /*  FileDetail,
+        CompanyInfoModal,*/
       },
       data() {
         return{
@@ -284,7 +286,7 @@
           this.ipagination = pagination;
           this.loadData();
         },
-        modalFormOk(data) {
+        modalFormOk(data){
           this.$emit("func",data);
           this.close();
         },

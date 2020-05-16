@@ -26,6 +26,7 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <a-button @click="handleAddCompany" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
 
               </span>
           </a-col>
@@ -57,21 +58,24 @@
       </a-table>
 
     </div>
+    <CompanyInfoModal  ref="companyInfoModal" @ok="modalFormOk"></CompanyInfoModal>
   </a-modal>
 
 
 </template>
 
 <script>
-    //import CompanyInfoModal from '././modules/CompanyInfoModal'
+    /*import CompanyInfoModal from './CompanyInfoModal'*/
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
+    import CompanyInfoModal from "./CompanyInfoModal";
    // import FileDetail from "./modules/FileDetail";
 
     export default {
       name: "companyInfoShow",
       components: {
+        CompanyInfoModal
       /*  FileDetail,
         CompanyInfoModal,*/
       },
@@ -283,9 +287,9 @@
           this.ipagination = pagination;
           this.loadData();
         },
-        modalFormOk() {
-          // 新增/修改 成功时，重载列表
-          this.loadData();
+        modalFormOk(data){
+          this.$emit("func",data);
+          this.close();
         },
         handleCancel() {
           this.close()
@@ -295,6 +299,10 @@
           this.selectionRows = [];
           this.$emit('close');
           this.visible = false;
+        },
+        handleAddCompany(){
+          this.$refs.companyInfoModal.add();
+          this.$refs.companyInfoModal.title = "新增客户信息";
         },
       }
     }

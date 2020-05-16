@@ -5,6 +5,7 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
+    @ok="handleOk"
     cancelText="关闭">
 
     <a-tabs :activeKey="defaultActiveKey" @change="callback" type="card" >
@@ -31,7 +32,7 @@
                   <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
-              <a-col :span="10" style="padding-left: 0px;">
+              <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
                   <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
                     <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
@@ -41,21 +42,17 @@
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
-                <!--  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-                  <a-auto-complete placeholder="请输入所属公司" :optionLabelProp="optionVal"  :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
-                     <template slot="dataSource">
-                       <a-select-option key="close">
-                         <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>
-                       </a-select-option>
-                       <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
-                     </template>
-                   </a-auto-complete>
-                 </a-form-item>-->
+                <!--<a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
+                  <a-auto-complete placeholder="请输入所属公司" :open="isOpen"  @blur="getCompanyList" @select="chooseThis" v-decorator="['companyName', {rules: [{ required: true, message: '请输入正确公司名称', }]}]" maxLength="30">
+                    <template slot="dataSource">
+                      <a-select-option v-for="item in companyNameList" :key="item.companyId" :value="item.companyName">{{ item.companyName }}</a-select-option>
+                    </template>
+                  </a-auto-complete>
+                </a-form-item>-->
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
                   <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @click="showCompanyList"/>
                 </a-form-item>
               </a-col>
-
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
                   <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
@@ -78,25 +75,6 @@
                 </a-form-item>
               </a-col>
             </a-row>
-
-            <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="建设方式" >
-                  <a-select v-decorator="['buildType', {rules: [{ required: true, message: '请选择建设方式', }]}]" placeholder="请选择建设方式">
-                    <a-select-option value="0">迁移</a-select-option>
-                    <a-select-option value="1">新建</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="12" style="padding-left: 0px;">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="拥有方式" >
-                  <a-select v-decorator="['haveWay', {rules: [{ required: true, message: '请选择拥有方式', }]}]" placeholder="请选择拥有方式">
-                    <a-select-option value="0">租赁</a-select-option>
-                    <a-select-option value="1">购买</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-            </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
@@ -113,11 +91,6 @@
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
                   <a-date-picker v-decorator="['requireDeployTime', {}]" />
-                </a-form-item>
-              </a-col>
-              <a-col :span="12" style="padding-left: 0px;" v-show="isShow">
-                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联合同" >
-                  <a @click="showContractInfo">{{contractName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -165,49 +138,12 @@
               </a-col>
             </a-row>
           </a-form>
-          <a-row style="text-align: center;">
-            <a-col>
-              <span style="overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleOk" icon="check">保存</a-button>
-              </span>
-            </a-col>
-          </a-row>
         </a-spin>
       </a-tab-pane>
-      <a-tab-pane tab="关联设备" key="2" style="padding-bottom: 14px">
-      <!--  <div style="float: right;">
-          <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
-        </div>-->
-        <div style="padding-top: 42px;">
-          <a-table
-            ref="table"
-            size="middle"
-            bordered
-            rowKey="prjItemId"
-            :columns="columns"
-            :dataSource="dataSource"
-            :pagination="ipagination"
-            :loading="loading"
-            @change="handleTableChange" style="padding-top: 10px;">
-
-                <span slot="action" slot-scope="text, record">
-                  <a @click="handleDelete(record.outId)">删除</a>
-                </span>
-          </a-table>
-        </div>
-      </a-tab-pane>
     </a-tabs>
-
-    <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
-
-    <ContractInfoLook ref="contractInfoShow"></ContractInfoLook>
     <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk"></CompanyInfoShow>
-
-
-    <div slot="footer">
-      <a-button @click="handleCancel">关闭</a-button>
-    </div>
   </a-modal>
+
 </template>
 
 <script>
@@ -215,20 +151,18 @@
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil'
   import pick from 'lodash.pick'
   import moment from "moment"
-  import PurchaseInfoStockShow from './PurchaseInfoStockShow'
   import ACol from "ant-design-vue/es/grid/Col";
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ARow from "ant-design-vue/es/grid/Row";
   import {filterObj} from '@/utils/util';
-  import ContractInfoLook from "../show/ContractInfoLook";
-  import CompanyInfoShow from "../show/CompanyInfoShow";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import { doMian} from '@/api/api'
+  import CompanyInfoShow from "../show/CompanyInfoShow";
+
 
   export default {
     name: "projectItemModal",
-    components: {CompanyInfoShow, ContractInfoLook, PurchaseInfoStockShow, ACol, ATextarea, ARow},
+    components: {CompanyInfoShow, ACol, ATextarea, ARow},
     data () {
       return {
         title:"操作",
@@ -242,6 +176,7 @@
         companyId:"",
         contractId: "",
         contractName: "",
+        chooseCompanyName: "",
         defaultActiveKey: "1",
         dateFormat: 'YYYY-MM-DD',
         uploadLoading: false,
@@ -316,9 +251,6 @@
         form: this.$form.createForm(this),
         validatorRules:{},
         companyNameList: [],
-        chooseCompanyName: '',
-        optionVal: '',
-        textVal: '',
         url: {
           add: "/renche/projectItem/add",
           edit: "/renche/projectItem/edit",
@@ -326,8 +258,6 @@
           projectIdList:"/renche/projectItem/projectIdList",
           delOutId: "/renche/outEquip/delOutEquip",
           searchCompany: "/renche/companyInfo/searchCompany",
-          searchContract: "/renche/contractInfo/getContractById",
-          filelist: "/renche/purchase/fileList",
           fileUpload: "/sys/common/upload",
         },
       }
@@ -401,28 +331,21 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'buildType','haveWay','prjItemName','prjItemNum','prjItemType','prjName','prjItemStatus','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
+          this.form.setFieldsValue(pick(this.model,'prjItemName','prjItemNum','prjItemType','prjName','prjItemStatus','companyName','personInCharge','personTel','progressOfItem','prjItemPlace'))
           this.form.setFieldsValue({entryTime:this.model.entryTime?moment(this.model.entryTime):null});
           this.form.setFieldsValue({finishTime:this.model.finishTime?moment(this.model.finishTime):null});
           this.form.setFieldsValue({requireDeployTime:this.model.requireDeployTime?moment(this.model.requireDeployTime):null});
         });
 
       },
-      modalFormOk(data) {
-        this.companyId = data.companyId;
-        this.form.setFieldsValue({companyName:data.companyName});
-      },
       close () {
         this.$emit('close');
         this.isShow = false;
         this.isOpen = false;
-        this.chooseCompanyName = '';
         this.visible = false;
       },
       handleOk () {
         const that = this;
-        that.isOpen = false;
-
         if(that.companyId == ""){
           this.form.setFieldsValue({companyName:""});
         }
@@ -439,9 +362,8 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
-            if(that.companyId != ''){
-              this.model.belongCompany = that.companyId;
-
+            if(this.companyId != ''){
+              this.model.belongCompany = this.companyId;
             }
             that.model.fileRelId = that.avatar;
             let formData = Object.assign(this.model, values);
@@ -449,45 +371,16 @@
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
-                if(method = 'post'){
-                  this.model.prjItemId = res.result.prjItemId;
-                }
+                that.$emit('ok',res.result);
               }else{
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
+              that.close();
             })
           }
         })
-      },
-      handleDelete: function (id) {
-        var that = this;
-        this.$confirm({
-          title: "确认删除",
-          content: "是否删除选中数据?",
-          onOk: function () {
-            deleteAction(that.url.delOutId, {outId: id}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
-          }
-        })
-      },
-      addProjectItem() {
-        this.loadData();
-      },
-      showTender:function (){
-        if(this.projectId==null || this.projectId == "" || this.projectId == undefined){
-          this.$message.warning("请先保存基本信息，再添加设备");
-          return;
-        }
-        this.$refs.PurchaseInfoStockShow.show(this.projectId);
-        this.$refs.PurchaseInfoStockShow.title = "选择关联设备信息";
       },
       callback: function(key){
         if(key != 1){
@@ -501,14 +394,11 @@
         }
       },
       handleCancel () {
-        this.$emit('ok');
         this.defaultActiveKey = "1";
         this.close()
       },
       getCompanyList(val){
-        if(val != undefined && val != this.chooseCompanyName){
-          this.textVal = val;
-          this.companyId = '';
+        if(val != this.chooseCompanyName) {
           this.chooseCompanyName = '';
           getAction(this.url.searchCompany, {pageNo: "1",pageSize: "30",name: val}).then((res) => {
             if (res.success) {
@@ -520,48 +410,15 @@
                 }
               }else if(this.companyNameList.length == 0){
                 this.companyId = "";
-              } else{
-                this.isOpen = true;
               }
             }
           })
         }
       },
       chooseThis: function(val,option){
+        this.companyId = option.data.key;
         this.isOpen = false;
-        if(val != 'close'){
-          this.companyId = option.key;
-          this.optionVal = val;
-          this.chooseCompanyName = val;
-          this.companyNameList = [];
-        }else{
-          this.optionVal = this.textVal;
-        }
-
-      /*  this.companyId = option.data.key;
-
-        this.chooseCompanyName = val;*/
-      },
-      async showContractInfo(){
-        let {result} = await getAction(this.url.searchContract, {contractId: this.contractId});
-        let record = result;
-
-        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
-          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
-          record.filelist = result.list;
-        }
-
-        if(record.elecFileRel != null || record.elecFileRel != "" || record.elecFileRel != undefined) {
-          let {result} = await getAction(this.url.filelist, {fileRelId: record.elecFileRel});
-          record.elefilelist = result.list;
-        }
-        this.$refs.contractInfoShow.edit(record);
-        this.$refs.contractInfoShow.title = "合同详情";
-      },
-
-      showCompanyList:function (){
-        this.$refs.companyInfoShow.show();
-        this.$refs.companyInfoShow.title = "选择客户信息";
+        this.chooseCompanyName = val;
       },
       beforeUpload: function (file) {
         return true;
@@ -570,11 +427,7 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const prjIteName = this.model.prjItemName;
-        var fileName=data.file.name.toString();
-         var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${prjIteName}_${nowDate}_${str1}_${timeStamp}_${str2}`)
+        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
         console.log(copyFile)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
@@ -633,8 +486,13 @@
           }
         }
       },
-      hideDownList(){
-        this.isOpen = false;
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
+      },
+      modalFormOk(data) {
+        this.companyId = data.companyId;
+        this.form.setFieldsValue({companyName:data.companyName});
       },
     }
   }

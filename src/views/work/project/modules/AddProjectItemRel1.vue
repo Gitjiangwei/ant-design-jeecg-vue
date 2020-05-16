@@ -11,20 +11,21 @@
     <a-spin :spinning="confirmLoading">
       <a-form  layout="inline">
         <a-row :gutter="24">
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="工程名称">
+          <a-col :span="8">
+            <a-form-item label="工程名称"  :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6" style="width: 27%;padding-left: 8px;padding-right: 0px;">
-            <a-form-item label="项目名称">
+          <a-col :span="8">
+            <a-form-item label="项目名称"  :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入项目名称" v-model="queryParam.prjName"  maxLength="100"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6" style="width: 18%;padding-left: 8px;padding-right: 0px;">
+          <a-col :span="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button @click="handleAddPrjItem" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
             </span>
           </a-col>
         </a-row>
@@ -48,12 +49,14 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange, type: 'radio'}"
         @change="handleTableChange">
 
       </a-table>
     </div>
     <!-- table区域-end -->
+    <AddProjectItem ref="addProjectItem" @ok="modalFormOk"></AddProjectItem>
+
   </a-modal>
 </template>
 
@@ -62,45 +65,46 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import ACol from "ant-design-vue/es/grid/Col";
   import {filterObj} from '@/utils/util';
+  import AddProjectItem from "./AddProjectItem";
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
 
   export default {
     name: "addProjectItemRel",
-    components: {ACol, ARow},
+    components: {ACol, ARow, AddProjectItem},
     data () {
       return {
         title:"操作",
         visible: false,
         // 查询条件
         queryParam: {},
-        contractId: "",
         confirmLoading: false,
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         // 表头
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key: 'rowIndex',
-            width: 60,
-            align: "center",
-            customRender: function (t, r, index) {
-              return parseInt(index) + 1;
-            }
-          },
-          {
             title: '工程编号',
             align: "center",
-            dataIndex: 'prjItemNum'
+            dataIndex: 'prjItemNum',
+            width: 100,
           },
           {
             title: '工程名称',
             align: "center",
-            dataIndex: 'prjItemName'
+            dataIndex: 'prjItemName',
+            width: 150,
           },
           {
             title: '工程类型',
             align: "center",
             dataIndex: 'prjItemType',
+            width: 80,
             customRender: (text, record, index) => {
               //字典值替换通用方法
               return filterDictText(this.typeDictOptions, text);
@@ -109,18 +113,15 @@
           {
             title: '项目名称',
             align: "center",
-            dataIndex: 'prjName'
+            dataIndex: 'prjName',
+            width: 150,
           },
           {
             title: '所属公司',
             align: "center",
-            dataIndex: 'companyName'
+            dataIndex: 'companyName',
+            width: 150,
           },
-          {
-            title: '负责人',
-            align: "center",
-            dataIndex: 'personInCharge'
-          }
         ],
 
         //数据集
@@ -145,8 +146,7 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/contractInfo/allPrjItemWithoutContractList",
-          add: "/renche/contractInfo/addProjectItem"
+          list: "/renche/projectItem/list",
         },
       }
     },
@@ -162,14 +162,12 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        if(this.contractId != ""){
-          getAction(this.url.list, params).then((res) => {
-            if (res.success) {
-              this.dataSource = res.result.list;
-              this.ipagination.total = res.result.total;
-            }
-          })
-        }
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.list;
+            this.ipagination.total = res.result.total;
+          }
+        })
       },
       initDictConfig() {
         //初始化字典 - 工程类型
@@ -182,12 +180,11 @@
       show (recode) {
         this.visible = true;
         this.queryParam = {};
-        this.contractId = recode;
         this.loadData();
       },
       close () {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -196,11 +193,6 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
-          /*  this.$emit('func',this.selectedRows);
-            this.selectedRowKeys = [];
-            this.selectionRows = [];
-            this.close();*/
-
           this.$emit('func',this.selectedRows[0]);
           this.close();
         }
@@ -213,7 +205,6 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.contractId = this.contractId;
         return filterObj(param);
       },
       getQueryField() {
@@ -233,7 +224,7 @@
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
@@ -250,8 +241,15 @@
         var that = this;
         that.queryParam = {}
         that.loadData(1);
-      }
-
+      },
+      handleAddPrjItem: function () {
+        this.$refs.addProjectItem.add();
+        this.$refs.addProjectItem.title = "新增";
+      },
+      modalFormOk(data){
+        this.$emit("func",data);
+        this.close();
+      },
     }
   }
 </script>

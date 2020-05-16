@@ -605,7 +605,7 @@
         this.form.setFieldsValue({prjItemName:data.prjItemName});
       },
       showProjectItem:function (){
-        this.$refs.addProjectItemRel.show(this.model.contractId);
+        this.$refs.addProjectItemRel.show();
         this.$refs.addProjectItemRel.title = "选择添加关联工程点信息";
       },
     }
