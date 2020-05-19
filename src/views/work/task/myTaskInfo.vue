@@ -71,12 +71,13 @@
 
           <span slot="action" slot-scope="text, record">
             <a @click="fileDeteil(record)">附件</a>
-              <a-divider type="vertical"/>
-            <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical"/>
+            <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
+                <a-menu-item>
+                    <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
                 <a-menu-item>
                   <a-popconfirm title="确定生成设备需求?" @confirm="() => handleMakeDemand(record)">
                     <a>生成需求</a>
@@ -151,22 +152,26 @@
             {
               title: '计划开始时间',
               align: "center",
-              dataIndex: 'planStartTime'
+              dataIndex: 'planStartTime',
+              width: 120,
             },
             {
               title: '实际开始时间',
               align: "center",
-              dataIndex: 'startTime'
+              dataIndex: 'startTime',
+              width: 120,
             },
             {
               title: '负责人',
               align: "center",
-              dataIndex: 'receiveUserName'
+              dataIndex: 'receiveUserName',
+              width: 150,
             },
             {
               title: '任务状态',
               align: "center",
               dataIndex: 'status',
+              width: 80,
               customRender: (text, record, index) => {
                 //字典值替换通用方法
                 if (text == '0'){
@@ -181,13 +186,15 @@
             {
               title: '附件',
               align: "center",
-              dataIndex: 'fileCount'
+              dataIndex: 'fileCount',
+              width: 50,
             },
             {
               title: '操作',
               dataIndex: 'action',
               align: "center",
               scopedSlots: {customRender: 'action'},
+              width: 120,
             }
           ],
           //数据集

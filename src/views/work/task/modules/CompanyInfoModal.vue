@@ -231,8 +231,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
-        console.log(copyFile)
+        const companyName = this.model.companyName;
+        const copyFile = new File([data.file], `公司${companyName}_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);

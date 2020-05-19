@@ -150,49 +150,6 @@
 
               </a-col>
             </a-row>
-
-            <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="电子版附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :headers="headers"
-                    :customRequest="uploadFileRequest"
-                    :file-list="elefileList"
-                    @change="handleChangeElec"
-                  >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
-                  <div>
-                    <div v-for="(item,index) in model.elefilelist" :key="index">{{item.fileName}}</div>
-                  </div>
-                </a-form-item>
-              </a-col>
-              <a-col :span="12" style="padding-left: 0px;">
-                <a-form-item label="扫描件附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
-                  <a-upload
-                    name="file"
-                    :multiple="true"
-                    :headers="headers"
-                    :file-list="fileList"
-                    :customRequest="uploadFileRequest1"
-                    @change="handleChange"
-                  >
-                    <a-button>
-                      <a-icon type="upload"/>
-                      上传
-                    </a-button>
-                  </a-upload>
-                  <div>
-                    <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
-                  </div>
-                </a-form-item>
-              </a-col>
-            </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="提醒周期" :wrapperCol="wrapperCol" :labelCol="labelCol">
@@ -214,6 +171,50 @@
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
                   <a-textarea placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="1500"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="22" style="padding-left: 22px;">
+                <a-form-item label="电子版附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
+                  <a-upload
+                    name="file"
+                    :multiple="true"
+                    :headers="headers"
+                    :customRequest="uploadFileRequest"
+                    :file-list="elefileList"
+                    @change="handleChangeElec"
+                  >
+                    <a-button>
+                      <a-icon type="upload"/>
+                      上传
+                    </a-button>
+                  </a-upload>
+                  <div>
+                    <div v-for="(item,index) in model.elefilelist" :key="index">{{item.fileName}}</div>
+                  </div>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="22" style="padding-left: 22px;">
+                <a-form-item label="扫描件附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
+                  <a-upload
+                    name="file"
+                    :multiple="true"
+                    :headers="headers"
+                    :file-list="fileList"
+                    :customRequest="uploadFileRequest1"
+                    @change="handleChange"
+                  >
+                    <a-button>
+                      <a-icon type="upload"/>
+                      上传
+                    </a-button>
+                  </a-upload>
+                  <div>
+                    <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+                  </div>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -310,7 +311,6 @@
     <MoneyBackShow ref="moneyBackShow" ></MoneyBackShow>
     <FileDetail ref="fileDetail" @ok="backInfoShowList"></FileDetail>
     <company-info-show ref="companyInfoShow" @func="modalFormOk1"></company-info-show>
-    <company-info-show1 ref="companyInfoShow1" @func="modalFormOk2"></company-info-show1>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -329,7 +329,6 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import ACol from "ant-design-vue/es/grid/Col";
   import AddProjectItemRel from "./AddProjectItemRel";
-  import { doMian} from '@/api/api'
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import InvociInfoFileDetail from "./InvociInfoFileDetail";
@@ -338,12 +337,10 @@
   import ProjectItemShow from "../show/ProjectItemShow";
   import FileDetail from "./FileDetail";
   import CompanyInfoShow from "../show/CompanyInfoShow";
-  import CompanyInfoShow1 from "../show/CompanyInfoShow1";
 
   export default {
     name: "contractInfoModel",
     components: {
-      CompanyInfoShow1,
       CompanyInfoShow,
       FileDetail,
       AddProjectItemRel, ACol, ATextarea, ARow,TenderInfoShow,InvociInfoFileDetail,InvociInfoShow,MoneyBackShow,ProjectItemShow},
@@ -379,6 +376,14 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
+        filelabelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        filewrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 21 },
+        },
         uploadLoading: false,
         headers: {},
         avatar: "",
@@ -393,7 +398,7 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
@@ -402,7 +407,8 @@
           {
             title: '工程编号',
             align: "center",
-            dataIndex: 'prjItemNum'
+            dataIndex: 'prjItemNum',
+            width: 100,
           },
           {
             title: '工程名称',
@@ -413,6 +419,7 @@
             title: '工程类型',
             align: "center",
             dataIndex: 'prjItemType',
+            width: 80,
             customRender: (text, record, index) => {
               //字典值替换通用方法
               return filterDictText(this.typePrjDictOptions, text);
@@ -426,18 +433,21 @@
           {
             title: '所属公司',
             align: "center",
-            dataIndex: 'companyName'
+            dataIndex: 'companyName',
+            width: 150,
           },
           {
             title: '附件',
             align: "center",
-            dataIndex: 'fileCount'
+            dataIndex: 'fileCount',
+            width: 50,
           },
           {
             title: '操作',
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
+            width: 120,
           }
         ],
         //数据集
@@ -468,7 +478,7 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
@@ -477,7 +487,8 @@
           {
             title: '开票日期',
             align: "center",
-            dataIndex: 'invociTime'
+            dataIndex: 'invociTime',
+            width: 100,
           },
           {
             title: '开票内容',
@@ -487,17 +498,20 @@
           {
             title: '开票金额',
             align: "center",
-            dataIndex: 'totalMoney'
+            dataIndex: 'totalMoney',
+            width: 120,
           },
           {
             title: '签收人',
             align: "center",
-            dataIndex: 'signatory'
+            dataIndex: 'signatory',
+            width: 100,
           },
           {
             title: '附件',
             align: "center",
             dataIndex: 'fileRelId',
+            width: 50,
             customRender: (text) => {
               if(text!=null && text !="" && text != undefined) {
                 if(text.indexOf(",") != -1) {
@@ -514,6 +528,7 @@
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
+            width: 120,
           }
         ],
         //数据集
@@ -544,7 +559,7 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
@@ -553,17 +568,20 @@
           {
             title: '回款日期',
             align: "center",
-            dataIndex: 'backTime'
+            dataIndex: 'backTime',
+            width: 100,
           },
           {
             title: '回款金额',
             align: "center",
-            dataIndex: 'backMoney'
+            dataIndex: 'backMoney',
+            width: 120,
           },
           {
             title: '负责人',
             align: "center",
-            dataIndex: 'backPerson'
+            dataIndex: 'backPerson',
+            width: 100,
           },
           {
             title: '备注',
@@ -574,6 +592,7 @@
             title: '附件',
             align: "center",
             dataIndex: 'fileRelId',
+            width: 50,
             customRender: (text) => {
               if(text!=null && text !="" && text != undefined) {
                 if(text.indexOf(",") != -1) {
@@ -590,6 +609,7 @@
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
+            width: 120,
           }
         ],
         //数据集
@@ -859,18 +879,17 @@
         this.$refs.tenderInfoShow.title = "选择关联招标信息";
       },
       modalFormOk(data) {
-        this.model.tenderId = data[0].tenderId;
-        this.form.setFieldsValue({prjName:data[0].prjName});
+        this.model.tenderId = data.tenderId;
+        this.form.setFieldsValue({prjName:data.prjName});
       },
       modalFormOk1(data) {
-        this.companyIdA = data.companyId;
-        this.form.setFieldsValue({companyNameA:data.companyName});
-
-      },
-      modalFormOk2(data) {
-        this.companyIdB = data.companyId;
-        this.form.setFieldsValue({companyNameB:data.companyName});
-
+        if(data.mark == '1'){
+          this.companyIdA = data.companyId;
+          this.form.setFieldsValue({companyNameA:data.companyName});
+        }else if(data.mark == '2'){
+          this.companyIdB = data.companyId;
+          this.form.setFieldsValue({companyNameB:data.companyName});
+        }
       },
       callback: function(key){
         if(key != 1){
@@ -957,12 +976,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const contracName = this.model.contractName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"电子版"}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const contractName = this.model.contractName;
+        const copyFile = new File([data.file], `合同${contractName}电子版_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
@@ -977,12 +992,8 @@
       uploadFileRequest1(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const contracName = this.model.contractName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"扫描件"}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const contractName = this.model.contractName;
+        const copyFile = new File([data.file], `合同${contractName}扫描件_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
@@ -1147,12 +1158,16 @@
       },
 
       showCompanyList:function (){
-        this.$refs.companyInfoShow.show();
+        var record = {};
+        record.mark = '1';
+        this.$refs.companyInfoShow.show(record);
         this.$refs.companyInfoShow.title = "选择公司信息";
       },
       showCompanyList1:function (){
-        this.$refs.companyInfoShow1.show();
-        this.$refs.companyInfoShow1.title = "选择公司信息";
+        var record = {};
+        record.mark = '2';
+        this.$refs.companyInfoShow.show(record);
+        this.$refs.companyInfoShow.title = "选择公司信息";
       },
     }
   }

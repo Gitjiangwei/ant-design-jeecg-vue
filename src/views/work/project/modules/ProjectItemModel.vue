@@ -143,8 +143,8 @@
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
+              <a-col :span="22" style="padding-left: 22px;">
+                <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
                   <a-upload
                     name="file"
                     :multiple="true"
@@ -224,7 +224,6 @@
   import CompanyInfoShow from "../show/CompanyInfoShow";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import { doMian} from '@/api/api'
 
   export default {
     name: "projectItemModal",
@@ -233,7 +232,6 @@
       return {
         title:"操作",
         visible: false,
-        isUpload: false,
         formData: {},
         model: {},
         isOpen: false,
@@ -257,6 +255,14 @@
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        filelabelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        filewrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 21 },
         },
         //表头
         columns:[
@@ -386,7 +392,6 @@
         if(record.filelist == undefined){
           record.filelist = [];
         }
-        this.isUpload = false;
         this.form.resetFields();
         this.dataSource = [];
         this.fileList = [];
@@ -537,10 +542,6 @@
         }else{
           this.optionVal = this.textVal;
         }
-
-      /*  this.companyId = option.data.key;
-
-        this.chooseCompanyName = val;*/
       },
       async showContractInfo(){
         let {result} = await getAction(this.url.searchContract, {contractId: this.contractId});
@@ -560,22 +561,14 @@
       },
 
       showCompanyList:function (){
-        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.show({});
         this.$refs.companyInfoShow.title = "选择客户信息";
-      },
-      beforeUpload: function (file) {
-        return true;
-        //TODO 验证文件大小
       },
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const prjIteName = this.model.prjItemName;
-        var fileName=data.file.name.toString();
-         var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${prjIteName}_${nowDate}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const prjItemName = this.model.prjItemName;
+        const copyFile = new File([data.file], `工程点${prjItemName}_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
@@ -598,7 +591,6 @@
         let systemDate = date.year + '-' + date.month + '-' +  date.date;
         return systemDate;
       },
-
       handleChange(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {

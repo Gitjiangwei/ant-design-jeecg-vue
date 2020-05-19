@@ -46,13 +46,6 @@
         </a-row>
         <a-row>
           <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="关联合同" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input disabled v-decorator="['contractName', {}]" />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="16" style="padding-left: 8px;">
             <a-form-item label="备注" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-textarea readonly v-decorator="['content', {}]" :autosize="{ minRows: 2, maxRows: 6 }"  class="read_tex"/>
             </a-form-item>

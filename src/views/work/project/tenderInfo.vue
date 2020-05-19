@@ -69,11 +69,14 @@
 
 
           <span slot="action" slot-scope="text, record">
-            <a @click="handleEdit(record)">编辑</a>
+            <a @click="fileDeteil(record)">附件</a>
             <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
                 <a-menu-item>
                   <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.tenderId )">
                     <a>删除</a>
@@ -88,7 +91,7 @@
 
       <!-- 表单区域 -->
       <add-tender ref="addTender" @ok="modalFormOk" ></add-tender>
-
+      <TenderFileDetail ref="tenderFileDetail" @ok="modalFormOk"></TenderFileDetail>
 
     </a-card>
 
@@ -99,14 +102,14 @@
     import addTender from './modules/AddTenderInfo';
     import {filterObj} from '@/utils/util';
     import {deleteAction, getAction, postAction} from '@/api/manage';
-
+    import TenderFileDetail from './modules/TenderFileDetail'
 
     export default {
       name: "tenderInfo",
       components: {
         ARow,
         addTender,
-
+        TenderFileDetail,
       },
       data() {
         return{
@@ -117,10 +120,10 @@
           // 表头
           columns: [
             {
-              title: '序号',
+              title: '#',
               dataIndex: '',
               key: 'rowIndex',
-              width: 60,
+              width: 40,
               align: "center",
               customRender: function (t, r, index) {
                 return parseInt(index) + 1;
@@ -135,21 +138,25 @@
               title: '招标编号',
               align: "center",
               dataIndex: 'tenderNo',
+              width: 100,
             },
             {
               title: '投标单位',
               align: "center",
               dataIndex: 'tenderCompany',
+              width: 150,
             },
             {
               title: '报价',
               align: "center",
               dataIndex: 'tenderOffer',
+              width: 100,
             },
             {
               title: '保证金是否退回',
               align: "center",
               dataIndex: 'isBack',
+              width: 80,
               customRender: (text) => {
                 //字典值替换通用方法
                 if(text == '2'){
@@ -163,17 +170,26 @@
               title: '招标代理机构',
               align: "center",
               dataIndex: 'agency',
+              width: 150,
             },
             {
               title: '采购人',
               align: "center",
               dataIndex: 'purchasePerson',
+              width: 100,
+            },
+            {
+              title: '附件',
+              align: "center",
+              dataIndex: 'fileCount',
+              width: 50,
             },
             {
               title: '操作',
               dataIndex: 'action',
               align: "center",
               scopedSlots: {customRender: 'action'},
+              width: 120,
             }
           ],
           //数据集
@@ -202,6 +218,7 @@
             delete: "/renche/tender/delete",
             deleteBatch: "/renche/tender/deleteBat",
             export:"/renche/tender/exportTender",
+            filelist: "/renche/purchase/fileList",
           },
         }
       },
@@ -300,12 +317,14 @@
             }
           });
         },
-        handleEdit: function (record) {
+        async handleEdit (record) {
+          if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+            let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+            record.filelist = result.list;
+          }
           this.$refs.addTender.edit(record);
           this.$refs.addTender.title = "编辑";
         },
-
-
         handleAdd: function () {
           this.$refs.addTender.add();
           this.$refs.addTender.title = "新增";
@@ -333,11 +352,14 @@
         exportDate(){
           var params = Object.assign({}, this.queryParam, this.isorter);
           var param = JSON.stringify(params);
-          //alert("param="+param);
           param = param.replace("{","");
           param = param.replace("}","");
           window.location.href = window._CONFIG['domainURL'] + this.url.export + "?param="+param;
-        }
+        },
+        fileDeteil:function(record){
+          this.$refs.tenderFileDetail.fileLoad(record);
+          this.$refs.tenderFileDetail.title = "附件";
+        },
       }
     }
 

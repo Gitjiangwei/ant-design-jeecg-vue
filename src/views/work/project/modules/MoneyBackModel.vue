@@ -153,12 +153,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const contracName = this.model.contractName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${contracName}_${nowDate}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const contractName = this.model.contractName;
+        const copyFile = new File([data.file], `合同${contractName}回款_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);

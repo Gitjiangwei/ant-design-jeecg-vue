@@ -124,12 +124,12 @@
           <span slot="action" slot-scope="text, record">
             <a @click="fileDeteil(record)">附件</a>
             <a-divider type="vertical"/>
-            <a @click="handleEdit(record)">编辑</a>
-
-            <a-divider type="vertical"/>
             <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="handleEdit(record)">编辑</a>
+                </a-menu-item>
                 <a-menu-item>
                   <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.prjItemId)">
                     <a>删除</a>
@@ -184,7 +184,7 @@
               title: '#',
               dataIndex: '',
               key: 'rowIndex',
-              width: 60,
+              width: 40,
               align: "center",
               customRender: function (t, r, index) {
                 return parseInt(index) + 1;
@@ -193,17 +193,19 @@
             {
               title: '工程编号',
               align: "center",
-              dataIndex: 'prjItemNum'
+              dataIndex: 'prjItemNum',
+              width: 100,
             },
             {
               title: '工程名称',
               align: "center",
-              dataIndex: 'prjItemName'
+              dataIndex: 'prjItemName',
             },
             {
               title: '工程类型',
               align: "center",
               dataIndex: 'prjItemType',
+              width: 80,
               customRender: (text, record, index) => {
                 //字典值替换通用方法
                 return filterDictText(this.typeDictOptions, text);
@@ -212,22 +214,25 @@
             {
               title: '项目名称',
               align: "center",
-              dataIndex: 'prjName'
+              dataIndex: 'prjName',
             },
             {
               title: '所属公司',
               align: "center",
-              dataIndex: 'companyName'
+              dataIndex: 'companyName',
+              width: 150,
             },
             {
               title: '负责人',
               align: "center",
-              dataIndex: 'personInCharge'
+              dataIndex: 'personInCharge',
+              width: 80,
             },
             {
               title: '工程状态',
               align: "center",
               dataIndex: 'prjItemStatus',
+              width: 80,
               customRender: (text, record, index) => {
                 if(text == '0'){
                   return "未开始";
@@ -242,12 +247,14 @@
               title: '附件',
               align: "center",
               dataIndex: 'fileCount',
+              width: 50,
             },
             {
               title: '操作',
               dataIndex: 'action',
               align: "center",
               scopedSlots: {customRender: 'action'},
+              width: 120,
             }
           ],
           //数据集

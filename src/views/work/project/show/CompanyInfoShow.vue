@@ -65,19 +65,15 @@
 </template>
 
 <script>
-    /*import CompanyInfoModal from './CompanyInfoModal'*/
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
     import CompanyInfoModal from "./CompanyInfoModal";
-   // import FileDetail from "./modules/FileDetail";
 
     export default {
       name: "companyInfoShow",
       components: {
         CompanyInfoModal
-      /*  FileDetail,
-        CompanyInfoModal,*/
       },
       data() {
         return{
@@ -161,6 +157,7 @@
           loading: false,
           selectedRowKeys: [],
           selectedRows: [],
+          mark: '',
           visible:false,
           confirmLoading: false,
           url: {
@@ -192,17 +189,15 @@
             this.$message.warning('请选择一条数据！');
             return;
           } else {
-          /*  this.$emit('func',this.selectedRows);
-            this.selectedRowKeys = [];
-            this.selectionRows = [];
-            this.close();*/
-
-            this.$emit('func',this.selectedRows[0]);
+            var data = this.selectedRows[0];
+            data.mark = this.mark;
+            this.$emit('func',data);
             this.close();
           }
         },
 
-        show(){
+        show(record){
+          this.mark = record.mark == undefined?'': record.mark;
           this.visible = true;
           this.queryParam = {};
           this.loadData(1);
@@ -288,6 +283,7 @@
           this.loadData();
         },
         modalFormOk(data){
+          data.mark = this.mark;
           this.$emit("func",data);
           this.close();
         },

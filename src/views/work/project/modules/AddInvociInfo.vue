@@ -263,12 +263,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const contracName = this.model.contractName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"发票附件"}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const contractName = this.model.contractName;
+        const copyFile = new File([data.file], `合同${contractName}发票_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
@@ -284,11 +280,8 @@
       uploadFileRequest1(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const contracName = this.model.contractName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${contracName}_${nowDate}_${"签收单附件"}_${str1}_${timeStamp}_${str2}`)
+        const contractName = this.model.contractName;
+        const copyFile = new File([data.file], `合同${contractName}签收单_${nowDate}_${timeStamp}_${data.file.name}`)
         console.log(copyFile)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
@@ -520,7 +513,7 @@
         this.isOpen = false;
       },
       showCompanyList:function (){
-        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.show({});
         this.$refs.companyInfoShow.title = "选择客户信息";
       },
 

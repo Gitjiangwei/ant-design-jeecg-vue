@@ -100,7 +100,7 @@
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="20" style="padding-left: 0px;">
+              <a-col :span="22" style="padding-left: 22px;">
                 <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
                   <a-upload
                     name="file"
@@ -219,11 +219,11 @@
         },
         filelabelCol: {
           xs: { span: 24 },
-          sm: { span: 4 },
+          sm: { span: 3 },
         },
         filewrapperCol: {
           xs: { span: 24 },
-          sm: { span: 19 },
+          sm: { span: 21 },
         },
         //表头
         columns:[
@@ -371,8 +371,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
-        console.log(copyFile)
+        const taskName = this.model.taskName;
+        const copyFile = new File([data.file], `任务${taskName}_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);

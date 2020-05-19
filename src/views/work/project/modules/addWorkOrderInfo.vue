@@ -252,7 +252,7 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import {queryDepartCGTreeList, doMian} from '@/api/api'
-  import AddProjectItemRel from "./AddProjectItemRel1";
+  import AddProjectItemRel from "./AddProjectItemRel";
 
 
 
@@ -415,12 +415,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const workNam = this.model.workName;
-        var fileName=data.file.name.toString();
-        var str1=fileName.substring(0,fileName.lastIndexOf("."));
-        var str2=fileName.substring(fileName.lastIndexOf("."), fileName.length);
-        const copyFile = new File([data.file], `${workNam}_${nowDate}_${str1}_${timeStamp}_${str2}`)
-        console.log(copyFile)
+        const workName = this.model.workName;
+        const copyFile = new File([data.file], `工单${workName}_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);

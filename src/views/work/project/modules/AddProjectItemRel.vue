@@ -65,7 +65,7 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import ACol from "ant-design-vue/es/grid/Col";
   import {filterObj} from '@/utils/util';
-  import AddProjectItem from "./AddProjectItem";
+  import AddProjectItem from "../../task/modules/AddProjectItem";
   import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
 
   export default {

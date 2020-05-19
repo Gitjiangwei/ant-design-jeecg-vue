@@ -251,7 +251,7 @@
       },
       close () {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -283,7 +283,7 @@
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

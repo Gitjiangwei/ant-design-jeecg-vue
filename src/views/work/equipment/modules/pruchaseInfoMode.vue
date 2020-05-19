@@ -220,8 +220,8 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
-        console.log(copyFile)
+        const purchaseItem = this.model.purchaseItem;
+        const copyFile = new File([data.file], `采购${purchaseItem}附件_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);

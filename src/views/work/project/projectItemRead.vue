@@ -384,8 +384,8 @@
         },
         handleEdit: function (record) {
           record.readOnly=true;
-          this.$refs.ProjectItemModelShow.edit(record);
-          this.$refs.ProjectItemModelShow.title = "详情";
+          this.$refs.projectItemModelShow.edit(record);
+          this.$refs.projectItemModelShow.title = "详情";
         },
         handleTableChange(pagination, filters, sorter) {
           //分页、排序、筛选变化时触发

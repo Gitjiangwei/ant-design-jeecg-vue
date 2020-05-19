@@ -232,13 +232,7 @@
             title: '使用次数',
             align: "center",
             dataIndex: 'useTimes'
-          },
-         /* {
-            title: '操作',
-            dataIndex: 'action',
-            align: "center",
-            scopedSlots: {customRender: 'action'},
-          }*/
+          }
         ],
         //数据集
         dataSource: [],

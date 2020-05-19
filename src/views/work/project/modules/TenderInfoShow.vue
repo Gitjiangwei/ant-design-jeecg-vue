@@ -32,6 +32,7 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button @click="addTenderInfo" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
             </span>
           </a-col>
         </a-row>
@@ -61,6 +62,10 @@
       </a-table>
     </div>
     <!-- table区域-end -->
+
+    <!-- 表单区域 -->
+    <AddTenderInfo ref="addTenderInfo" @ok="modalFormOk" ></AddTenderInfo>
+
   </a-modal>
 </template>
 
@@ -69,10 +74,11 @@
   import ARow from "ant-design-vue/es/grid/Row";
   import ACol from "ant-design-vue/es/grid/Col";
   import {filterObj} from '@/utils/util';
+  import AddTenderInfo from './AddTenderInfo';
 
   export default {
     name: "tenderInfoShow",
-    components: {ACol, ARow},
+    components: {ACol, ARow, AddTenderInfo},
     data () {
       return {
         title:"操作",
@@ -188,7 +194,7 @@
       },
       close () {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -197,9 +203,7 @@
           this.$message.warning('请选择一条数据！');
           return;
         } else {
-          this.$emit('func',this.selectedRows);
-          this.selectedRowKeys = [];
-          this.selectionRows = [];
+          this.$emit('func',this.selectedRows[0]);
           this.close();
         }
       },
@@ -230,7 +234,7 @@
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发
@@ -247,8 +251,15 @@
         var that = this;
         that.queryParam = {}
         that.loadData(1);
-      }
-
+      },
+      addTenderInfo(){
+        this.$refs.addTenderInfo.add();
+        this.$refs.addTenderInfo.title = "新增";
+      },
+      modalFormOk(data){
+        this.$emit('func',data);
+        this.close();
+      },
     }
   }
 </script>

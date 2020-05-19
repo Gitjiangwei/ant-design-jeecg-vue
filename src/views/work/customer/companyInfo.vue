@@ -97,7 +97,7 @@
 </template>
 
 <script>
-    import CompanyInfoModal from '././modules/CompanyInfoModal'
+    import CompanyInfoModal from "././modules/CompanyInfoModal"
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'

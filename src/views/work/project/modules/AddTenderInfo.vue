@@ -114,6 +114,28 @@
             </a-form-item>
           </a-col>
         </a-row>
+        <a-row>
+          <a-col :span="22" style="padding-left: 22px;">
+            <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
+              <a-upload
+                name="file"
+                :multiple="true"
+                :headers="headers"
+                :file-list="fileList"
+                :customRequest="uploadFileRequest"
+                @change="handleChange"
+              >
+                <a-button>
+                  <a-icon type="upload"/>
+                  上传
+                </a-button>
+              </a-upload>
+              <div>
+                <div v-for="(item,index) in model.filelist" :key="index">{{item.fileName}}</div>
+              </div>
+            </a-form-item>
+          </a-col>
+        </a-row>
       </a-form>
     </a-spin>
   </a-modal>
@@ -123,6 +145,8 @@
   import {getAction, httpAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
 
   export default {
     name: "addTenderInfo",
@@ -140,30 +164,47 @@
           xs: {span: 24},
           sm: {span: 16},
         },
-
+        filelabelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        filewrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 21 },
+        },
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        fileList: [],
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules: {},
         url: {
           add: "/renche/tender/addTender",
           edit: "/renche/tender/upTender",
-
+          fileUpload: "/sys/common/upload",
         },
       }
     },
-    created() {
+    created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
     },
     methods: {
       add() {
         this.edit({});
       },
       edit(record) {
-        //this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        this.avatar = record.fileRelId == undefined?'':record.fileRelId;
+        if(record.filelist == undefined){
+          record.filelist = [];
+        }
+        this.dataSource = [];
+        this.fileList = [];
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.isShow = false;
-
         if(record.tenderId != undefined){
           if(record.isBack == "1"){
             this.isShow = true;
@@ -198,6 +239,7 @@
               method = 'put';
             }
             values.recedeDeposit = that.model.recedeDeposit;
+            that.model.fileRelId = that.avatar;
             let formData = Object.assign(this.model, values);
             formData.payTime = formData.payTime ? formData.payTime.format('YYYY-MM-DD HH:mm:ss') : null;
             formData.recedeTime = formData.recedeTime ? formData.recedeTime.format('YYYY-MM-DD HH:mm:ss') : null;
@@ -207,16 +249,14 @@
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
-                that.$emit('ok');
+                that.$emit('ok',res.result);
               } else {
-                /* that.$message.warning(res.message);*/
                 alert(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
             })
-
 
           }
         })
@@ -248,6 +288,66 @@
         }
         this.form.setFieldsValue({recedeDeposit: totalPrice});
         this.model.recedeDeposit = totalPrice;
+      },
+      uploadFileRequest(data){
+        const timeStamp = new Date() - 0
+        const nowDate = this.getDate();
+        const prjName = this.model.prjName;
+        const copyFile = new File([data.file], `项目${prjName}招标_${nowDate}_${timeStamp}_${data.file.name}`)
+        this.formData=new FormData();
+        this.formData.append("file",copyFile);
+        this.formData.append("headers",this.headers);
+        httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
+          if (res.success) {
+            data.onSuccess(res);
+          } else {
+            this.$message.warning(res.message);
+          }
+        })
+      },
+      getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      },
+      handleChange(info) {
+        if(info.file.status == undefined){
+          info.fileList.some((item,i) => {
+            if(item.uid == info.file.uid){
+              info.fileList.splice(i,1);
+            }
+          })
+        }else{
+          if (info.file.status === 'uploading') {
+            this.uploadLoading = true
+            this.fileList = [...info.fileList];
+            return
+          }
+          if (info.file.status === 'done') {
+            var response = info.file.response;
+            this.uploadLoading = false;
+            console.log(response);
+            if (response.success) {
+              this.avatar = response.message + "," + this.avatar;
+              this.fileList = [...info.fileList];
+              let fileItem = info.fileList.slice(-1);
+              fileItem[0].id = response.message;
+              Vue.set(info.fileList,info.fileList.length-1,fileItem[0])
+            } else {
+              this.$message.warning(response.message);
+            }
+            return
+          }
+
+          if(info.file.status === 'removed'){
+            this.avatar = this.avatar.replace(info.file.id+',','')
+          }
+        }
       },
     }
   }

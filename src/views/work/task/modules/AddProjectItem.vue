@@ -116,8 +116,8 @@
               </a-col>
             </a-row>
             <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol"><!--  :before-upload="beforeUpload" -->
+              <a-col :span="22" style="padding-left: 22px;">
+                <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
                   <a-upload
                     name="file"
                     :multiple="true"
@@ -192,6 +192,14 @@
         wrapperCol: {
           xs: { span: 24 },
           sm: { span: 16 },
+        },
+        filelabelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        filewrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 21 },
         },
         //表头
         columns:[
@@ -427,14 +435,13 @@
       uploadFileRequest(data){
         const timeStamp = new Date() - 0
         const nowDate = this.getDate();
-        const copyFile = new File([data.file], `${nowDate}_${timeStamp}_${data.file.name}`)
-        console.log(copyFile)
+        const prjItemName = this.model.prjItemName
+        const copyFile = new File([data.file], `工程点${prjItemName}_${nowDate}_${timeStamp}_${data.file.name}`)
         this.formData=new FormData();
         this.formData.append("file",copyFile);
         this.formData.append("headers",this.headers);
         httpAction(this.url.fileUpload,this.formData,"post").then((res)=>{
           if (res.success) {
-            // this.avatar = res.message + "," + this.avatar;
             data.onSuccess(res);
           } else {
             this.$message.warning(res.message);

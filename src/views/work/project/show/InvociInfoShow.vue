@@ -114,13 +114,6 @@
           </a-col>
         </a-row>
         <a-row>
-          <a-col :span="16" style="padding-left: 8px;">
-            <a-form-item label="关联合同" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input disabled v-decorator="['contractName', {}]" />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="附件" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <div>
