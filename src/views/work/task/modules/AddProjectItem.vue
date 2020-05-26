@@ -157,7 +157,7 @@
   import {filterObj} from '@/utils/util';
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import CompanyInfoShow from "./CompanyInfoShow";
+  import CompanyInfoShow from "../../customer/modules/CompanyInfoShow";
 
 
   export default {

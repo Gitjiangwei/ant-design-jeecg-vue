@@ -68,7 +68,6 @@
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
-   // import FileDetail from "./modules/FileDetail";
     import CompanyInfoModal from "./CompanyInfoModal";
 
     export default {

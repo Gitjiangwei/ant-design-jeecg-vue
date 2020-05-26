@@ -22,39 +22,15 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
               </span>
           </a-col>
         </a-row>
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-     <!-- <a-button @click="exportDate" type="primary" icon="export">导出</a-button>-->
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
-    </div>
-
-
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
-        selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -67,10 +43,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-
           <span slot="action" slot-scope="text, record">
-<!--            <a @click="handleEdit(record)">编辑</a>-->
-<!--            <a-divider type="vertical"/>-->
              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.materialId )">
                 <a>删除</a>
               </a-popconfirm>
@@ -89,9 +62,9 @@
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import MaterialInfoModal from './modules/MaterialInfoModal';
+  import MaterialInfoModal from './MaterialInfoModal';
   import {filterObj} from '@/utils/util';
-  import {deleteAction, getAction, } from '@/api/manage';
+  import {deleteAction, getAction, postAction } from '@/api/manage';
   import Vue from 'vue';
   import {ACCESS_TOKEN} from "@/store/mutation-types";
 
@@ -147,13 +120,6 @@
             align: "center",
             dataIndex: 'materialUnit',
             width: 100,
-          },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: "center",
-            scopedSlots: {customRender: 'action'},
-            width: 120,
           }
         ],
         headers: {},
@@ -272,22 +238,6 @@
           });
         }
       },
-      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            /* alert("已删除");*/
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      async  handleEdit (record) {
-        this.$refs.materialInfoModal.edit(record);
-        this.$refs.materialInfoModal.title = "编辑";
-      },
       handleAdd: function () {
         this.$refs.materialInfoModal.add();
         this.$refs.materialInfoModal.title = "新增";
@@ -303,17 +253,11 @@
         this.ipagination = pagination;
         this.loadData();
       },
+
       modalFormOk() {
         // 新增/修改 成功时，重载列表
         this.loadData();
       },
-      exportDate: function () {
-        var params = Object.assign({}, this.queryParam, this.isorter );
-        var param = JSON.stringify(params);
-        param = param.replace("{", "");
-        param = param.replace("}", "");
-        window.location.href = window._CONFIG['domainURL'] +this.url.export + "?param="+param;
-      }
     }
   }
 

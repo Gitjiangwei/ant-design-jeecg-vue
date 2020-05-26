@@ -169,11 +169,6 @@
         },
       }
     },
-    created() {
-      //初始化字典配置
-
-      this.initDictConfig();
-    },
     methods:{
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容

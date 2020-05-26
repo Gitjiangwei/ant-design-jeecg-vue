@@ -32,15 +32,8 @@
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
-                <a-form-item label="任务内容" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入任务内容" v-decorator="['taskContent', {rules: [{ required: true,message: '请输入任务内容' }]}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="500"/>
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row :gutter="24">
-              <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select mode="multiple" style="width: 100%" placeholder="请选择负责人" v-decorator="['selectUser', {rules: [{ required: true,message: '请选择负责人' }]}]" @change="changUser">
+                  <a-select style="width: 100%" placeholder="请选择负责人" v-decorator="['selectUser', {rules: [{ required: true,message: '请选择负责人' }]}]">
                     <a-select-option v-for="(user,index) in userList" :key="user.realname" :value="user.id">
                       {{ user.realname }}
                     </a-select-option>
@@ -51,54 +44,58 @@
             <a-row>
               <a-col :span="16" style="padding-left: 0px;">
                 <a-form-item label="关联工程点" :wrapperCol="wrapperCol" :labelCol="labelCol">
-<!--                  <a-auto-complete :open="isOpen" :optionLabelProp="optionVal"  @select="chooseThis" @blur="getPrjItemList" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" maxLength="150">-->
-<!--                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }" />-->
-<!--                    <template slot="dataSource">-->
-<!--                      <a-select-option key="close">-->
-<!--                          <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>-->
-<!--                      </a-select-option>-->
-<!--                      <a-select-option v-for="item in itemList" :key="item.prjItemId" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>-->
-<!--                    </template>-->
-<!--                  </a-auto-complete>-->
+                  <!--                  <a-auto-complete :open="isOpen" :optionLabelProp="optionVal"  @select="chooseThis" @blur="getPrjItemList" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" maxLength="150">-->
+                  <!--                    <a-textarea placeholder="请输入工程点名称" class="custom" :autosize="{ minRows: 1, maxRows: 2 }" />-->
+                  <!--                    <template slot="dataSource">-->
+                  <!--                      <a-select-option key="close">-->
+                  <!--                          <a-icon @click="hideDownList()"  type="close" style="float: right;"></a-icon>-->
+                  <!--                      </a-select-option>-->
+                  <!--                      <a-select-option v-for="item in itemList" :key="item.prjItemId" :value="item.prjItemName">{{ item.prjItemName }}</a-select-option>-->
+                  <!--                    </template>-->
+                  <!--                  </a-auto-complete>-->
 
                   <a-input placeholder="请输入工程点名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" @click="showPrjItemList" />
                 </a-form-item>
               </a-col>
-<!--              <a-col>-->
-<!--                <a-button @click="handleAddPrjItem" type="primary" icon="plus">新增</a-button>-->
+            </a-row>
+            <a-row :gutter="24">
+              <a-col :span="16" style="padding-left: 8px;">
+                <a-form-item label="任务内容" :wrapperCol="wrapperCol" :labelCol="labelCol">
+                  <a-textarea placeholder="请输入任务内容" v-decorator="['taskContent', {rules: [{ required: true,message: '请输入任务内容' }]}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="500"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+<!--            <a-row>-->
+<!--              <a-col :span="12" style="padding-left: 40px;">-->
+<!--                <a-form-item label="计划开始时间" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--                  <a-date-picker v-decorator="[ 'planStartTime', {}]" />-->
+<!--                </a-form-item>-->
 <!--              </a-col>-->
-            </a-row>
-            <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="计划开始时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="[ 'planStartTime', {}]" />
-                </a-form-item>
-              </a-col>
-              <a-col :span="12" style="padding-left: 0px;">
-                <a-form-item label="计划结束时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="[ 'planEndTime', {}]" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col :span="12" style="padding-left: 40px;">
-                <a-form-item label="实际开始时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="[ 'startTime', {}]" />
-                </a-form-item>
-              </a-col>
-              <a-col :span="12" style="padding-left: 0px;">
-                <a-form-item label="实际结束时间" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-date-picker v-decorator="[ 'endTime', {}]" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row>
-              <a-col :span="16" style="padding-left: 0px;">
-                <a-form-item label="任务进度" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入任务进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
-                </a-form-item>
-              </a-col>
-            </a-row>
+<!--              <a-col :span="12" style="padding-left: 0px;">-->
+<!--                <a-form-item label="计划结束时间" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--                  <a-date-picker v-decorator="[ 'planEndTime', {}]" />-->
+<!--                </a-form-item>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
+<!--            <a-row>-->
+<!--              <a-col :span="12" style="padding-left: 40px;">-->
+<!--                <a-form-item label="实际开始时间" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--                  <a-date-picker v-decorator="[ 'startTime', {}]" />-->
+<!--                </a-form-item>-->
+<!--              </a-col>-->
+<!--              <a-col :span="12" style="padding-left: 0px;">-->
+<!--                <a-form-item label="实际结束时间" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--                  <a-date-picker v-decorator="[ 'endTime', {}]" />-->
+<!--                </a-form-item>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
+<!--            <a-row>-->
+<!--              <a-col :span="16" style="padding-left: 0px;">-->
+<!--                <a-form-item label="任务进度" :wrapperCol="wrapperCol" :labelCol="labelCol">-->
+<!--                  <a-textarea placeholder="请输入任务进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>-->
+<!--                </a-form-item>-->
+<!--              </a-col>-->
+<!--            </a-row>-->
             <a-row>
               <a-col :span="22" style="padding-left: 22px;">
                 <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
@@ -164,14 +161,13 @@
       </a-tab-pane>
     </a-tabs>
 
-<!--    <AddProjectItem ref="addProjectItem" @ok="modalFormOk"></AddProjectItem>-->
     <DemandModel ref="demandModel" @ok="addDemandOk"></DemandModel>
     <ShowProjectItemList ref="showProjectItemList" @func="modalFormOk"></ShowProjectItemList>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
-      <a-button type="primary" @click="handleOk('0')" v-if="model.status != '1' || model.status != '2'">保存</a-button>
-      <a-button type="primary" @click="handleOk('1')">提交</a-button>
+      <a-button type="primary" @click="handleOk('1')" v-if="model.status == '' || model.status == '1'">保存</a-button>
+      <a-button type="primary" @click="handleOk('2')">提交</a-button>
     </div>
   </a-modal>
 </template>
@@ -179,18 +175,16 @@
 <script>
   import {getAction, httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
-  import moment from "moment"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import ACol from "ant-design-vue/es/grid/Col";
-  import AddProjectItem from "./AddProjectItem";
   import DemandModel from "./DemandModel";
   import ShowProjectItemList from "./ShowProjectItemList";
 
   export default {
     name: "taskInfoModel",
-    components: {DemandModel, ACol, ATextarea,AddProjectItem, ShowProjectItemList},
+    components: {DemandModel, ACol, ATextarea, ShowProjectItemList},
     data () {
       return {
         title:"操作",
@@ -205,8 +199,7 @@
         model: {},
         itemList: [],
         fileList:[],
-        selectUser: [],
-        selectUserName: [],
+        selectUser: '',
         userList: [],
         defaultActiveKey: "1",
         labelCol: {
@@ -437,25 +430,23 @@
         if(record.filelist == undefined){
           record.filelist = [];
         }
+        record.createTime = null;
         this.isUpload = false;
+        this.prjItemId = record.prjItemId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.fileList = [];
-
-        if(record.receiveUser != undefined && record.receiveUser != null && record.receiveUser != ''){
-          this.selectUser = record.receiveUser.split(', ');
-          this.selectUserName = record.receiveUserName.split(', ');
-        }
+        this.selectUser = record.receiveUser;
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'taskName','contactPerson','contactTel','taskContent','prjItemName','progressOfItem'))
+          this.form.setFieldsValue(pick(this.model,'taskName','contactPerson','contactTel','taskContent','prjItemName'))
           this.form.setFieldsValue({selectUser:this.selectUser});
-          //时间格式化
-          this.form.setFieldsValue({planStartTime:this.model.planStartTime?moment(this.model.planStartTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({planEndTime:this.model.planEndTime?moment(this.model.planEndTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({startTime:this.model.startTime?moment(this.model.startTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({endTime:this.model.endTime?moment(this.model.endTime,'YYYY-MM-DD'):null});
+          // //时间格式化
+          // this.form.setFieldsValue({planStartTime:this.model.planStartTime?moment(this.model.planStartTime,'YYYY-MM-DD'):null});
+          // this.form.setFieldsValue({planEndTime:this.model.planEndTime?moment(this.model.planEndTime,'YYYY-MM-DD'):null});
+          // this.form.setFieldsValue({startTime:this.model.startTime?moment(this.model.startTime,'YYYY-MM-DD'):null});
+          // this.form.setFieldsValue({endTime:this.model.endTime?moment(this.model.endTime,'YYYY-MM-DD'):null});
         });
 
         if(this.model.taskId){
@@ -468,8 +459,7 @@
         this.isOpen = false;
         this.defaultActiveKey = "1";
         this.dataSource = [];
-        this.selectUser = [];
-        this.selectUserName = [];
+        this.selectUser = '';
         this.visible = false;
       },
       handleOk (status) {
@@ -499,7 +489,6 @@
             that.model.status = status;
             let formData = Object.assign(that.model, values);
             formData.demandList = this.dataSource;
-            formData.selectUserName = this.selectUserName;
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
@@ -546,11 +535,6 @@
           this.optionVal = this.textVal;
         }
       },
-      handleAddPrjItem: function () {
-        this.isOpen = false;
-        this.$refs.addProjectItem.add();
-        this.$refs.addProjectItem.title = "新增";
-      },
       modalFormOk(data){
         this.prjItemId = data.prjItemId;
         this.form.setFieldsValue({prjItemName:data.prjItemName});
@@ -572,12 +556,6 @@
       },
       addDemandOk(data){
         this.dataSource = data;
-      },
-      changUser(val,option){
-        this.selectUserName = [];
-        option.some((item,i) => {
-          this.selectUserName.push(item.key);
-        })
       },
       loadDemand(taskId){
         getAction(this.url.taskDemandList, {taskId: taskId}).then((res) => {

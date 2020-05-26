@@ -29,6 +29,11 @@
             </a-col>
           </a-row>
           <a-row  :gutter="24" v-show="isShow">
+            <a-col :span="6">
+              <a-form-item label="创建人">
+                <a-input placeholder="请输入创建人" v-model="queryParam.createUserName"  maxlength="30"></a-input>
+              </a-form-item>
+            </a-col>
             <a-col :span="12"  >
               <a-form-item label="开始时间">
                 <a-date-picker v-decorator="[ 'startTime', {}]" />  --  <a-date-picker v-decorator="[ 'startTime', {}]" />
@@ -132,7 +137,6 @@
     import ARow from "ant-design-vue/es/grid/Row";
     import FileDetail from "./modules/FileDetail";
     import moment from "moment"
-    import {httpAction} from "../../../api/manage";
 
     export default {
       name: "contractInfoList",
@@ -150,7 +154,6 @@
           //字典数组缓存
           typeDictOptions: [],
           isShow:false,
-          createUser: '',
           // 表头
           columns: [
             {
@@ -173,39 +176,53 @@
               align: "center",
               dataIndex: 'prjItemName'
             },
+            // {
+            //   title: '计划开始时间',
+            //   align: "center",
+            //   dataIndex: 'planStartTime',
+            //   width: 120,
+            // },
+            // {
+            //   title: '实际开始时间',
+            //   align: "center",
+            //   dataIndex: 'startTime',
+            //   width: 120,
+            // },
             {
-              title: '计划开始时间',
+              title: '任务状态',
               align: "center",
-              dataIndex: 'planStartTime',
-              width: 120,
-            },
-            {
-              title: '实际开始时间',
-              align: "center",
-              dataIndex: 'startTime',
-              width: 120,
+              dataIndex: 'status',
+              width: 100,
+              customRender: (text, record, index) => {
+                //字典值替换通用方法
+                if (text == '1'){
+                  return "待提交";
+                }else if(text == '2'){
+                  return "待采购确认";
+                }else if (text == '3'){
+                  return "待执行";
+                }else if (text == '0'){
+                  return "已结束";
+                }
+              }
             },
             {
               title: '负责人',
               align: "center",
               dataIndex: 'receiveUserName',
-              width: 150,
+              width: 100,
             },
             {
-              title: '任务状态',
+              title: '创建人',
               align: "center",
-              dataIndex: 'status',
-              width: 80,
-              customRender: (text, record, index) => {
-                //字典值替换通用方法
-                if (text == '0'){
-                  return "新建";
-                }else if(text == '1'){
-                  return "进行中";
-                }else if (text == '2'){
-                  return "已结束";
-                }
-              }
+              dataIndex: 'createUserName',
+              width: 100,
+            },
+            {
+              title: '创建时间',
+              align: "center",
+              dataIndex: 'createTime',
+              width: 100,
             },
             {
               title: '附件',
@@ -275,7 +292,6 @@
           getAction(this.url.list, params).then((res) => {
             if (res.success) {
               this.dataSource = res.result.list;
-              this.createUser = res.message;
               this.ipagination.total = res.result.total;
             }
           })
@@ -287,17 +303,6 @@
               this.typeDictOptions = res.result;
             }
           });
-        },
-        handleSuperQuery(arg) {//高级查询方法
-          let params = {'superQueryParams':encodeURI(JSON.stringify(arg))};
-          getAction(this.url.list, params).then((res) => {
-            if (res.success) {
-              this.dataSource = res.result.list;
-              this.ipagination.total = res.result.total;
-            }else{
-              that.$message.warn(res.message);
-            }
-          })
         },
         getQueryParams() {
           var param = Object.assign({}, this.queryParam, this.isorter);
@@ -413,8 +418,7 @@
         },
         exportDate(){
           var params = Object.assign({}, this.queryParam, this.isorter);
-          params.mark = 'create';
-          params.createUser = this.createUser;
+          // params.mark = 'create';
           var param = JSON.stringify(params);
           param = param.replace("{","");
           param = param.replace("}","");

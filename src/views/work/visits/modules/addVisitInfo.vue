@@ -167,8 +167,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import { doMian} from '@/api/api'
-  import CompanyInfoShow from "./CompanyInfoShow";
+  import CompanyInfoShow from "../../customer/modules/CompanyInfoShow";
 
 
   export default {

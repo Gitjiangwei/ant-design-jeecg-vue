@@ -58,7 +58,7 @@
       </a-table>
 
     </div>
-    <CompanyInfoModal  ref="companyInfoModal" @ok="modalFormOk"></CompanyInfoModal>
+    <CompanyInfoModal ref="companyInfoModal" @ok="modalFormOk"></CompanyInfoModal>
   </a-modal>
 
 
@@ -68,7 +68,7 @@
     import {filterObj} from '@/utils/util'
     import {deleteAction, getAction, postAction} from '@/api/manage'
     import {initDictOptions, filterDictText} from '@/components/dict/RencheDictSelectUtil'
-    import CompanyInfoModal from "./CompanyInfoModal";
+    import CompanyInfoModal from "../../customer/modules/CompanyInfoModal";
 
     export default {
       name: "companyInfoShow",

@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :width="800"
+    :width="1050"
     :visible="visible"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
@@ -10,10 +10,13 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" >
-
-        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备名称">
-          <a-input placeholder="请输入设备名称" :disabled= "!isEdit"   maxlength="30"  v-decorator="['equipmentName', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
-        </a-form-item>
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备名称">
+              <a-input placeholder="请输入设备名称" v-decorator="['equipmentName', {rules: [{ required: true, message: '请输入设备名称', }]}]"  />
+            </a-form-item>
+          </a-col>
+        </a-row>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备型号">
           <a-input placeholder="请输入设备型号" :disabled= "!isEdit"  maxlength="30"  v-decorator="['equipmentModel', {rules: [{ required: true, message: '请输入设备型号' }]}]" />
         </a-form-item>
