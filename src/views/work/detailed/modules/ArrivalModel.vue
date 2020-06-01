@@ -1,0 +1,271 @@
+<template>
+  <a-modal
+    :title="title"
+    :width="1050"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+
+    <a-spin :spinning="confirmLoading">
+      <a-form :form="form">
+        <a-row :gutter="24">
+          <a-col :span="16" style="padding-left: 8px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程点名称" >
+              <a-textarea placeholder="请输入工程点名称" disabled v-decorator="['prjItemName', {rules: [{ required: true,message: '请输入工程点名称' }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxlength="150"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位">
+              <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" maxLength="30"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收人" >
+              <a-input placeholder="请输入接收人" v-decorator="['recipient', {rules: [{ required: true,message: '请输入接收人' }]}]" maxlength="30"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row>
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
+              <a-input placeholder="请输入手机号"  v-decorator="['phoneNumber',validatorRules.phoneNumber]" maxLength="11"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收日期" >
+              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'receiptDate', {}]"/>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
+      </a-form>
+    </a-spin>
+    <div>
+      <a-table
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="prjItemId"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        @change="handleTableChange" style="padding-top: 10px;">
+
+                <span slot="action" slot-scope="text, record">
+                  <a @click="handleDelete(record.outId)">删除</a>
+                </span>
+      </a-table>
+    </div>
+  </a-modal>
+
+</template>
+
+
+<script>
+  import { httpAction} from '@/api/manage'
+  import pick from 'lodash.pick'
+  import moment from "moment"
+  import Vue from 'vue'
+  import {ACCESS_TOKEN} from "@/store/mutation-types"
+
+  export default {
+    name: "ArrivalModel",
+
+    data() {
+      return {
+        title: "操作",
+        visible: false,
+        isShow: false,
+        model: {},
+        labelCol: {
+          xs: {span: 24},
+          sm: {span: 5},
+        },
+        wrapperCol: {
+          xs: {span: 24},
+          sm: {span: 16},
+        },
+        filelabelCol: {
+          xs: { span: 24 },
+          sm: { span: 3 },
+        },
+        filewrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 21 },
+        },
+
+        //表头
+        columns:[
+          {
+            title: '序号',
+            dataIndex: '',
+            key: 'rowIndex',
+            width: 60,
+            align: "center",
+            customRender: function (t, r, index) {
+              return parseInt(index) + 1;
+            }
+          },
+          {
+            title: '设备名称',
+            align: "center",
+            dataIndex: 'materialName'
+          },
+          {
+            title: '设备单位',
+            align: "center",
+            dataIndex: 'materialUnit'
+          },
+          {
+            title: '设备数量',
+            align: "center",
+            dataIndex: 'needNumber'
+          },
+          {
+            title: '备注',
+            align: "center",
+            dataIndex: 'remarks'
+          },
+
+        ],
+        //数据集
+        dataSource: [],
+        // 分页参数
+        ipagination: {
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0,
+        },
+
+
+        uploadLoading: false,
+        headers: {},
+        avatar: "",
+        fileList: [],
+        confirmLoading: false,
+        form: this.$form.createForm(this),
+
+        validatorRules:{
+
+          phoneNumber:{rules: [{validator:this.validateMobile}]}
+        },
+        url: {
+          edit: "/renche/arrivalList/edit",
+          add: "/renche/tender/addTender",
+          fileUpload: "/sys/common/upload",
+        },
+
+      }
+    },
+    created () {
+      const token = Vue.ls.get(ACCESS_TOKEN);
+      this.headers = {"X-Access-Token": token}
+    },
+    methods: {
+      add() {
+        this.edit({});
+      },
+      edit(record) {
+        this.dataSource = record.demandList;
+        console.log(this.dataSource);
+        this.fileList = [];
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.isShow = false;
+        if(record.arrivalId != undefined){
+          if(record.isBack == "1"){
+            this.isShow = true;
+          }
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(this.model, 'prjItemName', 'receiver', 'recipient', 'phoneNumber','demandList','receiptDate'))
+            //时间格式化
+            this.form.setFieldsValue({receiptDate: this.model.receiptDate ? moment(this.model.receiptDate, 'YYYY-MM-DD HH:mm:ss"') : null});
+          });
+        }
+      },
+      close() {
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk() {
+        const that = this;
+        // 触发表单验证
+        this.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if (!this.model.prjItemId) {
+              httpurl += this.url.add;
+              method = 'post';
+            } else {
+              httpurl += this.url.edit;
+              method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            formData.receiptDate = formData.receiptDate ? formData.receiptDate.format('YYYY-MM-DD HH:mm:ss') : null;
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok',res.result);
+              } else {
+                alert(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+
+          }
+        })
+      },
+      handleCancel() {
+        this.close()
+      },
+      changeCheck: function (val){
+        if(val == "1"){
+          this.isShow = true;
+        }else{
+          this.isShow = false;
+        }
+      },
+      validateMobile(rule,value,callback) {
+        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)) {
+          callback();
+        } else {
+          callback("您的手机号码格式不正确!");
+        }
+      },
+
+
+     /* getDate() {
+        let nowDate = new Date();
+        let date = {
+          year: nowDate.getFullYear(),
+          month: nowDate.getMonth() + 1,
+          date: nowDate.getDate(),
+        }
+        let systemDate = date.year + '-' + date.month + '-' +  date.date;
+        return systemDate;
+      },*/
+
+
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>
