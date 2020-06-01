@@ -3,14 +3,27 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :span="12">
+          <a-col :span="6">
             <a-form-item label="设备名称">
-              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.equipmentName"></a-input>
+              <a-input placeholder="请输入设备名称" maxlength="30" v-model="queryParam.materialName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px;">新增 </a-button>
+
+                <a-dropdown v-if="selectedRowKeys.length > 0">
+                  <a-menu slot="overlay">
+                    <a-menu-item key="1" @click="batchDel()">
+                      <a-icon type="delete"/>
+                      删除
+                    </a-menu-item>
+                  </a-menu>
+                  <a-button style="margin-left: 8px"> 批量操作
+                    <a-icon type="down"/>
+                  </a-button>
+                </a-dropdown>
               </span>
           </a-col>
         </a-row>
@@ -19,21 +32,6 @@
     <div>
 
       <!-- 操作按钮区域 -->
-      <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增 </a-button>
-
-        <a-dropdown v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="batchDel()">
-              <a-icon type="delete"/>
-              删除
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作
-            <a-icon type="down"/>
-          </a-button>
-        </a-dropdown>
-      </div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
@@ -44,7 +42,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="demandId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -56,8 +54,6 @@
         <span slot="action" slot-scope="text, record">
             <a @click="updateStatus(record)">编辑</a>
           <a-divider type="vertical"/>
-          <a @click="relevanceEqu(record)"  >处理</a>
-          <a-divider type="vertical"/>
                 <a-dropdown>
                   <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
                   <a-menu slot="overlay">
@@ -67,17 +63,12 @@
                       </a-popconfirm>
                     </a-menu-item>
                     <a-menu-item>
-<!--                      <a-popconfirm title="确定发送吗?" @confirm="() => handleSendOut(record)">
-                        <a>发送</a>
-                      </a-popconfirm>-->
+                      <a @click="relevanceEqu(record)"  >处理</a>
                     </a-menu-item>
                     <a-menu-item>
                       <a-popconfirm title="确定通知领料吗?" @confirm="() => handleAdvice(record)">
                         <a>通知领料</a>
                       </a-popconfirm>
-                    </a-menu-item>
-                    <a-menu-item v-if="record.isSend=='3'">
-                        <a @click="handleReasons(record)">退回原因</a>
                     </a-menu-item>
                   </a-menu>
                 </a-dropdown>
@@ -87,7 +78,6 @@
     <demand-modules ref="DemandModules" @ok="modalFormOk"></demand-modules>
     <demand-modules ref="DemandPrjModules" @ok="modalFormOk"></demand-modules>
     <DemandPrjModules ref="DemandPrjModules" @ok="modalFormOk"></DemandPrjModules>
-    <demand-resons-modules ref="DemandResonsModules"></demand-resons-modules>
   </a-card>
 </template>
 <script>
@@ -95,7 +85,6 @@
   import {deleteAction, getAction, httpAction} from '@/api/manage';
   import DemandModules from "./modules/demandModules";
   import DemandPrjModules from "./modules/demandPrjModules";
-  import DemandResonsModules from "./modules/demandResonsModules"
   import {filterObj} from '@/utils/util';
 
   export default {
@@ -104,7 +93,6 @@
       ARow,
       DemandModules,
       DemandPrjModules,
-      DemandResonsModules
     },
     data() {
       return{
@@ -121,31 +109,33 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
             }
           },
           {
-            title: '设备名称',
+            title: '物料名称',
             align: "center",
-            dataIndex: 'equipmentName'
+            dataIndex: 'materialName'
           },
           {
-            title: '设备型号',
+            title: '物料型号',
             align: "center",
-            dataIndex: 'equipmentModel'
+            dataIndex: 'materialType'
           },
           {
             title: '需求数量',
             align: "center",
-            dataIndex: 'equipmentNumber'
+            dataIndex: 'needNumber',
+            width: 80,
           },
           {
             title: '拥有方式',
             align: "center",
             dataIndex: 'haveWay',
+            width: 100,
             customRender: (text, record, index) => {
               if(text == '0'){
                 return "租赁";
@@ -159,17 +149,14 @@
           {
             title: '提交人',
             align: "center",
-            dataIndex: 'createName'
+            dataIndex: 'createUserName',
+            width: 100,
           },
-        /*  {
-            title: '处理时间',
-            align: "center",
-            dataIndex: 'whetherTime'
-          },*/
           {
             title:"状态",
             align:"center",
             dataIndex: "status",
+            width: 100,
             customRender:function (text) {
               if(text==1){
                 return "已处理";
@@ -183,18 +170,13 @@
             }
           },
           {
-            title:"备注",
-            align:"center",
-            dataIndex: "remarks",
-          },
-          {
             title: '操作',
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
+            width: 120,
           }
         ],
-        purchaseId:"",
         //数据集
         dataSource: [],
         // 分页参数
@@ -238,8 +220,6 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        console.log(params)
-        params.purchaseId = this.purchaseId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -306,11 +286,6 @@
        }
         this.$refs.DemandPrjModules.edit(record,status);
         this.$refs.DemandPrjModules.title="处理";
-      },
-
-      handleReasons:function(record){
-        this.$refs.DemandResonsModules.edit(record);
-        this.$refs.DemandResonsModules.title="查看退回原因";
       },
      /* handleSendOut:function(record){
 

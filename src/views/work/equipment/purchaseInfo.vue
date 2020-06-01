@@ -32,11 +32,28 @@
             </a-col>
           </a-row>
           <a-row>
-            <a-col :span="6"  >
+            <a-col :span="8"  >
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
+                <a-button @click="handleAdd" type="primary" icon="plus" style="margin-left: 8px">新增 </a-button>
+                <a-button @click="exportDate" type="primary" icon="export" style="margin-left: 8px">导出</a-button>
+
+               <a-dropdown v-if="selectedRowKeys.length > 0">
+                  <a-menu slot="overlay">
+                    <a-menu-item key="1" @click="batchDel(1)">
+                      <a-icon type="delete"/>
+                      删除
+                    </a-menu-item>
+                    <a-menu-item key="1" @click="batchDel(2)">
+                      <a-icon type="shopping-cart"/>
+                      收货
+                    </a-menu-item>
+                  </a-menu>
+                  <a-button style="margin-left: 8px"> 批量操作
+                    <a-icon type="down"/>
+                  </a-button>
+                </a-dropdown>
               </span>
             </a-col>
           </a-row>
@@ -45,24 +62,7 @@
 
       <!-- 操作按钮区域 -->
       <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">新增 </a-button>
-        <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
 
-       <a-dropdown v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1" @click="batchDel(1)">
-              <a-icon type="delete"/>
-              删除
-            </a-menu-item>
-            <a-menu-item key="1" @click="batchDel(2)">
-              <a-icon type="shopping-cart"/>
-              收货
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作
-            <a-icon type="down"/>
-          </a-button>
-        </a-dropdown>
       </div>
       <!-- table区域-begin -->
       <div>
@@ -86,26 +86,25 @@
 
 
         <span slot="action" slot-scope="text, record">
-          <a @click="fileDeteil(record)">附件</a>
-           <a-divider type="vertical"/>
           <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a @click="handleDetail(record)">详情</a>
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
+                <a @click="fileDeteil(record)">附件</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-if="record.isarrival == '2'">
                 <a-popconfirm title="确定收货吗?" @confirm="() => batchDel(record.purchaseId)">
                   <a>收货</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-if="record.isstorage == '2'">
                 <a-popconfirm title="确定入库吗?程序会进行自动入库" @confirm="() => handleReceiving(record)">
                   <a>入库</a>
                 </a-popconfirm>
@@ -119,8 +118,6 @@
       <!-- table区域-end -->
       <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
 
-      <pruchase-info-detail ref="pruchaseInfoDetail" ></pruchase-info-detail>
-
       <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
     </a-card>
 
@@ -129,7 +126,6 @@
 <script>
     import ARow from "ant-design-vue/es/grid/Row";
     import prochaseInfoMode from "./modules/pruchaseInfoMode";
-    import pruchaseInfoDetail from "./modules/pruchaseInfoDetail";
     import fileDetail from "./modules/FileDetail";
     import {deleteAction, getAction, postAction} from '@/api/manage';
     import {filterObj,timeFix} from '@/utils/util';
@@ -140,7 +136,6 @@
       components: {
         ARow,
         prochaseInfoMode,
-        pruchaseInfoDetail,
         fileDetail,
       },
       data() {
@@ -158,62 +153,66 @@
               title: '#',
               dataIndex: '',
               key: 'rowIndex',
-              width: 60,
+              width: 40,
               align: "center",
               customRender: function (t, r, index) {
                 return parseInt(index) + 1;
               }
             },
             {
-              title: '物品名称',
+              title: '物料名称',
               align: "center",
-              dataIndex: 'purchaseItem',
+              dataIndex: 'materialName'
             },
             {
-              title: '设备型号',
+              title: '物料型号',
               align: "center",
-              dataIndex: 'itemModel'
+              dataIndex: 'materialType'
             },
             {
               title: '单价',
               align: "center",
-              dataIndex: 'price'
+              dataIndex: 'price',
+              width: 80,
             },
             {
               title: '数量',
               align: "center",
               dataIndex: 'quantity',
-
-            },
-            {
-              title: '总价',
-              align: "center",
-              dataIndex: 'totalPrice',
+              width: 70,
             },
             {
               title: '采购人员',
               align: "center",
-              dataIndex: 'purchaser'
+              dataIndex: 'purchaser',
+              width: 100,
             },
             {
-              title: '采购时间',
+              title: '采购日期',
               align: "center",
-              dataIndex: 'purchaseTime'
+              dataIndex: 'purchaseTime',
+              width: 100,
             },
             {
-              title: '采购来源',
+              title: '拥有方式',
               align: "center",
-              dataIndex: 'whichCompany'
-            },
-            {
-              title: '到货日期',
-              align: "center",
-              dataIndex: 'arrivalTime'
+              dataIndex: 'haveWay',
+              width: 80,
+              customRender: (text) => {
+                if(text == '0'){
+                  return "租赁";
+                }else if(text == '1'){
+                  return "购买";
+                }else {
+                  return text;
+                }
+              }
             },
             {
               title: '是否到货',
               align: "center",
               dataIndex: 'isarrival',
+              width: 80,
               customRender: (text) => {
                 if(text==1){
                   return "是";
@@ -228,6 +227,7 @@
               title: '是否入库',
               align: "center",
               dataIndex: 'isstorage',
+              width: 80,
               customRender: (text) => {
                 if(text==1){
                   return "已入库";
@@ -242,26 +242,25 @@
               title: '附件',
               align: "center",
               dataIndex: 'fileRelId',
+              width: 50,
               customRender: (text) => {
                 if(text!=null && text !="" && text != undefined) {
                   if(text.indexOf(",") != -1) {
                     var count = text.match(/,/g).length;
-                    return parseInt(count) + 1;
+                    return parseInt(count);
                   }else{
                     return 1;
                   }
                 }else{
                   return 0;
                 }
-
-
               }
-
             },
             {
               title: '操作',
               dataIndex: 'action',
               align: "center",
+              width: 120,
               scopedSlots: {customRender: 'action'},
             }
           ],
@@ -300,8 +299,6 @@
       },
       created() {
         this.loadData();
-        //初始化字典配置
-        this.initDictConfig();
       },
       methods: {
       loadData(arg) {
@@ -335,10 +332,6 @@
           //let results = this.handleKey(record);
           this.$refs.prochaseInfoMode.edit(record);
           this.$refs.prochaseInfoMode.title = "编辑";
-        },
-        handleDetail: function(record){
-          this.$refs.pruchaseInfoDetail.detail(record);
-          this.$refs.pruchaseInfoDetail.title = "详情";
         },
         batchDel: function (flag) {
           if (this.selectedRowKeys.length <= 0 && (flag==1||flag==2)) {
@@ -425,17 +418,15 @@
         },
         handleReceiving: function (record) {
           var that = this;
-          debugger;
           if(record.isarrival==2){
             that.$message.warning("只能入库收货后的设备");
             return;
           }
-          if(record.isstorage==1){
-            that.$message.warning("当前的设备已经入库，不能重放入库！");
-            return;
-          }
-          postAction(that.url.receiningGoods, {purchaseItem: record.purchaseItem,itemModel:record.itemModel,price:record.price,
-            quantity:record.quantity,purchaseId:record.purchaseId}).then((res) => {
+          // if(record.isstorage==1){
+          //   that.$message.warning("当前的设备已经入库，不能重放入库！");
+          //   return;
+          // }
+          postAction(that.url.receiningGoods, record).then((res) => {
             if (res.success) {
               that.$message.success(res.message);
               this.purchaseId = record.purchaseId;

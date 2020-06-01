@@ -12,27 +12,14 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" >
 
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备名称"
-          hasFeedback
-        >
-          <a-input placeholder="请输入设备名称" disabled   v-decorator="['equipName', {rules: [{ required: true, message: '请输入设备名称', }]}]" />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备名称">
+          <a-input placeholder="请输入设备名称" disabled   v-decorator="['materialName', {}]" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="厂家设备编号"
-          hasFeedback >
-          <a-input placeholder="厂家设备编号" maxlength="15" v-decorator="['manufacoryNo', {}]" />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="厂家设备编号">
+          <a-input placeholder="厂家设备编号" maxlength="30" v-decorator="['manufacoryNo', {}]" />
         </a-form-item>
-        <a-form-item
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          label="设备情况"
-          hasFeedback >
-          <a-input placeholder="请输入设备情况" id="price" maxlength="100"  v-decorator="['condition', {}]" />
+        <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="设备情况">
+          <a-textarea placeholder="请输入设备情况" maxlength="200"  v-decorator="['condition', {}]" :autosize="{ minRows: 2, maxRows: 6 }"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -42,10 +29,12 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
+  import ATextarea from "ant-design-vue/es/input/TextArea";
   //import $ from 'jquery'
 
   export default{
     name:"PurchaseInfoStockEdit",
+    components: {ATextarea},
     data(){
       return{
         title:"操作",
@@ -67,7 +56,6 @@
           xs: { span: 18 },
           sm: { span: 10 },
         },
-        isArris:false,
         confirmLoading: false,
         form: this.$form.createForm(this),
         validatorRules:{
@@ -84,16 +72,11 @@
         this.edit({});
       },
       edit (record) {
-        debugger;
-        this.isArris = true;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'equipName','manufacoryNo','condition'))
-          //时间格式化
-          this.form.setFieldsValue({purchaseTime:this.model.purchaseTime?moment(this.model.purchaseTime,'YYYY-MM-DD'):null});
-          this.form.setFieldsValue({arrivalTime:this.model.arrivalTime?moment(this.model.arrivalTime,'YYYY-MM-DD'):null});
+          this.form.setFieldsValue(pick(this.model,'materialName','manufacoryNo','condition'))
         });
 
       },
@@ -114,10 +97,7 @@
               method = 'post';
             }
             let formData = Object.assign(this.model, values);
-            //时间格式化
-            formData.purchaseTime = formData.purchaseTime?formData.purchaseTime.format('YYYY-MM-DD'):null;
-            formData.arrivalTime = formData.arrivalTime?formData.arrivalTime.format('YYYY-MM-DD'):null;
-            formData.equipStatus = "";
+            formData.equipStatus = '';
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);

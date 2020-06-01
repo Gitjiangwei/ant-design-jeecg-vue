@@ -20,14 +20,11 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
+                <a-button @click="exportDate" type="primary" icon="export" style="margin-left: 8px">导出</a-button>
               </span>
           </a-col>
         </a-row>
       </a-form>
-    </div>
-    <div class="table-operator">
-      <a-button @click="exportDate" type="primary" icon="export">导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div style="margin-top: 10px">
@@ -46,24 +43,11 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">详情 </a>
-
-          <!--          <a-divider type="vertical"/>
-                    <a-dropdown>
-                      <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-                      <a-menu slot="overlay">
-                        <a-menu-item>
-                          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.purchaseId )">
-                            <a>删除</a>
-                          </a-popconfirm>
-                        </a-menu-item>
-                      </a-menu>
-                    </a-dropdown>-->
         </span>
 
       </a-table>
     </div>
     <!-- table区域-end -->
-    <prochase-info-mode ref="prochaseInfoMode" @ok="modalFormOk"></prochase-info-mode>
 
   </a-card>
 
@@ -71,8 +55,7 @@
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import prochaseInfoMode from "./modules/pruchaseInfoMode";
-  import {deleteAction, getAction, postAction} from '@/api/manage';
+  import {getAction, } from '@/api/manage';
   import {filterObj} from '@/utils/util';
 
 
@@ -80,7 +63,6 @@
     name: "PurchaseInfoStock",
     components: {
       ARow,
-      prochaseInfoMode,
     },
     data() {
       return{
@@ -103,12 +85,12 @@
           {
             title: '设备名称',
             align: "center",
-            dataIndex: 'equipName',
+            dataIndex: 'materialName',
           },
           {
             title: '设备型号',
             align: "center",
-            dataIndex: 'equipModel'
+            dataIndex: 'materialType'
           },
           {
             title: '数量',
@@ -135,11 +117,6 @@
             title:"维修中",
             align:"center",
             dataIndex: "maintenonceCount",
-          },
-          {
-            title:"入库时间",
-            align:"center",
-            dataIndex: "createTime",
           },
           {
             title: '操作',
@@ -171,17 +148,12 @@
         selectedRows: [],
         url: {
            list: "/renche/equip/equipList",
-          // delete: "/renche/purchase/delete",
-          // deleteBatch: "/renche/purchase/deleteBatch",
-          // updateIsArrival: "/renche/purchase/updateIsArrival"
           export: "/renche/equip/exportEquip",
         },
       }
     },
     created() {
       this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
     },
     methods: {
       loadData(arg) {
@@ -198,35 +170,10 @@
           }
         })
       },
-
-
-      handleAdd: function () {
-        this.$refs.prochaseInfoMode.add();
-        this.$refs.prochaseInfoMode.title = "新增";
-      },
-      handleEdit: function (record) {
-        this.$refs.prochaseInfoMode.edit(record);
-        this.$refs.prochaseInfoMode.title = "编辑";
-      },
       handleDetail: function(record){
-        this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
+        this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{materialId:record.materialId} })
       },
 
-/*      handleDelete: function (id) {
-        var that = this;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },*/
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      },
       searchReset() {
         var that = this;
         that.queryParam = {}

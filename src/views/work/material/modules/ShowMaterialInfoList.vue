@@ -1,24 +1,34 @@
 <template>
-  <a-card :bordered="false">
-    <div class="table-page-search-wrapper">
+  <a-modal
+    :title="title"
+    :width="1050"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    cancelText="关闭">
+
+    <a-spin :spinning="confirmLoading">
       <a-form layout="inline">
         <a-row :gutter="24">
-          <a-col :span="6">
-            <a-form-item label="物料编号">
+          <a-col :span="8">
+            <a-form-item label="物料编号" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入物料编号" v-model="queryParam.materialNo"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
-            <a-form-item label="物料名称">
+          <a-col :span="8">
+            <a-form-item label="物料名称" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入物料名称" v-model="queryParam.materialName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
-            <a-form-item label="物料型号">
+          <a-col :span="8">
+            <a-form-item label="物料型号" :wrapperCol="wrapperCol" :labelCol="labelCol" style="width: 100%;">
               <a-input placeholder="请输入物料型号" v-model="queryParam.materialType"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+        </a-row>
+        <a-row>
+          <a-col :span="10" style="padding: 12px;">
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -27,10 +37,16 @@
           </a-col>
         </a-row>
       </a-form>
-    </div>
+    </a-spin>
 
     <!-- table区域-begin -->
     <div>
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
+        selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
+
       <a-table
         ref="table"
         size="middle"
@@ -40,24 +56,15 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,type: 'radio',}"
         @change="handleTableChange">
 
-          <span slot="action" slot-scope="text, record">
-             <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.materialId )">
-                <a>删除</a>
-              </a-popconfirm>
-          </span>
       </a-table>
     </div>
     <!-- table区域-end -->
-
-    <!-- 表单区域 -->
-
     <MaterialInfoModal ref="materialInfoModal" @ok="modalFormOk"></MaterialInfoModal>
 
-  </a-card>
-
+  </a-modal>
 </template>
 
 <script>
@@ -65,8 +72,6 @@
   import MaterialInfoModal from './MaterialInfoModal';
   import {filterObj} from '@/utils/util';
   import {deleteAction, getAction, postAction } from '@/api/manage';
-  import Vue from 'vue';
-  import {ACCESS_TOKEN} from "@/store/mutation-types";
 
   export default {
     name: "MaterialInfo",
@@ -76,9 +81,19 @@
     },
     data() {
       return {
-        description: '物料库管理',
+        title: '操作',
         // 查询条件
         queryParam: {},
+        visible: false,
+        confirmLoading: false,
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         // 表头
         columns: [
           {
@@ -104,12 +119,6 @@
             width: 200,
           },
           {
-            title: '拼音',
-            align: "center",
-            dataIndex: 'pyName',
-            width: 150,
-          },
-          {
             title: '物料型号',
             align: "center",
             dataIndex: 'materialType',
@@ -122,7 +131,6 @@
             width: 100,
           }
         ],
-        headers: {},
         //数据集
         dataSource: [],
         // 分页参数
@@ -157,10 +165,31 @@
     },
     created() {
       this.loadData();
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token": token};
     },
     methods: {
+      show () {
+        this.visible = true;
+        this.queryParam = {};
+        this.loadData();
+      },
+      close () {
+        this.selectedRowKeys = [];
+        this.selectedRows = [];
+        this.$emit('close');
+        this.visible = false;
+      },
+      handleOk () {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条数据！');
+          return;
+        } else {
+          this.$emit('func',this.selectedRows[0]);
+          this.close();
+        }
+      },
+      handleCancel () {
+        this.close()
+      },
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -170,7 +199,6 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
-            console.log(this.dataSource);
             this.ipagination.total = res.result.total;
 
           }
@@ -204,11 +232,11 @@
       },
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;
-        this.selectionRows = selectionRows;
+        this.selectedRows = selectionRows;
       },
       onClearSelected() {
         this.selectedRowKeys = [];
-        this.selectionRows = [];
+        this.selectedRows = [];
       },
       batchDel: function () {
         if (this.selectedRowKeys.length <= 0) {
@@ -254,9 +282,9 @@
         this.loadData();
       },
 
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
+      modalFormOk(data) {
+        this.$emit("func",data);
+        this.close();
       },
     }
   }

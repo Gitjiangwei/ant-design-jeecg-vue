@@ -20,23 +20,19 @@
               <RencheDictSelectTag v-model="queryParam.type" placeholder="请选择客户类型" dictCode="CUSTOMETYPE"/>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="6"  >
-              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <a-button @click="handleAddCompany" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
-
-              </span>
+          <a-col :span="6">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button @click="handleAddCompany" type="primary" icon="plus" style="margin-left: 8px">新增</a-button>
+            </span>
           </a-col>
         </a-row>
       </a-form>
     </div>
 
-
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
@@ -77,7 +73,7 @@
       },
       data() {
         return{
-          description: '客户信息管理页面',
+          title: '客户信息管理页面',
 
           // 查询条件
           queryParam: {},

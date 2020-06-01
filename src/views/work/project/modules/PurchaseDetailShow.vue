@@ -195,7 +195,7 @@
         url: {
           list: "/renche/equip/equipKeyDetail",
           outEquip: "/renche/outEquip/inserOutEquip",
-          repair: "/renche/equip/equipKeyDetail"
+          repair: "/renche/equip/updateDetailEquipInfo"
         },
       }
     },

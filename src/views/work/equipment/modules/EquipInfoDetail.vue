@@ -34,7 +34,6 @@
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
     <!-- table区域-begin -->
     <div>
 
@@ -42,17 +41,12 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="equipId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-        <!--          <span slot="purchaseItem" slot-scope="text,record">-->
-        <!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
-        <!--          </span>-->
 
 
       </a-table>
@@ -89,7 +83,7 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
@@ -98,7 +92,7 @@
           {
             title: '库存设备名称',
             align: "center",
-            dataIndex: 'equipName'
+            dataIndex: 'materialName'
           },
           {
             title: '库存设备编号',
@@ -111,14 +105,25 @@
             dataIndex: 'manufacoryNo'
           },
           {
-            title: '设备情况',
-            align: "center",
-            dataIndex: 'condition'
+            title:"拥有方式",
+            align:"center",
+            dataIndex: "haveWay",
+            width: 80,
+            customRender: (text) => {
+              if(text == '0'){
+                return "租赁";
+              }else if(text == '1'){
+                return "购买";
+              }else {
+                return text;
+              }
+            }
           },
           {
             title:"当前状态",
             align:"center",
             dataIndex: "equipStatus",
+            width: 80,
             customRender: (text, record, index) => {
               //字典值替换通用方法
               return filterDictText(this.statDictOptions, text);
@@ -128,16 +133,17 @@
             title:"使用次数",
             align:"center",
             dataIndex: "useTimes",
+            width: 80,
           }
         ],
-        purchaseId:"",
+        materialId:"",
         //数据集
         dataSource: [],
         // 分页参数
         ipagination: {
           current: 1,
-          pageSize: 10,
-          pageSizeOptions: ['10', '20', '30'],
+          pageSize: 20,
+          pageSizeOptions: ['20', '30', '40'],
           showTotal: (total, range) => {
             return range[0] + "-" + range[1] + " 共" + total + "条"
           },
@@ -159,7 +165,6 @@
     },
     created() {
       //初始化字典配置
-
       this.initDictConfig();
     },
     methods: {
@@ -168,9 +173,8 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        debugger;
         var params = this.getQueryParams();//查询条件
-        params.purchaseId = this.purchaseId;
+        params.materialId = this.materialId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -180,7 +184,7 @@
       },
       detail:function(record){
         this.visible = true;
-        this.purchaseId = record.purchaseId;
+        this.materialId = record.materialId;
         this.loadData(1);
       },
       initDictConfig: function() {

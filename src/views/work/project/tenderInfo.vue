@@ -181,8 +181,20 @@
             {
               title: '附件',
               align: "center",
-              dataIndex: 'fileCount',
+              dataIndex: 'fileRelId',
               width: 50,
+              customRender: (text) => {
+                if(text!=null && text !="" && text != undefined) {
+                  if(text.indexOf(",") != -1) {
+                    var count = text.match(/,/g).length;
+                    return parseInt(count);
+                  }else{
+                    return 1;
+                  }
+                }else{
+                  return 0;
+                }
+              }
             },
             {
               title: '操作',

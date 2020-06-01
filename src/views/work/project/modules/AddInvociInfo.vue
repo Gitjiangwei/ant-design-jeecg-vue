@@ -32,12 +32,12 @@
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
             <a-form-item label="金额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input-number id="price" v-decorator="['price', {rules: [{ required: true,message: '请输入正确金额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
+              <a-input-number id="price" v-decorator="['price', {rules: [{ required: true,message: '请输入正确金额' }]}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="税额" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input-number id="shuiMoney" v-decorator="['shuiMoney', {rules: [{ required: true,message: '请输入正确税额' }],initialValue: '0'}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
+              <a-input-number id="shuiMoney" v-decorator="['shuiMoney', {rules: [{ required: true,message: '请输入正确税额' }]}]" :min="0" :max="99999999999" :step="0.01" style="width: 60%;" @blur="makeTotalMoney" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -199,7 +199,6 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
-  import { doMian} from '@/api/api'
   import ContractInfoShow from './ContractInfoShow'
   import CompanyInfoShow from "../show/CompanyInfoShow";
 
@@ -448,20 +447,18 @@
       handleCancel () {
         this.close()
       },
-      makeTotalMoney(e){
+      makeTotalMoney(){
         let price = document.getElementById("price").value.toString();
         let shuiMoney = document.getElementById("shuiMoney").value.toString();
-        if(price == ""){
-          price = "0";
+        if(price == ''){
+          price = 0;
         }
-        if(shuiMoney == ""){
-          shuiMoney = "0";
+        if(quantity == ''){
+          shuiMoney = 0;
         }
         var totalPrice = parseFloat(price) + parseFloat(shuiMoney);
-        if (price != "" || shuiMoney != "") {
-          this.form.setFieldsValue({totalMoney: totalPrice})
-          this.model.totalMoney = totalPrice;
-        }
+        this.form.setFieldsValue({totalMoney: totalPrice})
+        this.model.totalMoney = totalPrice;
       },
       showContract:function (){
         this.$refs.contractInfoShow.show();

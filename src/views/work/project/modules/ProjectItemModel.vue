@@ -454,7 +454,7 @@
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
-                if(method = 'post'){
+                if(method == 'post'){
                   this.model.prjItemId = res.result.prjItemId;
                 }
               }else{

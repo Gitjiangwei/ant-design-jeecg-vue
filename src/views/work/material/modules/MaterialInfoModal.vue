@@ -17,18 +17,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item label="名称拼音" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="名称拼音（全拼）" v-decorator="['pyName', {rules: [{ required: true,message: '请输入名称拼音（全拼）', pattern: /^[A-Za-z]*$/,}]}]"  maxLength="50"/>
+            <a-form-item label="物料型号" :wrapperCol="wrapperCol" :labelCol="labelCol">
+              <a-input placeholder="请输入物料型号" v-decorator="['materialType', {rules: [{ required: true,message: '请输入物料型号' }]}]"  maxLength="30" />
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item label="物料型号" :wrapperCol="wrapperCol" :labelCol="labelCol">
-              <a-input placeholder="请输入物料型号" v-decorator="['materialType', {rules: [{ required: true,message: '请输入物料型号' }]}]"  maxLength="30" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="12" style="padding-left: 0px;">
             <a-form-item label="物料单位" :wrapperCol="wrapperCol" :labelCol="labelCol">
               <a-input placeholder="请输入物料单位" v-decorator="['materialUnit', {rules: [{ required: true,message: '请输入物料单位' }]}]"  maxLength="5"/>
             </a-form-item>
@@ -94,7 +89,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'materialNo','materialName','pyName','materialType','materialUnit'))
+          this.form.setFieldsValue(pick(this.model,'materialNo','materialName','materialType','materialUnit'))
         });
 
       },

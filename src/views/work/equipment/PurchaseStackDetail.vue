@@ -30,20 +30,6 @@
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel(1)">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
-    </div>
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
@@ -56,7 +42,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="equipId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -64,26 +50,22 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <!--          <span slot="purchaseItem" slot-scope="text,record">-->
-        <!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
-        <!--          </span>-->
-
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a @click="handleRepair(record)">维修</a>
           <a-divider type="vertical"/>
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
-                  <a>删除</a>
-                </a-popconfirm>
+                <a @click="handleRepair(record)">维修</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a-popconfirm title="确定将设备报废吗?" @confirm="() => handleBaoF(record)">
                   <a>报废</a>
                 </a-popconfirm>
-                <a-popconfirm title="确定将设备投入使用吗?" @confirm="() => handleStatus(record)">
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定设备可以投入使用吗?" @confirm="() => handleStatus(record)">
                   <a>维修完成</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -125,7 +107,7 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
@@ -134,7 +116,7 @@
           {
             title: '库存设备名称',
             align: "center",
-            dataIndex: 'equipName'
+            dataIndex: 'materialName'
           },
           {
             title: '库存设备编号',
@@ -147,14 +129,25 @@
             dataIndex: 'manufacoryNo'
           },
           {
-            title: '设备情况',
-            align: "center",
-            dataIndex: 'condition'
+            title:"拥有方式",
+            align:"center",
+            dataIndex: "haveWay",
+            width: 80,
+            customRender: (text) => {
+              if(text == '0'){
+                return "租赁";
+              }else if(text == '1'){
+                return "购买";
+              }else {
+                return text;
+              }
+            }
           },
           {
             title:"当前状态",
             align:"center",
             dataIndex: "equipStatus",
+            width: 80,
             customRender: (text, record, index) => {
               //字典值替换通用方法
               return filterDictText(this.statDictOptions, text);
@@ -164,16 +157,17 @@
             title:"使用次数",
             align:"center",
             dataIndex: "useTimes",
+            width: 80,
           },
-
           {
             title: '操作',
             dataIndex: 'action',
             align: "center",
+            width: 120,
             scopedSlots: {customRender: 'action'},
           }
         ],
-        purchaseId:"",
+        materialId:"",
         //数据集
         dataSource: [],
         // 分页参数
@@ -197,18 +191,17 @@
         selectedRows: [],
         url: {
           list: "/renche/equip/equipKey",
-          // delete: "/renche/purchase/delete",
           equipStatus: "/renche/equip/updateStatus",
           repair: "/renche/equip/updateStatusweix",
-          baof:"/renche/equip/updateEquipbaof"
+          baof:"/renche/equip/updateEquipbaof",
+          delete: "/renche/equip/delete",
         },
       }
     },
     created() {
-      this.purchaseId = this.$route.params.purchaseId;
+      this.materialId = this.$route.params.materialId;
       this.loadData();
       //初始化字典配置
-
       this.initDictConfig();
     },
     methods: {
@@ -217,9 +210,8 @@
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        debugger;
         var params = this.getQueryParams();//查询条件
-        params.purchaseId = this.purchaseId;
+        params.materialId = this.materialId;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
@@ -239,7 +231,7 @@
       },
       handleEdit: function (record) {
         this.$refs.purchaseInfoStockEdit.edit(record);
-        this.$refs.purchaseInfoStockEdit.title = record.equipName+"编辑";
+        this.$refs.purchaseInfoStockEdit.title = "编辑";
       },
       handleRepair: function(record){
         var that = this;
@@ -299,74 +291,13 @@
         }
 
       },
-      batchDel: function (flag) {
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        } else {
-          var ids = "";
-          debugger;
-          for (var a = 0; a < this.selectedRowKeys.length; a++) {
-            if(this.selectionRows[a].equipStatus != "SCRAP"){
-              this.$message.warning('您要删除的设备中有未报废的设备，请重新选择！');
-              return;
-            }
-            ids += this.selectionRows[a].purchaseId + ",";
-          }
-          var that = this;
-          var title = "";
-          var content = "";
-          var url = "";
-          if (flag==1){
-            title = "确认删除";
-            content = "是否删除选中数据";
-            url = that.url.deleteBatch;
-          } else {
-            title = "确认收货";
-            content = "再次确认设备已经到达";
-            url = that.url.updateIsArrival;
-          }
-          this.$confirm({
-            title: title,
-            content: content,
-            onOk: function () {
-              deleteAction(url, {ids: ids}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData(1);
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            }
-          });
-        }
-      },
       handleStatus: function(record){
         var that = this;
-        debugger;
         if(record.equipStatus != "INREPAIR"){
           that.$message.warning("只能将维修中的设备投入使用！")
           return;
         }
         deleteAction(that.url.equipStatus, {equipId: record.equipId}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      handleDelete: function (record) {
-        var that = this;
-        debugger;
-        if(record.equipStatus != "SCRAP"){
-          that.$message.warning("只能删除报废的设备！")
-          return;
-        }
-        deleteAction(that.url.delete, {id: record.id}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
             that.loadData();

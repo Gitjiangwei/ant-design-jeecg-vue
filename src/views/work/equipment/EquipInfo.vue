@@ -20,7 +20,7 @@
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
                 <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                <!--<a-button type="primary" @click="superQuery" icon="filter" style="margin-left: 8px">高级查询</a-button>-->
+                <a-button @click="exportDate" type="primary" icon="export" style="margin-left: 8px">导出</a-button>
               </span>
           </a-col>
         </a-row>
@@ -88,12 +88,12 @@
           {
             title: '设备名称',
             align: "center",
-            dataIndex: 'equipName',
+            dataIndex: 'materialName',
           },
           {
             title: '设备型号',
             align: "center",
-            dataIndex: 'equipModel'
+            dataIndex: 'materialType'
           },
           {
             title: '数量',
@@ -120,11 +120,6 @@
             title:"维修中",
             align:"center",
             dataIndex: "maintenonceCount",
-          },
-          {
-            title:"入库时间",
-            align:"center",
-            dataIndex: "createTime",
           },
           {
             title: '操作',
@@ -155,14 +150,13 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/equip/equipList",
+           list: "/renche/equip/equipList",
+          export: "/renche/equip/exportEquip",
         },
       }
     },
     created() {
       this.loadData();
-      //初始化字典配置
-      this.initDictConfig();
     },
     methods: {
       loadData(arg) {
@@ -185,21 +179,6 @@
         //this.$router.push({ name: 'work-equipment-PurchaseStackDetail',params:{purchaseId:record.purchaseId} })
       },
 
-      /*      handleDelete: function (id) {
-              var that = this;
-              deleteAction(that.url.delete, {id: id}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              });
-            },*/
-      modalFormOk() {
-        // 新增/修改 成功时，重载列表
-        this.loadData();
-      },
       searchReset() {
         var that = this;
         that.queryParam = {}

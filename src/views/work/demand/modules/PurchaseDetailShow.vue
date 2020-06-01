@@ -33,20 +33,6 @@
       </a-form>
     </div>
 
-    <!-- 操作按钮区域 -->
-<!--    <div class="table-operator">
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel(1)">
-            <a-icon type="delete"/>
-            删除
-          </a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作
-          <a-icon type="down"/>
-        </a-button>
-      </a-dropdown>
-    </div>-->
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;margin-top: 15px;">
@@ -66,27 +52,6 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-        <!--          <span slot="purchaseItem" slot-scope="text,record">-->
-        <!--              <a @click="handleEdit(record)">chaolianj(record.purchaseItem)</a>-->
-        <!--          </span>-->
-
-<!--        <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical"/>
-          <a @click="handleRepair(record)">维修</a>
-          <a-divider type="vertical"/>
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>-->
 
       </a-table>
     </div>
@@ -160,13 +125,6 @@
             align:"center",
             dataIndex: "useTimes",
           }
-/*
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align: "center",
-            scopedSlots: {customRender: 'action'},
-          }*/
         ],
         purchaseId:"",
         projectId:"",
@@ -196,12 +154,11 @@
         url: {
           list: "/renche/equip/equipKeyDetail",
           outEquip: "/renche/outEquip/inserOutEquip",
-          repair: "/renche/equip/equipKeyDetail"
+          repair: "/renche/equip/updateDetailEquipInfo"
         },
       }
     },
     created() {
-      //this.purchaseId = this.$route.params.purchaseId;
       this.loadData();
       //初始化字典配置
 
