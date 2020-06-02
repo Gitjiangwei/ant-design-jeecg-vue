@@ -33,7 +33,7 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select style="width: 100%" placeholder="请选择负责人" v-decorator="['selectUser', {rules: [{ required: true,message: '请选择负责人' }]}]">
+                  <a-select style="width: 100%" placeholder="请选择负责人" v-decorator="['receiveUser', {rules: [{ required: true,message: '请选择负责人' }]}]">
                     <a-select-option v-for="(user,index) in userList" :key="user.realname" :value="user.id">
                       {{ user.realname }}
                     </a-select-option>
@@ -118,37 +118,31 @@
                 </a-form-item>
               </a-col>
             </a-row>
-
           </a-form>
+          <a-row style="text-align: center;">
+            <a-col>
+              <span style="overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="handleOk('1')" v-if="model.status != 2">保存</a-button>
+                <a-button type="primary" @click="handleOk('2')" style="margin-left: 8px;">提交</a-button>
+              </span>
+            </a-col>
+          </a-row>
         </a-spin>
       </a-tab-pane>
-      <a-tab-pane tab="需要设备清单" key="2" style="padding-bottom: 14px" v-if="model.isMakeDemand == '1'">
-        <div style="padding-top: 42px;">
-          <a-table
-            ref="table"
-            bordered
-            rowKey="demandId"
-            :columns="columnsRead"
-            :dataSource="dataSource"
-            :loading="loading"
-            :scroll="{ y: 500 }"
-            style="padding-top: 10px;">
-          </a-table>
-        </div>
-      </a-tab-pane>
-      <a-tab-pane tab="需要设备清单" key="2" style="padding-bottom: 14px" v-if="model.isMakeDemand != '1'">
+      <a-tab-pane tab="需要设备清单" key="2" style="padding-bottom: 14px">
         <div style="float: right;">
           <a-button type="primary" @click="addDemand" icon="plus" >新增</a-button>
         </div>
         <div style="padding-top: 42px;">
           <a-table
             ref="table"
+            size="middle"
             bordered
             rowKey="demandId"
             :columns="columns"
             :dataSource="dataSource"
+            :pagination="ipagination"
             :loading="loading"
-            :scroll="{ y: 500 }"
             style="padding-top: 10px;">
 
                 <span slot="action" slot-scope="text, record">
@@ -166,14 +160,12 @@
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
-      <a-button type="primary" @click="handleOk('1')" v-if="model.status == '' || model.status == '1'">保存</a-button>
-      <a-button type="primary" @click="handleOk('2')">提交</a-button>
     </div>
   </a-modal>
 </template>
 
 <script>
-  import {getAction, httpAction } from '@/api/manage'
+  import {getAction, httpAction,deleteAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import Vue from 'vue'
@@ -199,8 +191,8 @@
         model: {},
         itemList: [],
         fileList:[],
-        selectUser: '',
         userList: [],
+        taskId: '',
         defaultActiveKey: "1",
         labelCol: {
           xs: { span: 24 },
@@ -224,35 +216,38 @@
             title: '#',
             dataIndex: '',
             key: 'rowIndex',
-            width: 60,
+            width: 40,
             align: "center",
             customRender: function (t, r, index) {
               return parseInt(index) + 1;
             }
           },
           {
+            title: '设备编号',
+            align: "center",
+            dataIndex: 'materialNo',
+          },
+          {
             title: '设备名称',
             align: "center",
-            dataIndex: 'equipmentName',
-            width: 190,
+            dataIndex: 'materialName',
           },
           {
             title: '设备型号',
             align: "center",
-            dataIndex: 'equipmentModel',
-            width: 190,
+            dataIndex: 'materialType',
           },
           {
             title: '需要数量',
             align: "center",
-            dataIndex: 'equipmentNumber',
-            width: 100,
+            dataIndex: 'needNumber',
+            width: 80,
           },
           {
             title: '拥有方式',
             align: "center",
             dataIndex: 'haveWay',
-            width: 100,
+            width: 80,
             customRender: (text, record, index) => {
               //字典值替换通用方法
               if (text == '0'){
@@ -266,69 +261,35 @@
             title: '备注',
             align: "center",
             dataIndex: 'remarks',
-            width: 220,
+            width: 200,
           },
           {
             title: '操作',
             dataIndex: 'action',
             align: "center",
+            width: 120,
             scopedSlots: {customRender: 'action'},
           }
 
         ],
-        //表头
-        columnsRead:[
-          {
-            title: '#',
-            dataIndex: '',
-            key: 'rowIndex',
-            width: 60,
-            align: "center",
-            customRender: function (t, r, index) {
-              return parseInt(index) + 1;
-            }
-          },
-          {
-            title: '设备名称',
-            align: "center",
-            dataIndex: 'equipmentName',
-            width: 190,
-          },
-          {
-            title: '设备型号',
-            align: "center",
-            dataIndex: 'equipmentModel',
-            width: 190,
-          },
-          {
-            title: '需要数量',
-            align: "center",
-            dataIndex: 'equipmentNumber',
-            width: 100,
-          },
-          {
-            title: '拥有方式',
-            align: "center",
-            dataIndex: 'haveWay',
-            width: 100,
-            customRender: (text, record, index) => {
-              //字典值替换通用方法
-              if (text == '0'){
-                return "租赁";
-              }else if(text == '1'){
-                return "购买";
-              }
-            }
-          },
-          {
-            title: '备注',
-            align: "center",
-            dataIndex: 'remarks',
-            width: 220,
-          }
-        ],
         //数据集
         dataSource: [],
+        // 分页参数
+        ipagination: {
+          current: 1,
+          pageSize: 30,
+          pageSizeOptions: ['20', '30', '40'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+        isorter: {
+          column: 'createTime',
+          order: 'desc',
+        },
         loading: false,
         uploadLoading: false,
         headers: {},
@@ -344,8 +305,8 @@
           edit: "/renche/taskInfo/edit",
           fileUpload: "/sys/common/upload",
           searchPrjItem: "/renche/projectItem/queryItemList",
-          demandList: "/renche/demand/queryDemandList",
-          taskDemandList: "/renche/demand/queryDemandList",
+          taskDemandList: "/renche/demand/queryDemand",
+          deleteDemand: "renche/demand/delDemand",
         },
       }
     },
@@ -433,15 +394,14 @@
         record.createTime = null;
         this.isUpload = false;
         this.prjItemId = record.prjItemId;
+        this.taskId = record.taskId;
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.fileList = [];
-        this.selectUser = record.receiveUser;
 
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'taskName','contactPerson','contactTel','taskContent','prjItemName'))
-          this.form.setFieldsValue({selectUser:this.selectUser});
+          this.form.setFieldsValue(pick(this.model,'taskName','contactPerson','contactTel','taskContent','prjItemName','receiveUser'))
           // //时间格式化
           // this.form.setFieldsValue({planStartTime:this.model.planStartTime?moment(this.model.planStartTime,'YYYY-MM-DD'):null});
           // this.form.setFieldsValue({planEndTime:this.model.planEndTime?moment(this.model.planEndTime,'YYYY-MM-DD'):null});
@@ -459,7 +419,6 @@
         this.isOpen = false;
         this.defaultActiveKey = "1";
         this.dataSource = [];
-        this.selectUser = '';
         this.visible = false;
       },
       handleOk (status) {
@@ -488,17 +447,16 @@
             }
             that.model.status = status;
             let formData = Object.assign(that.model, values);
-            formData.demandList = this.dataSource;
+            // formData.demandList = this.dataSource;
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
-                that.$emit('ok');
+                that.taskId = res.result.taskId;
               }else{
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.close();
             })
           }
         })
@@ -540,34 +498,47 @@
         this.form.setFieldsValue({prjItemName:data.prjItemName});
       },
       callback: function(key){
+        if(key != '1' && this.taskId == ''){
+          this.$message.warning("请先新建任务！");
+          return;
+        }
           this.defaultActiveKey = key;
       },
       addDemand(){
         var record = {};
-        record.demandList = this.dataSource;
+        // record.demandList = this.dataSource;
+        record.taskId = this.taskId;
+        record.prjItemId = this.prjItemId;
         this.$refs.demandModel.add(record);
         this.$refs.demandModel.title = "添加需要设备";
       },
       handleEdit(record){
-        var info = Object.assign({}, record);
-        info.demandList = this.dataSource;
-        this.$refs.demandModel.add(info);
+        this.$refs.demandModel.add(record);
         this.$refs.demandModel.title = "修改需要设备";
       },
-      addDemandOk(data){
-        this.dataSource = data;
+      addDemandOk(){
+        this.loadDemand();
       },
-      loadDemand(taskId){
-        getAction(this.url.taskDemandList, {taskId: taskId}).then((res) => {
+      loadDemand(arg){
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        getAction(this.url.taskDemandList, {taskId: this.taskId,pageNo: this.ipagination.current, pageSize: this.ipagination.pageSize}).then((res) => {
           if (res.success) {
-            this.dataSource = res.result;
+            this.dataSource = res.result.list;
+            this.ipagination.total = res.result.total;
           }
         })
       },
-      handleDelete: function (id) {
-        this.dataSource.some((item,i) => {
-          if(item.demandId == id){
-            this.dataSource.splice(i);
+      handleDelete:function(demandId){
+        var that = this;
+        deleteAction(that.url.deleteDemand,{demandId:demandId}).then((res) =>{
+          if(res.success){
+            that.$message.success(res.message);
+            that.loadDemand();
+          }else {
+            that.$message.warning(res.message);
           }
         })
       },

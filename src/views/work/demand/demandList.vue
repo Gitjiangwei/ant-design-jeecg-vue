@@ -211,7 +211,6 @@
     created() {
       this.loadData();
 
-
     },
     methods: {
       loadData(arg) {
