@@ -67,7 +67,7 @@
             <a-divider type="vertical"/>-->
              <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
-            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.arrivalId )">
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.leaseReturnId )">
                     <a>删除</a>
                   </a-popconfirm>
             <!--<a-dropdown>
@@ -92,14 +92,14 @@
 
     <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
    <!-- <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>-->
-
+    <leaseReturnModel ref="leaseReturnModel" @ok="modalFormOk"></leaseReturnModel>
   </a-card>
 
 </template>
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import addVisit from './modules/ArrivalModel';
+  import leaseReturnModel from './modules/LeaseReturnModel';
   import {filterObj} from '@/utils/util';
 /*  import fileDetail from "./modules/FileDetail";*/
   import {deleteAction, getAction, postAction } from '@/api/manage';
@@ -108,10 +108,10 @@
   import {ACCESS_TOKEN} from "@/store/mutation-types";
 
   export default {
-    name: "ArrivalInfo",
+    name: "LeaseReturn",
     components: {
       ARow,
-      addVisit,
+      leaseReturnModel,
      /* fileDetail,*/
     },
     data() {
@@ -150,9 +150,15 @@
             width: 150,
           },
           {
-            title: '接收日期',
+            title: '归还单位',
             align: "center",
-            dataIndex: 'receiptDate',
+            dataIndex: 'returnCompany',
+            width: 150,
+          },
+          {
+            title: '结束日期',
+            align: "center",
+            dataIndex: 'endDate',
             width: 150,
           },
           {
@@ -194,9 +200,9 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/arrivalList/list",
-          delete: "/renche/arrivalList/delete",
-          deleteBatch: "/renche/arrivalList/deleteBatch",
+          list: "/renche/leaseReturn/list",
+          delete: "/renche/leaseReturn/delete",
+          deleteBatch: "/renche/leaseReturn/deleteBatch",
 
         },
       }
@@ -274,7 +280,7 @@
           var ids = "";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
 
-            ids += this.selectionRows[a].arrivalId + ",";
+            ids += this.selectionRows[a].leaseReturnId + ",";
           }
           var that = this;
           this.$confirm({
@@ -284,7 +290,6 @@
               deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
-                  console.log(res)
                   that.loadData();
                   that.onClearSelected();
                 } else {
@@ -297,6 +302,8 @@
       },
       handleDelete: function (id) {
         var that = this;
+        alert("id="+id)
+
         deleteAction(that.url.delete, {id: id}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
@@ -309,8 +316,8 @@
       },
 
       async  handleEdit (record) {
-        this.$refs.addVisit.edit(record);
-        this.$refs.addVisit.title = "编辑";
+        this.$refs.leaseReturnModel.edit(record);
+        this.$refs.leaseReturnModel.title = "编辑";
       },
 
 
@@ -320,8 +327,8 @@
         this.$refs.fileDetail.title = "附件";
       },*/
       handleAdd: function () {
-        this.$refs.addVisit.add();
-        this.$refs.addVisit.title = "新增";
+        this.$refs.leaseReturnModel.add();
+        this.$refs.leaseReturnModel.title = "新增";
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

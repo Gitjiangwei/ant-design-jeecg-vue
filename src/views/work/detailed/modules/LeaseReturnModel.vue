@@ -23,25 +23,55 @@
               <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" maxLength="30"/>
             </a-form-item>
           </a-col>
+          <a-col :span="12" style="padding-left: 40px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还单位">
+              <a-input placeholder="请输入归还单位" v-decorator="['returnCompany', {rules: [{ required: true,message: '请输入归还单位' }]}]" maxLength="30"/>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
+
+
+        <a-row>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="开始日期" >
+              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'startDate', {}]"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12" style="padding-left: 0px;">
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="结束日期" >
+              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'endDate', {}]"/>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
+
+        <a-row>
           <a-col :span="12" style="padding-left: 0px;" >
             <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收人" >
               <a-input placeholder="请输入接收人" v-decorator="['recipient', {rules: [{ required: true,message: '请输入接收人' }]}]" maxlength="30"/>
             </a-form-item>
           </a-col>
+          <a-col :span="12" style="padding-left: 40px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收人电话">
+              <a-input placeholder="请输入接收人电话"  v-decorator="['phoneNumber',validatorRules.phoneNumber]" maxLength="11"/>
+            </a-form-item>
+          </a-col>
         </a-row>
         <a-row>
+          <a-col :span="12" style="padding-left: 0px;" >
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还人" >
+              <a-input placeholder="请输入归还人" v-decorator="['returnPerson', {rules: [{ required: true,message: '请输入归还人' }]}]" maxlength="30"/>
+            </a-form-item>
+          </a-col>
           <a-col :span="12" style="padding-left: 40px;" >
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
-              <a-input placeholder="请输入手机号"  v-decorator="['phoneNumber',validatorRules.phoneNumber]" maxLength="11"/>
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还人电话">
+              <a-input placeholder="请输入归还人电话"  v-decorator="['returnPhoNum',validatorRules.phoneNumber]" maxLength="11"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12" style="padding-left: 0px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收日期" >
-              <a-date-picker format="YYYY-MM-DD" v-decorator="[ 'receiptDate', {}]"/>
-            </a-form-item>
-          </a-col>
-
         </a-row>
+
+
       </a-form>
     </a-spin>
     <div>
@@ -54,9 +84,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading">
-     <!--   @change="handleTableChange" style="padding-top: 10px;">
-
-                <span slot="action" slot-scope="text, record">
+      <!--  @change="" style="padding-top: 10px;">-->
+                <!--<span slot="action" slot-scope="text, record">
                   <a @click="handleDelete(record.outId)">删除</a>
                 </span>-->
       </a-table>
@@ -68,7 +97,7 @@
 
 
 <script>
-  import { httpAction,getAction} from '@/api/manage'
+  import { httpAction , getAction} from '@/api/manage'
   import pick from 'lodash.pick'
   import moment from "moment"
   import Vue from 'vue'
@@ -76,13 +105,15 @@
   import AddProjectItemRel from "./AddProjectItemRel";
 
   export default {
-    name: "ArrivalModel",
+    name: "LeaseReturnModel",
     components: {AddProjectItemRel},
+
     data() {
       return {
         title: "操作",
         visible: false,
         isShow: false,
+        isCheck:false,
         model: {},
         labelCol: {
           xs: {span: 24},
@@ -163,11 +194,11 @@
           phoneNumber:{rules: [{validator:this.validateMobile}]}
         },
         url: {
-          edit: "/renche/arrivalList/edit",
-          add: "/renche/arrivalList/add",
+          edit: "/renche/leaseReturn/edit",
+          add: "/renche/leaseReturn/addLeaseReturn",
           fileUpload: "/sys/common/upload",
-          check:"/renche/arrivalList/check",
-          demand:"/renche/arrivalList/demand",
+          demand:"/renche/leaseReturn/demand",
+          check:"/renche/leaseReturn/check",
         },
 
       }
@@ -176,27 +207,27 @@
       const token = Vue.ls.get(ACCESS_TOKEN);
       this.headers = {"X-Access-Token": token}
     },
-
     methods: {
       add() {
         this.edit({});
       },
       edit(record) {
         this.dataSource = record.demandList;
-        console.log(this.dataSource);
+        console.log(record);
         this.fileList = [];
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.isShow = false;
-        if(record.arrivalId != undefined){
+        if(record.leaseReturnId != undefined){
           if(record.isBack == "1"){
             this.isShow = true;
           }
           this.$nextTick(() => {
-            this.form.setFieldsValue(pick(this.model, 'prjItemName', 'receiver', 'recipient', 'phoneNumber','demandList','receiptDate'))
+            this.form.setFieldsValue(pick(this.model, 'prjItemName', 'receiver', 'recipient', 'phoneNumber','demandList','startDate','endDate','returnCompany','returnPerson','returnPhoNum'))
             //时间格式化
-            this.form.setFieldsValue({receiptDate: this.model.receiptDate ? moment(this.model.receiptDate, 'YYYY-MM-DD HH:mm:ss"') : null});
+            this.form.setFieldsValue({startDate: this.model.startDate ? moment(this.model.startDate, 'YYYY-MM-DD "') : null});
+            this.form.setFieldsValue({endDate: this.model.endDate ? moment(this.model.endDate, 'YYYY-MM-DD "') : null});
           });
         }
       },
@@ -212,7 +243,7 @@
             that.confirmLoading = true;
             let httpurl = '';
             let method = '';
-            if (!this.model.prjItemId) {
+            if (!this.model.leaseReturnId) {
               httpurl += this.url.add;
               method = 'post';
             } else {
@@ -220,7 +251,8 @@
               method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            formData.receiptDate = formData.receiptDate ? formData.receiptDate.format('YYYY-MM-DD HH:mm:ss') : null;
+            formData.endDate = formData.endDate ? formData.endDate.format('YYYY-MM-DD') : null;
+            formData.startDate = formData.startDate ? formData.startDate.format('YYYY-MM-DD') : null;
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
@@ -257,7 +289,6 @@
         this.$refs.addProjectItemRel.show();
         this.$refs.addProjectItemRel.title = "选择添加关联工程点信息";
       },
-
       modalFormOk(data) {
         this.prjItemId = data.prjItemId;
         this.form.setFieldsValue({prjItemName:data.prjItemName});
@@ -270,13 +301,13 @@
           } else {
             alert(res.message);
             that.isCheck=false;
-            that.form.setFieldsValue({prjItemName: null });
+            that.form.setFieldsValue({prjItemName:""});
           }
         })
         if(that.isCheck){
           getAction(that.url.demand,{prjItemId: this.prjItemId}).then((res) => {
             if (res.success) {
-              /* that.$message.success(res.message);*/
+             /* that.$message.success(res.message);*/
               that.dataSource = res.result;
               console.log(res.result)
               console.log(that.dataSource)
@@ -285,8 +316,11 @@
             }
           })
         }
+       /*.finally(() => {
+          that.confirmLoading = false;
+          that.close();
+        })*/
       },
-
 
 
      /* getDate() {
