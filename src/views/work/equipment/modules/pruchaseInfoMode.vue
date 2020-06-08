@@ -311,7 +311,7 @@
             data.onSuccess(res);
           }
         }).catch(({err}) => {
-          f.onError()
+          /*f.onError()*/
         })
       },
       getDate() {
@@ -358,7 +358,7 @@
         }
       },
       dataChange(data, dataString){
-        alert(data+"-----"+dataString);
+        /*alert(data+"-----"+dataString);*/
       },
     }
   }

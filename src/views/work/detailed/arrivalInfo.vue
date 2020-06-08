@@ -107,6 +107,7 @@
   import Vue from 'vue';
   import {ACCESS_TOKEN} from "@/store/mutation-types";
 
+
   export default {
     name: "ArrivalInfo",
     components: {

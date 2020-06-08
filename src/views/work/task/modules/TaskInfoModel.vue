@@ -14,26 +14,26 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="任务名称" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入任务名称" v-decorator="['taskName', {rules: [{ required: true,message: '请输入任务名称' }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea :disabled="disabl" placeholder="请输入任务名称" v-decorator="['taskName', {rules: [{ required: true,message: '请输入任务名称' }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item label="联系人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入联系人" v-decorator="[ 'contactPerson', {}]" />
+                  <a-input :disabled="disabl" placeholder="请输入联系人" v-decorator="[ 'contactPerson', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item label="联系电话" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-input placeholder="请输入联系电话" v-decorator="['contactTel', {}]"  />
+                  <a-input :disabled="disabl" placeholder="请输入联系电话" v-decorator="['contactTel', {}]"  />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="负责人" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-select style="width: 100%" placeholder="请选择负责人" v-decorator="['receiveUser', {rules: [{ required: true,message: '请选择负责人' }]}]">
+                  <a-select :disabled="disabl" style="width: 100%" placeholder="请选择负责人" v-decorator="['receiveUser', {rules: [{ required: true,message: '请选择负责人' }]}]">
                     <a-select-option v-for="(user,index) in userList" :key="user.realname" :value="user.id">
                       {{ user.realname }}
                     </a-select-option>
@@ -54,14 +54,14 @@
                   <!--                    </template>-->
                   <!--                  </a-auto-complete>-->
 
-                  <a-input placeholder="请输入工程点名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" @click="showPrjItemList" />
+                  <a-input :disabled="disabl" placeholder="请输入工程点名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入正确工程点名称', }]}]" @click="showPrjItemList" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item label="任务内容" :wrapperCol="wrapperCol" :labelCol="labelCol">
-                  <a-textarea placeholder="请输入任务内容" v-decorator="['taskContent', {rules: [{ required: true,message: '请输入任务内容' }]}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="500"/>
+                  <a-textarea :disabled="disabl" placeholder="请输入任务内容" v-decorator="['taskContent', {rules: [{ required: true,message: '请输入任务内容' }]}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="500"/>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -98,7 +98,7 @@
 <!--            </a-row>-->
             <a-row>
               <a-col :span="22" style="padding-left: 22px;">
-                <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
+                <a-form-item :disabled="disabl" label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
                   <a-upload
                     name="file"
                     :multiple="true"
@@ -106,6 +106,7 @@
                     :file-list="fileList"
                     :customRequest="uploadFileRequest"
                     @change="handleChange"
+                    :disabled="disabl"
                   >
                     <a-button>
                       <a-icon type="upload"/>
@@ -122,8 +123,8 @@
           <a-row style="text-align: center;">
             <a-col>
               <span style="overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleOk('1')" v-if="model.status != 2">保存</a-button>
-                <a-button type="primary" @click="handleOk('2')" style="margin-left: 8px;">提交</a-button>
+                <a-button :disabled="disabl" type="primary" @click="handleOk('1')" v-if="model.status != 2">保存</a-button>
+                <a-button :disabled="disabl" type="primary" @click="handleOk('2')" style="margin-left: 8px;">提交</a-button>
               </span>
             </a-col>
           </a-row>
@@ -131,7 +132,8 @@
       </a-tab-pane>
       <a-tab-pane tab="需要设备清单" key="2" style="padding-bottom: 14px">
         <div style="float: right;">
-          <a-button type="primary" @click="addDemand" icon="plus" >新增</a-button>
+          <a-button type="primary" :disabled="disabl2" v-show="isShow" @click="addDemand" icon="plus" >{{addDem}}</a-button>
+          <a-button type="primary" :disabled="disabl1" v-show="isShow3" @click="chuli"  >{{chul}}</a-button>
         </div>
         <div style="padding-top: 42px;">
           <a-table
@@ -145,10 +147,10 @@
             :loading="loading"
             style="padding-top: 10px;">
 
-                <span slot="action" slot-scope="text, record">
-                  <a @click="handleEdit(record)">编辑</a>
+                <span  slot="action" slot-scope="text, record">
+                  <a :disabled="disabl"  @click="handleEdit(record)">编辑</a>
                   <a-divider type="vertical"/>
-                  <a @click="handleDelete(record.demandId)">删除</a>
+                  <a :disabled="disabl"  @click="handleDelete(record.demandId)">删除</a>
                 </span>
           </a-table>
         </div>
@@ -159,7 +161,8 @@
     <ShowProjectItemList ref="showProjectItemList" @func="modalFormOk"></ShowProjectItemList>
 
     <div slot="footer">
-      <a-button @click="handleCancel">关闭</a-button>
+      <a-button type="primary" @click="handleCancel">关闭</a-button>
+      <a-button type="primary" v-show="isShow1" @click="handOk">提交</a-button>
     </div>
   </a-modal>
 </template>
@@ -183,7 +186,15 @@
         visible: false,
         isUpload: false,
         isOpen: false,
+        isShow:true,
+        isShow1:false,
+        isShow3:false,
+        chul:"",
+        addDem:"",
+        disabl1:false,
         prjItemId: '',
+        disabl:false,
+        disabl2:false,
         choosePrjItemName: '',
         optionVal: '',
         textVal: '',
@@ -307,6 +318,8 @@
           searchPrjItem: "/renche/projectItem/queryItemList",
           taskDemandList: "/renche/demand/queryDemand",
           deleteDemand: "renche/demand/delDemand",
+          chuli:"/renche/taskInfo/chuli",
+          handOk:"/renche/taskInfo/handOk",
         },
       }
     },
@@ -391,6 +404,38 @@
         if(record.filelist == undefined){
           record.filelist = [];
         }
+
+
+        alert(record.equipStatus)
+
+
+        if(record.flag=="purchase"){
+          this.disabl=true;
+          this.isShow=false;
+          this.isShow3=true;
+          this.chul="处理";
+          if(record.equipStatus!=1){
+            this.chul="已处理";
+            this.disabl1=true;
+          }
+        }else if(record.flag=="pro"){
+          this.disabl=true;
+          this.isShow=false;
+        }else {
+          if(record.equipStatus!=0 ){
+            this.disabl2=true;
+            this.addDem="已提交";
+            this.isShow1=false;
+          }else {
+            this.addDem="新增";
+            this.disabl2=false;
+            this.isShow1=true;
+          }
+
+        }
+
+
+
         record.createTime = null;
         this.isUpload = false;
         this.prjItemId = record.prjItemId;
@@ -482,6 +527,9 @@
           })
         }
       },
+
+
+
       chooseThis: function(val,option){
         this.isOpen = false;
         if(val != 'close'){
@@ -512,6 +560,22 @@
         this.$refs.demandModel.add(record);
         this.$refs.demandModel.title = "添加需要设备";
       },
+
+      chuli(val){
+
+        var that =this;
+          getAction(this.url.chuli, {taskId: that.taskId}).then((res) => {
+            if(res.success){
+              that.$message.success(res.message);
+              that.disabl1=true;
+            }else{
+              that.$message.warning(res.message);
+            }
+          })
+
+      },
+
+
       handleEdit(record){
         this.$refs.demandModel.add(record);
         this.$refs.demandModel.title = "修改需要设备";
@@ -541,6 +605,45 @@
             that.$message.warning(res.message);
           }
         })
+      },
+      handleDelete: function (id) {
+        var that = this;
+        this.$confirm({
+          title: "确认删除",
+          content: "是否删除选中数据?",
+          onOk: function () {
+            deleteAction(that.url.delOutId, {outId: id}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadData();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+        })
+      },
+
+
+
+
+      handOk:function(arg){
+
+        var that=this;
+        this.$confirm({
+          title: "提交",
+          content: "提交后无法更改，是否确认提交?",
+          onOk: function () {
+            getAction(this.url.handOk, {taskId: this.taskId}).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.loadDemand();
+              } else {
+                that.$message.warning(res.message);
+              }
+            });
+          }
+      })
       },
       hideDownList(){
         this.isOpen = false;

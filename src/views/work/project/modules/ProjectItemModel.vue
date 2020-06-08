@@ -14,27 +14,27 @@
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程名称" >
-                  <a-textarea placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea :disabled="disabl" placeholder="请输入工程名称" v-decorator="['prjItemName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="项目名称" >
-                  <a-textarea placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
+                  <a-textarea :disabled="disabl" placeholder="请输入项目名称" v-decorator="['prjName', {rules: [{ required: true, message: '请输入工程名称', }]}]" :autosize="{ minRows: 1, maxRows: 2 }" maxLength="150"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程编号" >
-                  <a-input placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
+                  <a-input :disabled="disabl" placeholder="请输入工程编号" v-decorator="['prjItemNum', {}]" maxLength="30" />
                 </a-form-item>
               </a-col>
               <a-col :span="10" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程类型" >
-                  <a-select v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
-                    <a-select-option v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
+                  <a-select :disabled="disabl" v-decorator="['prjItemType', {rules: [{ required: true, message: '请选择工程类型', }]}]" placeholder="请选择工程类型">
+                    <a-select-option  v-for="item in typeDictOptions" :key="item.value" :value="item.value">{{item.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -52,25 +52,25 @@
                    </a-auto-complete>
                  </a-form-item>-->
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="所属公司" >
-                  <a-input placeholder="请输入所属公司" v-decorator="['companyName', {}]" @click="showCompanyList"/>
+                  <a-input :disabled="disabl" placeholder="请输入所属公司" v-decorator="['companyName', {}]" @click="showCompanyList"/>
                 </a-form-item>
               </a-col>
 
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="负责人" >
-                  <a-input placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
+                  <a-input :disabled="disabl" placeholder="请输入负责人" v-decorator="['personInCharge', {}]"  maxLength="30"/>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="联系电话" >
-                  <a-input placeholder="请输入联系电话" v-decorator="['personTel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" />
+                  <a-input :disabled="disabl" placeholder="请输入联系电话" v-decorator="['personTel', {rules: [{ required: false,pattern: /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$|^[1][3-9]\d{9}$/,message: '请输入正确联系电话' }]}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程状态" >
-                  <a-select v-decorator="['prjItemStatus', {rules: [{ required: true, message: '请选择工程状态', }]}]" placeholder="请选择工程状态">
+                  <a-select :disabled="disabl" v-decorator="['prjItemStatus', {rules: [{ required: true, message: '请选择工程状态', }]}]" placeholder="请选择工程状态">
                     <a-select-option value="0">未开始</a-select-option>
                     <a-select-option value="1">进行中</a-select-option>
                     <a-select-option value="2">已结束</a-select-option>
@@ -82,7 +82,7 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="建设方式" >
-                  <a-select v-decorator="['buildType', {rules: [{ required: true, message: '请选择建设方式', }]}]" placeholder="请选择建设方式">
+                  <a-select :disabled="disabl" v-decorator="['buildType', {rules: [{ required: true, message: '请选择建设方式', }]}]" placeholder="请选择建设方式">
                     <a-select-option value="0">迁移</a-select-option>
                     <a-select-option value="1">新建</a-select-option>
                   </a-select>
@@ -90,7 +90,7 @@
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="拥有方式" >
-                  <a-select v-decorator="['haveWay', {rules: [{ required: true, message: '请选择拥有方式', }]}]" placeholder="请选择拥有方式">
+                  <a-select :disabled="disabl" v-decorator="['haveWay', {rules: [{ required: true, message: '请选择拥有方式', }]}]" placeholder="请选择拥有方式">
                     <a-select-option value="0">租赁</a-select-option>
                     <a-select-option value="1">购买</a-select-option>
                   </a-select>
@@ -100,51 +100,57 @@
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="进场时间" >
-                  <a-date-picker v-decorator="[ 'entryTime', {}]" />
+                  <a-date-picker :disabled="disabl" v-decorator="[ 'entryTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="完成时间" >
-                  <a-date-picker v-decorator="[ 'finishTime', {}]" />
+                  <a-date-picker :disabled="disabl" v-decorator="[ 'finishTime', {}]" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="要求部署时间" >
-                  <a-date-picker v-decorator="['requireDeployTime', {}]" />
+                  <a-date-picker :disabled="disabl" v-decorator="['requireDeployTime', {}]" />
                 </a-form-item>
               </a-col>
               <a-col :span="12" style="padding-left: 0px;" v-show="isShow">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联合同" >
-                  <a @click="showContractInfo">{{contractName}}</a>
+                  <a :disabled="disabl"  @click="showContractInfo">{{contractName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
-            <a-row :gutter="24">
-              <a-col :span="16" style="padding-left: 8px;">
+            <a-row >
+              <a-col :span="12" style="padding-left: 40px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程进度" >
-                  <a-textarea  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
+                  <a-textarea :disabled="disabl"  placeholder="请输入工程进度" v-decorator="['progressOfItem', {}]" :autosize="{ minRows: 2, maxRows: 6 }" maxLength="250" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12" style="padding-left: 0px;">
+                <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="关联任务" >
+
+                  <a  @click="showTaskInfo">{{taskName}}</a>
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="工程地址" >
-                  <a-textarea  placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
+                  <a-textarea  :disabled="disabl" placeholder="请输入工程地址" v-decorator="['prjItemPlace', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="250" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row :gutter="24">
               <a-col :span="16" style="padding-left: 8px;">
                 <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注" >
-                  <a-textarea  placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
+                  <a-textarea :disabled="disabl" placeholder="请输入备注" v-decorator="['remark', {}]" :autosize="{ minRows: 2, maxRows: 6 }"   maxLength="1500" />
                 </a-form-item>
               </a-col>
             </a-row>
             <a-row>
               <a-col :span="22" style="padding-left: 22px;">
-                <a-form-item label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
+                <a-form-item :disabled="disabl" label="附件" :wrapperCol="filewrapperCol" :labelCol="filelabelCol">
                   <a-upload
                     name="file"
                     :multiple="true"
@@ -153,7 +159,7 @@
                     :customRequest="uploadFileRequest"
                     @change="handleChange"
                   >
-                    <a-button>
+                    <a-button :disabled="disabl"  >
                       <a-icon type="upload"/>
                       上传
                     </a-button>
@@ -168,16 +174,16 @@
           <a-row style="text-align: center;">
             <a-col>
               <span style="overflow: hidden;" class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleOk" icon="check">保存</a-button>
+                <a-button :disabled="disabl"  type="primary" @click="handleOk" icon="check">保存</a-button>
               </span>
             </a-col>
           </a-row>
         </a-spin>
       </a-tab-pane>
-      <a-tab-pane tab="关联设备" key="2" style="padding-bottom: 14px">
-      <!--  <div style="float: right;">
-          <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
-        </div>-->
+     <!-- <a-tab-pane tab="关联设备" key="2" style="padding-bottom: 14px">
+        &lt;!&ndash;  <div style="float: right;">
+            <a-button @click="showTender" type="primary" icon="plus">新增</a-button>
+          </div>&ndash;&gt;
         <div style="padding-top: 42px;">
           <a-table
             ref="table"
@@ -195,14 +201,14 @@
                 </span>
           </a-table>
         </div>
-      </a-tab-pane>
+      </a-tab-pane>-->
     </a-tabs>
 
     <purchase-info-stock-show ref="PurchaseInfoStockShow" @ok="addProjectItem"></purchase-info-stock-show>
 
     <ContractInfoLook ref="contractInfoShow"></ContractInfoLook>
     <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk"></CompanyInfoShow>
-
+    <TaskInfoModel ref="taskInfoModel" @ok="modalFormOk1"></TaskInfoModel>
 
     <div slot="footer">
       <a-button @click="handleCancel">关闭</a-button>
@@ -224,10 +230,11 @@
   import CompanyInfoShow from "../show/CompanyInfoShow";
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
+  import TaskInfoModel from '../../task/modules/TaskInfoModel'
 
   export default {
     name: "projectItemModal",
-    components: {CompanyInfoShow, ContractInfoLook, PurchaseInfoStockShow, ACol, ATextarea, ARow},
+    components: {CompanyInfoShow, ContractInfoLook, PurchaseInfoStockShow, ACol, ATextarea, ARow,TaskInfoModel},
     data () {
       return {
         title:"操作",
@@ -237,9 +244,12 @@
         isOpen: false,
         projectId:"",
         isShow: false,
+        disabl:false,
         companyId:"",
         contractId: "",
+        taskId:"",
         contractName: "",
+        taskName:"",
         defaultActiveKey: "1",
         dateFormat: 'YYYY-MM-DD',
         uploadLoading: false,
@@ -333,6 +343,7 @@
           delOutId: "/renche/outEquip/delOutEquip",
           searchCompany: "/renche/companyInfo/searchCompany",
           searchContract: "/renche/contractInfo/getContractById",
+          searchTask:"/renche/taskInfo/getTaskById",
           filelist: "/renche/purchase/fileList",
           fileUpload: "/sys/common/upload",
         },
@@ -392,6 +403,9 @@
         if(record.filelist == undefined){
           record.filelist = [];
         }
+        if(record.flag=="purchase"){
+          this.disabl=true;
+        }
         this.form.resetFields();
         this.dataSource = [];
         this.fileList = [];
@@ -400,7 +414,9 @@
         if(this.projectId != undefined && this.projectId != null && this.projectId != ""){
           this.isShow = true;
           this.contractId = record.contractId;
+          this.taskId=record.taskId;
           this.contractName = record.contractName;
+          this.taskName = record.taskName;
           this.loadData();
         }
         this.model = Object.assign({}, record);
@@ -560,6 +576,26 @@
         this.$refs.contractInfoShow.title = "合同详情";
       },
 
+      async showTaskInfo(){
+        let {result} = await getAction(this.url.searchTask, {taskId: this.taskId});
+        let record = result;
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+
+        if(this.disabl){
+          var flag="purchase";
+          record.flag=flag;
+        }else{
+          record.flag="pro";
+        }
+
+
+        this.$refs.taskInfoModel.edit(record);
+        this.$refs.taskInfoModel.title = "任务详情";
+      },
+
       showCompanyList:function (){
         this.$refs.companyInfoShow.show({});
         this.$refs.companyInfoShow.title = "选择客户信息";
@@ -627,6 +663,11 @@
       },
       hideDownList(){
         this.isOpen = false;
+      },
+
+      modalFormOk1() {
+        // 新增/修改 成功时，重载列表
+        this.loadData();
       },
     }
   }

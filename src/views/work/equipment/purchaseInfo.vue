@@ -141,7 +141,7 @@
       data() {
         return{
           description: '采购管理页面',
-          timer:"",
+          timer:null,
           purchaseId:"",
           fileRelId:"",
           value:0,
@@ -158,6 +158,11 @@
               customRender: function (t, r, index) {
                 return parseInt(index) + 1;
               }
+            },
+            {
+              title: '任务名称',
+              align: "center",
+              dataIndex: 'taskName'
             },
             {
               title: '物料名称',
@@ -443,10 +448,13 @@
         },
         ReceivingSuccess () {
           //this.$router.push({ name: "dashboard" })
+
           this.$notification.success({
             message: '成功',
             description: `设备入库成功，请查收！`,
+
           });
+          this.beforeDestroy();
         },
         ReceivingError () {
           //this.$router.push({ name: "dashboard" })

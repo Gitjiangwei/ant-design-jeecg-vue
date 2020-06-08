@@ -19,14 +19,22 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位">
+         <!--   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位">
               <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" maxLength="30"/>
+            </a-form-item>
+-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位" >
+              <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" @click="showCompanyList"/>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还单位">
+          <!--  <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还单位">
               <a-input placeholder="请输入归还单位" v-decorator="['returnCompany', {rules: [{ required: true,message: '请输入归还单位' }]}]" maxLength="30"/>
+            </a-form-item>-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="归还单位" >
+              <a-input placeholder="请输入归还单位" v-decorator="['returnCompany', {rules: [{ required: true,message: '请输入归还单位' }]}]" @click="showCompanyList1"/>
             </a-form-item>
+
           </a-col>
 
         </a-row>
@@ -91,6 +99,8 @@
       </a-table>
     </div>
     <AddProjectItemRel ref="addProjectItemRel" @func="modalFormOk"></AddProjectItemRel>
+    <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk1"></CompanyInfoShow>
+    <CompanyInfoShow ref="companyInfoShow1" @func="modalFormOk2"></CompanyInfoShow>
   </a-modal>
 
 </template>
@@ -103,10 +113,11 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import AddProjectItemRel from "./AddProjectItemRel";
+  import CompanyInfoShow from "../../customer/modules/CompanyInfoShow";
 
   export default {
     name: "LeaseReturnModel",
-    components: {AddProjectItemRel},
+    components: {AddProjectItemRel,CompanyInfoShow},
 
     data() {
       return {
@@ -321,6 +332,29 @@
           that.close();
         })*/
       },
+
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
+      },
+      showCompanyList1:function (){
+        this.$refs.companyInfoShow1.show();
+        this.$refs.companyInfoShow1.title = "选择客户信息";
+      },
+      modalFormOk1(data) {
+        this.model.companyId = data.companyId;
+
+        this.form.setFieldsValue({receiver:data.companyName});
+      },
+      modalFormOk2(data) {
+        this.model.companyId = data.companyId;
+
+        this.form.setFieldsValue({returnCompany:data.companyName});
+      },
+
+
+
+
 
 
      /* getDate() {

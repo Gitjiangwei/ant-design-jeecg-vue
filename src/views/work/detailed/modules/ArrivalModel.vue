@@ -19,8 +19,12 @@
         </a-row>
         <a-row>
           <a-col :span="12" style="padding-left: 40px;">
-            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位">
+         <!--   <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位">
               <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" maxLength="30"/>
+            </a-form-item>
+-->
+            <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="接收单位" >
+              <a-input placeholder="请输入接收单位" v-decorator="['receiver', {rules: [{ required: true,message: '请输入接收单位' }]}]" @click="showCompanyList"/>
             </a-form-item>
           </a-col>
           <a-col :span="12" style="padding-left: 0px;" >
@@ -62,6 +66,7 @@
       </a-table>
     </div>
     <AddProjectItemRel ref="addProjectItemRel" @func="modalFormOk"></AddProjectItemRel>
+    <CompanyInfoShow ref="companyInfoShow" @func="modalFormOk1"></CompanyInfoShow>
   </a-modal>
 
 </template>
@@ -74,10 +79,12 @@
   import Vue from 'vue'
   import {ACCESS_TOKEN} from "@/store/mutation-types"
   import AddProjectItemRel from "./AddProjectItemRel";
+  import CompanyInfoShow from "../../customer/modules/CompanyInfoShow";
+
 
   export default {
     name: "ArrivalModel",
-    components: {AddProjectItemRel},
+    components: {AddProjectItemRel,CompanyInfoShow},
     data() {
       return {
         title: "操作",
@@ -285,6 +292,15 @@
             }
           })
         }
+      },
+      showCompanyList:function (){
+        this.$refs.companyInfoShow.show();
+        this.$refs.companyInfoShow.title = "选择客户信息";
+      },
+      modalFormOk1(data) {
+        this.model.companyId = data.companyId;
+
+        this.form.setFieldsValue({receiver:data.companyName});
       },
 
 

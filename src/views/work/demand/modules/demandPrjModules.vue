@@ -12,7 +12,7 @@
     <span style="color: red">需求数量: {{ needNum }} 台</span>
       <div style="float: right;">
 
-        <a-button style="padding-left: 5px;" @click="showTender" type="primary" icon="plus" v-show="isShow1">新增</a-button>
+        <a-button style="padding-left: 5px;" @click="showTender" type="primary" icon="plus" >新增</a-button>
       </div>
       <div style="padding-top: 42px;">
         <a-table
@@ -101,12 +101,12 @@
             align: "center",
             dataIndex: 'useTimes'
           },
-         /* {
+          {
             title: '操作',
             dataIndex: 'action',
             align: "center",
             scopedSlots: {customRender: 'action'},
-          }*/
+          }
         ],
         //数据集
         dataSource: [],
@@ -247,11 +247,11 @@
 
       showTender:function (){
         var realityNum=this.dataSource.length;
-      if(this.needNum<=realityNum){
+     /* if(this.needNum<=realityNum){
           alert("设备数量已足够，不能再次添加！");
           return;
         }
-
+*/
 
 
         if(this.projectId==null || this.projectId == "" || this.projectId == undefined ){
