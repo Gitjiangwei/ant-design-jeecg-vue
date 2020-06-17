@@ -8,11 +8,11 @@
               <a-input placeholder="请输入工程点名称" v-model="queryParam.prjItemName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="6">
+         <!-- <a-col :span="6">
             <a-form-item label="接收单位">
               <a-input placeholder="请输入接收单位" v-model="queryParam.receiver"  maxlength="30"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
 
           <a-col :span="6">
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -67,7 +67,7 @@
             <a-divider type="vertical"/>-->
              <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical"/>
-            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.leaseReturnId )">
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.managingPeopleId )">
                     <a>删除</a>
                   </a-popconfirm>
             <!--<a-dropdown>
@@ -92,14 +92,15 @@
 
     <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
    <!-- <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>-->
-    <leaseReturnModel ref="leaseReturnModel" @ok="modalFormOk"></leaseReturnModel>
+    <managing-people-info-model ref="managingPeopleInfoModel" @ok="modalFormOk"></managing-people-info-model>
+
   </a-card>
 
 </template>
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import leaseReturnModel from './modules/LeaseReturnModel';
+  import managingPeopleInfoModel from './modules/ManagingPeopleInfoModel';
   import {filterObj} from '@/utils/util';
 /*  import fileDetail from "./modules/FileDetail";*/
   import {deleteAction, getAction, postAction } from '@/api/manage';
@@ -108,15 +109,15 @@
   import {ACCESS_TOKEN} from "@/store/mutation-types";
 
   export default {
-    name: "LeaseReturn",
+    name: "ManagingPeopleInfo",
     components: {
       ARow,
-      leaseReturnModel,
+      managingPeopleInfoModel,
      /* fileDetail,*/
     },
     data() {
       return {
-        description: '设备租赁归还交接单',
+        description: '人员管理系统部署验收确认单',
         // 查询条件
         queryParam: {},
         // 表头
@@ -138,33 +139,34 @@
             width: 150,
           },
           {
-            title: '接收单位',
+            title: '验收日期',
             align: "center",
-            dataIndex: 'receiver',
+            dataIndex: 'checkTime',
             width: 150,
           },
           {
-            title: '接收人',
+            title: '建设单位',
             align: "center",
-            dataIndex: 'recipient',
+            dataIndex: 'constructionCompany',
             width: 150,
           },
           {
-            title: '归还单位',
+            title: '监理单位',
             align: "center",
-            dataIndex: 'returnCompany',
+            dataIndex: 'supervisorCompany',
             width: 150,
           },
           {
-            title: '结束日期',
+            title: '施工单位',
             align: "center",
-            dataIndex: 'endDate',
+            dataIndex: 'roadworkCompany',
             width: 150,
           },
+
           {
-            title: '手机号',
+            title: '实施厂商',
             align: "center",
-            dataIndex: 'phoneNumber',
+            dataIndex: 'implementCompany',
             width: 150,
           },
 
@@ -200,9 +202,9 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/leaseReturn/list",
-          delete: "/renche/leaseReturn/delete",
-          deleteBatch: "/renche/leaseReturn/deleteBatch",
+          list: "/renche/managingPeople/list",
+          delete: "/renche/managingPeople/delete",
+          deleteBatch: "/renche/managingPeople/deleteBatch",
 
         },
       }
@@ -280,7 +282,7 @@
           var ids = "";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
 
-            ids += this.selectionRows[a].leaseReturnId + ",";
+            ids += this.selectionRows[a].managingPeopleId + ",";
           }
           var that = this;
           this.$confirm({
@@ -316,8 +318,8 @@
       },
 
       async  handleEdit (record) {
-        this.$refs.leaseReturnModel.edit(record);
-        this.$refs.leaseReturnModel.title = "编辑";
+        this.$refs.managingPeopleInfoModel.edit(record);
+        this.$refs.managingPeopleInfoModel.title = "编辑";
       },
 
 
@@ -327,8 +329,8 @@
         this.$refs.fileDetail.title = "附件";
       },*/
       handleAdd: function () {
-        this.$refs.leaseReturnModel.add();
-        this.$refs.leaseReturnModel.title = "新增";
+        this.$refs.managingPeopleInfoModel.add();
+        this.$refs.managingPeopleInfoModel.title = "新增";
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

@@ -405,10 +405,6 @@
           record.filelist = [];
         }
 
-
-        alert(record.equipStatus)
-
-
         if(record.flag=="purchase"){
           this.disabl=true;
           this.isShow=false;
@@ -417,6 +413,10 @@
           if(record.equipStatus!=1){
             this.chul="已处理";
             this.disabl1=true;
+          }
+          if(record.equipStatus==0){
+            this.chul="处理";
+            this.disabl1=false;
           }
         }else if(record.flag=="pro"){
           this.disabl=true;

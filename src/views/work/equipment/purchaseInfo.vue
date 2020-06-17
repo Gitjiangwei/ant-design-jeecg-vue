@@ -104,11 +104,19 @@
                   <a>收货</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-if="record.isstorage == '2'">
+              <a-menu-item v-if="record.isstorage == '2'&&(record.taskName ==null || record.taskName ==undefined)"  >
                 <a-popconfirm title="确定入库吗?程序会进行自动入库" @confirm="() => handleReceiving(record)">
                   <a>入库</a>
                 </a-popconfirm>
               </a-menu-item>
+                 <a-menu-item v-if="(record.taskName !=null || record.taskName !=undefined)&& record.isstorage=='2' ">
+                <a-popconfirm title="确定入库并出库吗?程序会进行自动入库出库操作" @confirm="() => handleReceiving1(record)">
+                  <a>入库并出库</a>
+                </a-popconfirm>
+              </a-menu-item>
+
+
+
             </a-menu>
           </a-dropdown>
         </span>
@@ -140,7 +148,7 @@
       },
       data() {
         return{
-          description: '采购管理页面',
+          description: '采购需求页面',
           timer:null,
           purchaseId:"",
           fileRelId:"",
@@ -159,16 +167,42 @@
                 return parseInt(index) + 1;
               }
             },
+
+            {
+              title: '工程点名称',
+              align: "center",
+              dataIndex: 'prjItemName'
+            },
             {
               title: '任务名称',
               align: "center",
               dataIndex: 'taskName'
             },
+
             {
               title: '物料名称',
               align: "center",
               dataIndex: 'materialName'
             },
+
+            {
+              title: '是否通知领料',
+              align: "center",
+              dataIndex: 'adviceStatus',
+              width: 80,
+              customRender: (text) => {
+                if(text == '0'){
+                  return "不可通知";
+                }else if(text == '1'){
+                  return "可通知";
+                 }else if(text == '2'){
+                    return "已通知";
+                  } else {
+                  return text;
+                }
+              }
+            },
+
             {
               title: '物料型号',
               align: "center",
@@ -299,6 +333,7 @@
             qryReceivingKey:"/renche/purchase/qryPurchaseKey",
             filelist: "/renche/purchase/fileList",
             export:"/renche/purchase/exportPurchase",
+            insertAndOutReceiving:"/renche/purchase/insertAndOutReceiving",
           },
         }
       },
@@ -423,6 +458,33 @@
         },
         handleReceiving: function (record) {
           var that = this;
+
+          if(record.materialName==null||record.materialName==undefined){
+            that.$message.warning("物料名称为空，请保存后再提交！");
+            return;
+          }
+          if(record.quantity==null||record.quantity==undefined){
+            that.$message.warning("采购数量，请保存后再提交！");
+            return;
+          }
+          if(record.price==null||record.price==undefined){
+            that.$message.warning("设备价格为空，请保存后再提交！");
+            return;
+          }
+          if(record.haveWay==null||record.haveWay==undefined){
+            that.$message.warning("拥有方式为空，请保存后再提交！");
+            return;
+          }
+
+          if(record.purchaseTime==null||record.purchaseTime==undefined){
+            that.$message.warning("采购日期为空，请保存后再提交！");
+            return;
+          }
+          if(record.purchaser==null||record.purchaser==undefined){
+            that.$message.warning("采购人员为空，请保存后再提交！");
+            return;
+          }
+
           if(record.isarrival==2){
             that.$message.warning("只能入库收货后的设备");
             return;
@@ -441,6 +503,56 @@
             }
           });
         },
+        handleReceiving1: function (record) {
+          var that = this;
+
+          if(record.materialName==null||record.materialName==undefined){
+            that.$message.warning("物料名称为空，请保存后再提交！");
+            return;
+          }
+          if(record.quantity==null||record.quantity==undefined){
+            that.$message.warning("采购数量，请保存后再提交！");
+            return;
+          }
+          if(record.price==null||record.price==undefined){
+            that.$message.warning("设备价格为空，请保存后再提交！");
+            return;
+          }
+          if(record.haveWay==null||record.haveWay==undefined){
+            that.$message.warning("拥有方式为空，请保存后再提交！");
+            return;
+          }
+
+          if(record.purchaseTime==null||record.purchaseTime==undefined){
+            that.$message.warning("采购日期为空，请保存后再提交！");
+            return;
+          }
+          if(record.purchaser==null||record.purchaser==undefined){
+            that.$message.warning("采购人员为空，请保存后再提交！");
+            return;
+          }
+
+
+
+          if(record.isarrival==2){
+            that.$message.warning("只能入库收货后的设备");
+            return;
+          }
+          // if(record.isstorage==1){
+          //   that.$message.warning("当前的设备已经入库，不能重放入库！");
+          //   return;
+          // }
+          postAction(that.url.insertAndOutReceiving, record).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message);
+              this.purchaseId = record.purchaseId;
+              that.mounted(record.purchaseId);
+            } else {
+              that.$message.warning(res.message);
+            }
+          });
+        },
+
         //定时任务销毁
         beforeDestroy()
         {
