@@ -627,7 +627,7 @@
         let systemDate = date.year + '-' + date.month + '-' +  date.date;
         return systemDate;
       },
-      handleChange(info) {
+     Change(info) {
         if(info.file.status == undefined){
           info.fileList.some((item,i) => {
             if(item.uid == info.file.uid){

@@ -4,13 +4,13 @@
       <a-form layout="inline">
         <a-row :gutter="24">
           <a-col :span="6">
-            <a-form-item label="工程点名称">
-              <a-input placeholder="请输入工程点名称" v-model="queryParam.prjItemName"  maxlength="30"></a-input>
+            <a-form-item label="工程名称">
+              <a-input placeholder="请输入工程名称" v-model="queryParam.prjItemName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>
-         <!-- <a-col :span="6">
-            <a-form-item label="接收单位">
-              <a-input placeholder="请输入接收单位" v-model="queryParam.receiver"  maxlength="30"></a-input>
+        <!--  <a-col :span="6">
+            <a-form-item label="工单名称">
+              <a-input placeholder="请输入工单名称" v-model="queryParam.workName"  maxlength="30"></a-input>
             </a-form-item>
           </a-col>-->
 
@@ -26,8 +26,9 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--<a-button @click="exportDate" type="primary" icon="export">导出</a-button>-->
+     <!-- <a-button @click="exportDate" type="primary" icon="export">导出</a-button>-->
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel">
@@ -62,27 +63,23 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+
           <span slot="action" slot-scope="text, record">
-         <!--   <a @click="fileDeteil(record)">附件</a>
-            <a-divider type="vertical"/>-->
-             <a @click="handleEdit(record)">编辑</a>
+            <a @click="fileDeteil(record)">附件</a>
             <a-divider type="vertical"/>
-            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.managingPeopleId )">
-                    <a>删除</a>
-                  </a-popconfirm>
-            <!--<a-dropdown>
+            <a-dropdown>
               <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a @click="handleEdit(record)">编辑</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.arrivalId )">
+                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.projectReceiptId )">
                     <a>删除</a>
                   </a-popconfirm>
                 </a-menu-item>
               </a-menu>
-            </a-dropdown>-->
+            </a-dropdown>
           </span>
       </a-table>
     </div>
@@ -91,8 +88,7 @@
     <!-- 表单区域 -->
 
     <add-visit ref="addVisit" @ok="modalFormOk"></add-visit>
-   <!-- <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>-->
-    <managing-people-info-model ref="managingPeopleInfoModel" @ok="modalFormOk"></managing-people-info-model>
+    <file-detail ref="fileDetail" @ok="modalFormOk"></file-detail>
 
   </a-card>
 
@@ -100,30 +96,30 @@
 
 <script>
   import ARow from "ant-design-vue/es/grid/Row";
-  import managingPeopleInfoModel from './modules/ManagingPeopleInfoModel1';
+  import addVisit from './modules/ProjectReceiptInfoModel';
   import {filterObj} from '@/utils/util';
-/*  import fileDetail from "./modules/FileDetail";*/
+  import fileDetail from "./modules/FileDetail";
   import {deleteAction, getAction, postAction } from '@/api/manage';
   import {initDictOptions} from '@/components/dict/RencheDictSelectUtil';
   import Vue from 'vue';
   import {ACCESS_TOKEN} from "@/store/mutation-types";
 
   export default {
-    name: "ManagingPeopleInfo",
+    name: "ProjectReceiptInfo",
     components: {
       ARow,
-      managingPeopleInfoModel,
-     /* fileDetail,*/
+      addVisit,
+      fileDetail,
     },
     data() {
       return {
-        description: '人员管理系统部署验收确认单',
+        description: '工程验收单',
         // 查询条件
         queryParam: {},
         // 表头
         columns: [
           {
-            title: '序号',
+            title: '#',
             dataIndex: '',
             key: 'rowIndex',
             width: 40,
@@ -139,34 +135,28 @@
             width: 150,
           },
           {
-            title: '验收日期',
+            title: '项目类型',
             align: "center",
-            dataIndex: 'checkTime',
+            dataIndex: 'projectType',
+            width: 150,
+            customRender: (text, record, index) => {
+              if(text == '0'){
+                return "租赁";
+              }else if(text == '1'){
+                return "购买";
+              }
+            }
+          },
+          {
+            title: '项目内容',
+            align: "center",
+            dataIndex: 'projectContent',
             width: 150,
           },
           {
-            title: '建设单位',
+            title: '完成情况',
             align: "center",
-            dataIndex: 'constructionCompany',
-            width: 150,
-          },
-          {
-            title: '监理单位',
-            align: "center",
-            dataIndex: 'supervisorCompany',
-            width: 150,
-          },
-          {
-            title: '施工单位',
-            align: "center",
-            dataIndex: 'roadworkCompany',
-            width: 150,
-          },
-
-          {
-            title: '实施厂商',
-            align: "center",
-            dataIndex: 'implementCompany',
+            dataIndex: 'evaluate',
             width: 150,
           },
 
@@ -202,9 +192,11 @@
         selectedRowKeys: [],
         selectedRows: [],
         url: {
-          list: "/renche/managingPeople/list",
-          delete: "/renche/managingPeople/delete",
-          deleteBatch: "/renche/managingPeople/deleteBatch",
+          list: "/renche/projectReceipt/list",
+          delete: "/renche/projectReceipt/delete",
+          deleteBatch: "/renche/projectReceipt/deleteBatch",
+        /*  export: "/renche/WorkSerivice/exportWorkService",*/
+          filelist: "/renche/purchase/fileList",
 
         },
       }
@@ -227,6 +219,8 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.list;
+           // this.isorter.visitor = res.result.list[0].visitor;
+           // alert("this.isorter.visitor ="+this.isorter.visitor )
             this.ipagination.total = res.result.total;
 
           }
@@ -282,7 +276,7 @@
           var ids = "";
           for (var a = 0; a < this.selectedRowKeys.length; a++) {
 
-            ids += this.selectionRows[a].managingPeopleId + ",";
+            ids += this.selectionRows[a].projectReceiptId + ",";
           }
           var that = this;
           this.$confirm({
@@ -304,8 +298,6 @@
       },
       handleDelete: function (id) {
         var that = this;
-        alert("id="+id)
-
         deleteAction(that.url.delete, {id: id}).then((res) => {
           if (res.success) {
             that.$message.success(res.message);
@@ -318,19 +310,23 @@
       },
 
       async  handleEdit (record) {
-        this.$refs.managingPeopleInfoModel.edit(record);
-        this.$refs.managingPeopleInfoModel.title = "编辑";
+        if(record.fileRelId != null || record.fileRelId != "" || record.fileRelId != undefined) {
+          let {result} = await getAction(this.url.filelist, {fileRelId: record.fileRelId});
+          record.filelist = result.list;
+        }
+        this.$refs.addVisit.edit(record);
+        this.$refs.addVisit.title = "编辑";
       },
 
 
-   /*   fileDeteil: function (record) {
+      fileDeteil: function (record) {
         console.log(record);
         this.$refs.fileDetail.fileLoad(record);
         this.$refs.fileDetail.title = "附件";
-      },*/
+      },
       handleAdd: function () {
-        this.$refs.managingPeopleInfoModel.add();
-        this.$refs.managingPeopleInfoModel.title = "新增";
+        this.$refs.addVisit.add();
+        this.$refs.addVisit.title = "新增";
       },
       handleTableChange(pagination, filters, sorter) {
         //分页、排序、筛选变化时触发

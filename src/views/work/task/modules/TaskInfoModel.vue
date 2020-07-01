@@ -162,7 +162,7 @@
 
     <div slot="footer">
       <a-button type="primary" @click="handleCancel">关闭</a-button>
-      <a-button type="primary" v-show="isShow1" @click="handOk">提交</a-button>
+      <a-button type="primary" :v-show="isShow1" @click="handOk">提交</a-button>
     </div>
   </a-modal>
 </template>
@@ -310,7 +310,7 @@
         form: this.$form.createForm(this),
         validatorRules:{
         },
-        url: {
+        url:{
           queryNaList: "/sys/user/queryNaList",
           add: "/renche/taskInfo/add",
           edit: "/renche/taskInfo/edit",
@@ -319,7 +319,7 @@
           taskDemandList: "/renche/demand/queryDemand",
           deleteDemand: "renche/demand/delDemand",
           chuli:"/renche/taskInfo/chuli",
-          handOk:"/renche/taskInfo/handOk",
+          handOk1:"/renche/taskInfo/handOk",
         },
       }
     },
@@ -396,6 +396,7 @@
         }
       },
       add () {
+        this.isShow1=false;
         this.edit({});
       },
       edit (record) {
@@ -404,7 +405,6 @@
         if(record.filelist == undefined){
           record.filelist = [];
         }
-
         if(record.flag=="purchase"){
           this.disabl=true;
           this.isShow=false;
@@ -422,7 +422,7 @@
           this.disabl=true;
           this.isShow=false;
         }else {
-          if(record.equipStatus!=0 ){
+          if(record.equipStatus>0 ){
             this.disabl2=true;
             this.addDem="已提交";
             this.isShow1=false;
@@ -634,7 +634,7 @@
           title: "提交",
           content: "提交后无法更改，是否确认提交?",
           onOk: function () {
-            getAction(this.url.handOk, {taskId: this.taskId}).then((res) => {
+            getAction(that.url.handOk1, {taskId: that.taskId}).then((res) => {
               if (res.success) {
                 that.$message.success(res.message);
                 that.loadDemand();

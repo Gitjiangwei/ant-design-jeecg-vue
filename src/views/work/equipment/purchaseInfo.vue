@@ -185,7 +185,7 @@
               dataIndex: 'materialName'
             },
 
-            {
+           /* {
               title: '是否通知领料',
               align: "center",
               dataIndex: 'adviceStatus',
@@ -201,7 +201,7 @@
                   return text;
                 }
               }
-            },
+            },*/
 
             {
               title: '物料型号',

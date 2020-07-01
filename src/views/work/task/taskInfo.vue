@@ -349,8 +349,9 @@
           } else {
             var ids = "";
             for (var a = 0; a < this.selectedRowKeys.length; a++) {
-              ids += this.selectedRowKeys[a] + ",";
+              ids += this.selectionRows[a].taskId + ",";
             }
+            alert(ids)
             var that = this;
             this.$confirm({
               title: "确认删除",

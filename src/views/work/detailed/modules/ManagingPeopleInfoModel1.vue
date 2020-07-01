@@ -662,7 +662,7 @@
       addProjectItem(data) {
         this.prjItemId=data.prjItemId;
         this.form.setFieldsValue({prjItemName:data.prjItemName});
-        this.loadData();
+      /*  this.loadData();*/
       },
       addSoftwareDeploy(){
         const that = this;

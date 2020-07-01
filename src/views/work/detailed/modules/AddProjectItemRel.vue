@@ -189,11 +189,13 @@
         this.visible = false;
       },
       handleOk () {
+
         if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请选择一条数据！');
           return;
         } else {
           this.$emit('func',this.selectedRows[0]);
+
           this.close();
         }
       },
